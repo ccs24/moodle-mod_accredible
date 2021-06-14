@@ -5,11 +5,18 @@ namespace mod_accredible\apiRest;
 use mod_accredible\client\client;
 
 class apiRest {
-    private $api_endpoint = "https://api.accredible.com/v1/";
+    private $api_endpoint;
 
     private $token;
 
     public function __construct($token, $url = null) {
+        global $CFG;
+
+        $this->api_endpoint = "https://api.accredible.com/v1/";
+
+        if($CFG->is_eu) {
+            $this->api_endpoint = "https://eu.api.accredible.com/v1/";
+        }
 
         if(empty($url)) {
             $this->url = "https://staging.accredible.com/v1/";

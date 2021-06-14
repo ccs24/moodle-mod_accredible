@@ -361,7 +361,7 @@ function accredible_get_recipient_sso_linik($group_id, $email) {
 function accredible_get_templates() {
 	global $CFG;
 
-	$curl = curl_init('https://api.accredible.com/v1/issuer/templates');
+	$curl = curl_init(get_api_endpoint().'issuer/templates');
 	curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Authorization: Token token="'.$CFG->accredible_api_key.'"' ) );
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 	if(!$result = json_decode( curl_exec($curl) )) {
@@ -657,14 +657,14 @@ function accredible_course_completed_handler($event) {
 function accredible_update_certificate_grade($certificate_id, $evidence_item_id, $grade) {
   global $CFG;
 
-	$curl = curl_init('https://api.accredible.com/v1/credentials/' . $certificate_id . '/evidence_items/'.$evidence_item_id);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+  $curl = curl_init(get_api_endpoint() . 'credentials/' . $certificate_id . '/evidence_items/'.$evidence_item_id);
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-	curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query( array('evidence_item' => array( 'string_object' => $grade ) ) ));
-	curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Authorization: Token token="'.$CFG->accredible_api_key.'"' ) );
+  curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query( array('evidence_item' => array( 'string_object' => $grade ) ) ));
+  curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Authorization: Token token="'.$CFG->accredible_api_key.'"' ) );
 
-	$result = curl_exec($curl);
-	return $result;
+  $result = curl_exec($curl);
+  return $result;
 }
 
 function accredible_get_transcript($course_id, $user_id, $final_quiz_id) {
@@ -711,7 +711,7 @@ function accredible_get_transcript($course_id, $user_id, $final_quiz_id) {
 function accredible_post_evidence($credential_id, $evidence_item, $allow_exceptions) {
 	global $CFG;
 
-	$curl = curl_init('https://api.accredible.com/v1/credentials/' . $credential_id . '/evidence_items');
+	$curl = curl_init(get_api_endpoint() . 'credentials/' . $credential_id . '/evidence_items');
 	curl_setopt($curl, CURLOPT_POST, true);
 	curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query( array('evidence_item' => $evidence_item) ));
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -898,4 +898,15 @@ function seconds_to_str ($seconds) {
     return $minutes . ' minute' . number_ending($minutes);
   }
   return $seconds . ' second' . number_ending($seconds);
+}
+
+function get_api_endpoint() {
+	global $CFG;
+
+	$api_endpoint = "https://api.accredible.com/v1/";
+	if($CFG->is_eu) {
+		$api_endpoint = "https://eu.api.accredible.com/v1/";
+	}
+
+    return $api_endpoint;
 }

@@ -5,9 +5,9 @@ $functions = array(
 
 $services = array (
     'accredible service' => array(
-        'function' => array(
+        'functions' => array(
         ),
-        "restricteduser" => 0,
+        "restrictedusers" => 0,
         "enabled" => 1,
     )
 );

@@ -32,15 +32,31 @@ require_once ($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/mod/accredible/lib.php');
 require_once($CFG->dirroot.'/mod/accredible/locallib.php');
 
+use mod_accredible\Html2Text\Html2Text;
+
 class mod_accredible_mod_form extends moodleform_mod {
 
     function definition() {
-        global $DB, $OUTPUT, $CFG;
+        global $DB, $COURSE, $CFG;
         $updatingcert = false;
         $alreadyexists = false;
+
+        if (!extension_loaded('mbstring')) {
+            print_error('You or administrator must install mbstring extensions of php.');
+        }
+
+        if (!extension_loaded('dom')) {
+            print_error('You or administrator must install dom extensions of php.');
+        }
+
+        $description = Html2Text::convert($COURSE->summary);
+        if(empty($description)){
+            $description = "Recipient has compeleted the achievement.";
+        }
+
         // Make sure the API key is set
         if(!isset($CFG->accredible_api_key)) {
-            print_error('Please set your API Key first.');
+            print_error('Please set your API Key first in the plugin settings.');
         }
         // Update form init
         if (optional_param('update', '', PARAM_INT)) {
@@ -50,9 +66,7 @@ class mod_accredible_mod_form extends moodleform_mod {
             $id = $cm->course;
             $course = $DB->get_record('course', array('id'=> $id), '*', MUST_EXIST);
             $accredible_certificate = $DB->get_record('accredible', array('id'=> $cm->instance), '*', MUST_EXIST);
-        } 
-        // New form init
-        elseif(optional_param('course', '', PARAM_INT)) {
+        } else if(optional_param('course', '', PARAM_INT)) { // New form init
             $id =  optional_param('course', '', PARAM_INT);
             $course = $DB->get_record('course', array('id'=> $id), '*', MUST_EXIST);
             // see if other accredible certificates already exist for this course
@@ -75,6 +89,7 @@ class mod_accredible_mod_form extends moodleform_mod {
         $mform =& $this->_form;
         $mform->addElement('hidden', 'course', $id);
         $mform->addElement('header', 'general', get_string('general', 'form'));
+        $mform->addElement('static', 'overview', get_string('overview', 'accredible'), get_string('activitydescription', 'accredible'));
         if($alreadyexists) {
             $mform->addElement('static', 'additionalactivitiesone', '', get_string('additionalactivitiesone', 'accredible'));
             $mform->addElement('static', 'additionalactivitiestwo', '', get_string('additionalactivitiestwo', 'accredible'));
@@ -85,77 +100,133 @@ class mod_accredible_mod_form extends moodleform_mod {
         $mform->setDefault('name', $course->fullname);
         
 
-        // Grab the list of templates available
-        $templates = accredible_get_templates();
-        $mform->addElement('static', 'usestemplatesdescription', '', get_string('usestemplatesdescription', 'accredible'));
-        $mform->addElement('select', 'achievementid2', get_string('templatename', 'accredible'), $templates);
-        $mform->addRule('achievementid2', null, 'required', null, 'client');
-        if($updatingcert) {
-            $mform->setDefault('achievementid2', $accredible_certificate->achievementid);
-        } else {
-            $mform->setDefault('achievementid2', get_string('templatedefault', 'accredible'));
+        // If we're updating and have a group then let the issuer choose to edit this
+        if($updatingcert && $accredible_certificate->groupid){
+            // Grab the list of groups available
+            $templates = accredible_get_groups();
+            $mform->addElement('static', 'usestemplatesdescription', '', get_string('usestemplatesdescription', 'accredible'));
+            $mform->addElement('select', 'groupid', get_string('templatename', 'accredible'), $templates);
+            $mform->addRule('groupid', null, 'required', null, 'client');
+            $mform->setDefault('groupid', $accredible_certificate->groupid);
         }
 
-        $mform->addElement('text', 'achievementid', get_string('customtemplatename', 'accredible'), array('style'=>'width: 399px'));
-        $mform->setType('achievementid', PARAM_TEXT);
-        $mform->setDefault('achievementid', $course->shortname);
+        if($updatingcert && $accredible_certificate->achievementid){
+            // Grab the list of templates available
+            $templates = accredible_get_templates();
+            $mform->addElement('static', 'usestemplatesdescription', '', get_string('usestemplatesdescription', 'accredible'));
+            $mform->addElement('select', 'achievementid', get_string('groupselect', 'accredible'), $templates);
+            $mform->addRule('achievementid', null, 'required', null, 'client');
+            $mform->setDefault('achievementid', $course->shortname);
 
-        $mform->addElement('text', 'certificatename', get_string('certificatename', 'accredible'), array('style'=>'width: 399px'));
-        $mform->addRule('certificatename', null, 'required', null, 'client');
-        $mform->setType('certificatename', PARAM_TEXT);
-        $mform->setDefault('certificatename', $course->fullname);
-        
-        if($alreadyexists) {
-            $mform->addElement('static', 'additionalactivitiesthree', '', get_string('additionalactivitiesthree', 'accredible'));
+            if($alreadyexists) {
+                $mform->addElement('static', 'additionalactivitiesthree', '', get_string('additionalactivitiesthree', 'accredible'));
+            }
+            $mform->addElement('text', 'certificatename', get_string('certificatename', 'accredible'), array('style'=>'width: 399px'));
+            $mform->addRule('certificatename', null, 'required', null, 'client');
+            $mform->setType('certificatename', PARAM_TEXT);
+            $mform->setDefault('certificatename', $course->fullname);
+
+            $mform->addElement('textarea', 'description', get_string('description', 'accredible'), array('cols'=>'64', 'rows'=>'10', 'wrap'=>'virtual', 'maxlength' => '1000'));
+            $mform->addRule('description', null, 'required', null, 'client');
+            $mform->setType('description', PARAM_RAW);
+            $mform->setDefault('description', $description);
+            if($updatingcert) {
+                $mform->addElement('static', 'dashboardlink', get_string('dashboardlink', 'accredible'), get_string('dashboardlinktext', 'accredible'));
+            }
         }
 
-        $mform->addElement('textarea', 'description', get_string('description', 'accredible'), array('cols'=>'64', 'rows'=>'10', 'wrap'=>'virtual', 'maxlength' => '1000'));
-        $mform->addRule('description', null, 'required', null, 'client');
-        $mform->setType('description', PARAM_RAW);
-        $mform->setDefault('description', strip_tags($course->summary));
-        if($updatingcert) {
-            $mform->addElement('static', 'dashboardlink', get_string('dashboardlink', 'accredible'), get_string('dashboardlinktext', 'accredible'));
+        // Get certificates if updating
+        if ($updatingcert) {
+            // Grab existing certificates and cross-reference emails
+            if ($accredible_certificate->achievementid) {
+                $certificates = accredible_get_credentials($accredible_certificate->achievementid);
+            }
+            elseif ($accredible_certificate->groupid) {
+                $certificates = accredible_get_credentials($accredible_certificate->groupid);
+            }
         }
 
+        // Generate list of users who have earned a certificate, if updating
+        if ($updatingcert) {
+            foreach ($users as $user) {
+                // If this user has completed the criteria to earn a certificate, add to $users_earned_certificate
+                if(accredible_check_if_cert_earned($accredible_certificate, $course, $user)) {
+                    $users_earned_certificate[$user->id] = $user;
+                }
+            }
+        }
 
+        // Unissued certificates header
+        if (isset($users_earned_certificate) && count($users_earned_certificate) > 0) {
+            $unissued_header = false;
+            foreach ($users_earned_certificate as $user) {
+                $existing_certificate = false;
 
+                foreach ($certificates as $certificate) {
+                    // Search through the certificates to see if this user has one existing
+                    if ($certificate->recipient->email == $user->email) {
+                        // This user has an existing certificate, no need to continue searching
+                        $existing_certificate = true;
+                        break;
+                    }
+                }
+
+                if (!$existing_certificate) {
+                    if (!$unissued_header) {
+                        // The header has not been added to the form yet and is needed
+                        $mform->addElement('header', 'chooseunissuedusers', get_string('unissuedheader', 'accredible'));
+                        $mform->addElement('static', 'unissueddescription', '', get_string('unissueddescription', 'accredible'));
+                        $this->add_checkbox_controller(2, 'Select All/None');
+                        $unissued_header = true;
+                    }
+                    // No existing certificate, add this user to the unissued users list
+                    $mform->addElement('advcheckbox', 'unissuedusers['.$user->id.']', $user->firstname . ' ' . $user->lastname . '    ' . $user->email, null, array('group' => 2));
+                }
+
+            }
+        }
+
+        // Manually issue certificates header
         $mform->addElement('header', 'chooseusers', get_string('manualheader', 'accredible'));
         $this->add_checkbox_controller(1, 'Select All/None');
 
         if($updatingcert) {
-            // Grab existing certificates and cross-reference emails
-            $certificates = accredible_get_issued($accredible_certificate->achievementid);
+
+            // Grab existing credentials and cross-reference emails
+            if($accredible_certificate->achievementid){
+                $certificates = accredible_get_credentials($accredible_certificate->achievementid);
+            } else {
+                $certificates = accredible_get_credentials($accredible_certificate->groupid);
+            }
+            
             foreach ($users as $user) {
                 $cert_id = null;
                 // check cert emails for this user
                 foreach ($certificates as $certificate) {
                     if($certificate->recipient->email == $user->email) {
                         $cert_id = $certificate->id;
-                        if($certificate->private) {
-                            $cert_link = $certificate->id . '?key=' . $certificate->private_key;
-                        }
-                        else {
-                            $cert_link = $cert_id;
+                        if(isset($certificate->url)) {
+                            $cert_link = $certificate->url;
+                        } else {
+                            $cert_link = 'https://www.credential.net/'.$cert_id;
                         }
                     }
                 }
                 // show the certificate if they have a certificate
                 if( $cert_id ) {
-                    $mform->addElement('static', 'certlink'.$user->id, $user->firstname . ' ' . $user->lastname, "Certificate $cert_id - <a href='https://www.accredible.com/$cert_link' target='_blank'>link</a>");
+                    $mform->addElement('static', 'certlink'.$user->id, $user->firstname . ' ' . $user->lastname . '    ' . $user->email, "Certificate $cert_id - <a href='$cert_link' target='_blank'>link</a>");
                 } // show a checkbox if they don't
                 else {
-                    $mform->addElement('advcheckbox', 'users['.$user->id.']', $user->firstname . ' ' . $user->lastname, null, array('group' => 1));
+                    $mform->addElement('advcheckbox', 'users['.$user->id.']', $user->firstname . ' ' . $user->lastname . '    ' . $user->email, null, array('group' => 1));
                 }
             }
         }
         // For new modules, just list all the users
         else {
             foreach( $users as $user ) { 
-                $mform->addElement('advcheckbox', 'users['.$user->id.']', $user->firstname . ' ' . $user->lastname, null, array('group' => 1));
+                $mform->addElement('advcheckbox', 'users['.$user->id.']', $user->firstname . ' ' . $user->lastname . '    ' . $user->email, null, array('group' => 1));
             }
         }
-
-
 
         $mform->addElement('header', 'gradeissue', get_string('gradeissueheader', 'accredible'));
         $mform->addElement('select', 'finalquiz', get_string('chooseexam', 'accredible'), $quiz_choices);
@@ -163,26 +234,24 @@ class mod_accredible_mod_form extends moodleform_mod {
         $mform->setType('passinggrade', PARAM_INT);
         $mform->setDefault('passinggrade', 70);
 
-
-
         $mform->addElement('header', 'completionissue', get_string('completionissueheader', 'accredible'));
-        $this->add_checkbox_controller(2, 'Select All/None');
         if($updatingcert) {
-            $completion_activity_ids = unserialize_completion_array($accredible_certificate->completionactivities);
-            foreach ($quizes as $quiz) {
-                $mform->addElement('advcheckbox', 'activities['.$quiz->id.']', 'Quiz', $quiz->name, array('group' => 2));
-                if(isset( $completion_activity_ids[$quiz->id] )) {
-                    $mform->setDefault('activities['.$quiz->id.']', 1);
-                }
+
+            $mform->addElement('checkbox', 'completionactivities', get_string('completionissuecheckbox', 'accredible'));
+            if(isset( $accredible_certificate->completionactivities )) {
+                $mform->setDefault('completionactivities', 1);
             }
         } else {
-            if($quizes) {
-                foreach ($quizes as $quiz) {
-                    $mform->addElement('advcheckbox', 'activities['.$quiz->id.']', 'Quiz', $quiz->name, array('group' => 2));
-                }
-            }   
-        }
+            $mform->addElement('checkbox', 'completionactivities', get_string('completionissuecheckbox', 'accredible'));
+            // $mform->addElement('advcheckbox', 'activities['.$quiz->id.']', 'Quiz', $quiz->name, array('group' => 2));
+            // $mform->addElement('advcheckbox', 'users['.$user->id.']', $user->firstname . ' ' . $user->lastname, null, array('group' => 1));
 
+            // if($quizes) {
+            //     foreach ($quizes as $quiz) {
+            //         $mform->addElement('advcheckbox', 'activities['.$quiz->id.']', 'Quiz', $quiz->name, array('group' => 2));
+            //     }
+            // }   
+        }
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();

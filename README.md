@@ -1,21 +1,24 @@
-## Introduction
-This plugin enables you to issue dynamic, digital certificates using the [Accredible](https://www.accredible.com) API on your Moodle instance. They act as a replacement for the PDF certificates normally generated for your courses. An example output certificate can be viewed at: [https://www.accredible.com/example](https://www.accredible.com/example).
+![Accredible Logo](https://s3.amazonaws.com/accredible-cdn/accredible_logo_sm.png)
+
+# Accredible Moodle Activity Plugin
+
+## Overview
+The Accredible platform enables organizations to create, manage and distribute digital credentials as digital certificates or open badges.
+
+An example digital certificate and badge can be viewed here: https://www.credential.net/10000005
+
+This plugin enables you to issue dynamic, digital certificates or open badges on your Moodle instance. They act as a replacement for the PDF certificates normally generated for your courses.
+
+Here's a video showing a tutorial on how to install and start using the plugin: https://youtu.be/h0ORng5TBnU
+
+## Example Output
+![Example Digital Certificate](https://s3.amazonaws.com/accredible-cdn/example-digital-certificate.png)
+
+![Example Open Badge](https://s3.amazonaws.com/accredible-cdn/example-digital-badge.png)
 
 ## Compatability
 
-This plugin is currently a **Release Candidate**. It is being used in production by a large course provider. 
-It was developed for **Moodle versions 27 and greater**.
-
----
-
-##### Note - Version 1 Launched
-We have just updated the plugin to work with **our more advanced certificate designs**. Your existing set up will still work, but you must transition to templates to use version 1 of the plugin. To transition to templates: 
-
-1. Log into the Accredible Dashboard, and create a new cohort for API use.
-2. Install version 1.0.0 of the accredible plugin.
-3. Edit your existing certificate activities, and select the appropriate templates.
-
-If you would like to use a new template with your old certificates, we can work with you to transition them to the new design. It's quite simple, and won't require you to email your students again. Contact us at support@accredible.com.
+This plugin has been tested and is working on Moodle 2.7+ and Moodle 3.1+.
 
 ---
 
@@ -37,43 +40,61 @@ If you have git installed, simply visit the Moodle /mod directory and clone this
 
 #### Get your API key
 
-Make sure you have your API key from Accredible. We should have shared it with you, but it's also on the [API Management Dashboard](https://www.accredible.com/issuer/dashboard).
+Make sure you have your API key from Accredible. It's available from the settings page on our dashboard: [https://dashboard.accredible.com](https://dashboard.accredible.com).
 
 #### Continue Moodle set up
 
 Start by installing the new plugin (go to Site Administration > Notifications if your Moodle doesn't ask you to install automatically).
 
-![alt text][install-image]
-[install-image]: https://s3.amazonaws.com/accredible-moodle-instructions/install_plugin.png "Installing the plugin"
+![install-image](https://s3.amazonaws.com/accredible-moodle-instructions/install_plugin.png "Installing the plugin")
 
 After clicking 'Upgrade Moodle database now', this is when you'll enter your API key from Accredible.
 
-![alt text][api-image]
-[api-image]: https://s3.amazonaws.com/accredible-moodle-instructions/set_api_key.png "Enter your Accredible API key"
+![api-image](https://s3.amazonaws.com/accredible-moodle-instructions/set_api_key.png "Enter your Accredible API key")
 
-## Creating a Certificate
+## Creating a Certificate or Badge
 
 #### Add an Activity
 
-Go to the course you want to issue certificates for and add an Accredible Certificates activity. 
+Go to the course you want to issue certificates or badges for and add an Accredible activity. First select add activity:
 
-![alt text][activity-image]
-[activity-image]: https://s3.amazonaws.com/accredible-moodle-instructions/choose_activity.png "Add an Accredible Certificates Activity"
+![add-activity](https://s3.amazonaws.com/accredible-moodle-instructions/add_activity1.png)
 
-Issuing a certificate is easy - choose from 3 issuing options:
+then select Accredible:
 
-- Pick student names and manually issue certificates. Only students that need a certificates have a checkbox.
-- Choose the Quiz Activity that represents the **final exam**, and set a minimum grade requirement. Certificates will get issued as soon as the student receives a grade above the threshold.
-- Choose multiple Activities that need to be **completed** (attempted) for a student to receive their certificate.
+![select-accredible](https://s3.amazonaws.com/accredible-moodle-instructions/add_activity2.png)
 
-![alt text][settings-image]
-[settings-image]: https://s3.amazonaws.com/accredible-moodle-instructions/activity_settings.png "Choose how to issue certificates"
+Issuing a certificate or badge is easy - choose from 3 issuing options:
 
-*Note: if you set both types of auto-issue criteria, completing either will issue a certificate.*
+- Pick student names and manually issue credentials. Only students that don't already have a credential will show a checkbox.
+- Choose the Quiz Activity that represents the **final exam**, and set a minimum grade requirement. Certificates/Badges will get issued as soon as the student receives a grade above the threshold.
+- Choose for a student to receive their certificate/badge when they complete the course if you've setup completion tracking.
 
-Once you've issued the certificate, head over to Accredible to edit the appearance.
+![settings-image](https://s3.amazonaws.com/accredible-moodle-instructions/activity_settings2.png "Choose how to issue certificates")
 
-Contact us at support@accredible.com if you have issues.
+*Note: if you set both types of auto-issue criteria, completing either will issue a certificate/badge.*
+
+*Note: Make sure you don't allow students to set their completion of the Accredible activity or they'll be able to issue their own certificates/badges.*
+
+Once you've added the activity to your course we'll auto-create a Group on your Accredible account where these credentials will belong. You'll see this on your dashboard.
+
+![new-group](https://s3.amazonaws.com/accredible-moodle-instructions/new_group.png "Group on Accredible")
+
+Then select a certificate design and or badge design to be able to send out credentails in this group.
+
+![credentials-list](https://s3.amazonaws.com/accredible-moodle-instructions/credentials_list.png "List of certificates and badges")
+
+From now on new certificates and badges will be automatically sent to recipients based upon the criteria you chose.
+
+You are able to add, edit and remove your badges and certificates at any time through the platform.
+
+**Contact us at support@accredible.com if you have issues or ideas on how we can make this integration better.**
+
+### Bug reports
+
+If you discover any bugs, feel free to create an issue on GitHub. Please add as much information as possible to help us fixing the possible bug. We also encourage you to help even more by forking and sending us a pull request.
+
+https://github.com/accredible/acms-php-api/issues
 
 ## FAQs
 

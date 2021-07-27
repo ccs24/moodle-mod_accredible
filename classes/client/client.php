@@ -34,6 +34,12 @@ class client {
         ));
 
         $response = curl_exec($curl);
+        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        if($httpcode >= 400) {
+            echo '<script>';
+            echo 'console.error("ACCREDIBLE API ERROR:", "' . $httpcode . '", "' . $method . '", "' . $url . '")';
+            echo '</script>';
+        }
 
         curl_close($curl);
 

@@ -22,7 +22,7 @@ class apiRest {
             $this->url = "https://staging.accredible.com/v1/";
         }
 
-        $dev_api_endpoint = getenv("ACCREDIBLE_API_ENDPOINT");
+        $dev_api_endpoint = getenv("ACCREDIBLE_DEV_API_ENDPOINT");
         if($dev_api_endpoint) {
             $this->api_endpoint = $dev_api_endpoint;
             $this->url = $dev_api_endpoint;

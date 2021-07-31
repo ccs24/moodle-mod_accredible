@@ -18,6 +18,9 @@ class client {
     }
 
     static function create_req($url, $token, $method, $postBody = null) {
+        global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
+
         $curl = new \curl();
         $options = array(
             'CURLOPT_RETURNTRANSFER' => true,

@@ -18,30 +18,37 @@ class client {
     }
 
     static function create_req($url, $token, $method, $postBody = null) {
-        $curl = curl_init();
+        $curl = new \curl();
+        $options = array(
+            'CURLOPT_RETURNTRANSFER' => true,
+            'CURLOPT_FAILONERROR'    => true,
+            'CURLOPT_HTTPHEADER'     => array(
+                'Authorization: Token '.$token,
+                'Content-Type: application/json; charset=utf-8'
+            )
+        );
 
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-
-        if (isset($postBody)) {
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $postBody);
+        switch($method) {
+            case 'GET':
+                $response = $curl->get($url, $postBody, $options);
+                break;
+            case 'POST':
+                $response = $curl->post($url, $postBody, $options);
+                break;
+            case 'PUT':
+                $response = $curl->put($url, $postBody, $options);
+                break;
+            case 'DELETE':
+                $response = $curl->delete($url, $postBody, $options);
+                break;
+            default:
+                throw new \coding_exception('Invalid HTTP method');
         }
 
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-            'Authorization: Token '.$token,
-            'Content-Type: application/json; charset=utf-8'
-        ));
-
-        $response = curl_exec($curl);
-        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        if($httpcode >= 400) {
-            echo '<script>';
-            echo 'console.error("ACCREDIBLE API ERROR:", "' . $httpcode . '", "' . $method . '", "' . $url . '")';
-            echo '</script>';
-        }
-
-        curl_close($curl);
+        if($curl->error) {
+            debugging('<div style="padding-top: 70px; font-size: 0.9rem;"><b>ACCREDIBLE API ERROR</b> ' .
+                $curl->error . '<br />' . $method . ' ' . $url . '</div>', DEBUG_DEVELOPER);
+        };
 
         return json_decode($response);
     }

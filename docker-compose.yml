@@ -14,7 +14,7 @@ services:
   moodle:
     image: docker.io/bitnami/moodle:3.11.2
     ports:
-      - '80:8080'
+      - '8080:8080'
       - '443:8443'
     environment:
       - MOODLE_DATABASE_HOST=mariadb
@@ -30,6 +30,17 @@ services:
       - '.:/bitnami/moodle/mod/accredible'
     depends_on:
       - mariadb
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    links:
+      - mariadb:database
+    depends_on:
+      - mariadb
+    environment:
+      PMA_HOST: database
 
 volumes:
   mariadb_data:

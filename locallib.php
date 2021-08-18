@@ -437,9 +437,9 @@ function accredible_log_creation($certificate_id, $user_id, $course_id, $cm_id) 
 	$context = context_module::instance($cm->id);
 
 	return \mod_accredible\event\certificate_created::create(array(
-	  'objectid' => $certificate_id,
-	  'context' => $context,
-	  'relateduserid' => $user_id
+		'objectid' => $certificate_id,
+		'context' => $context,
+		'relateduserid' => $user_id
 	));
 }
 
@@ -655,16 +655,16 @@ function accredible_course_completed_handler($event) {
 
 
 function accredible_update_certificate_grade($certificate_id, $evidence_item_id, $grade) {
-  global $CFG;
+	global $CFG;
 
-  $curl = curl_init(get_api_endpoint() . 'credentials/' . $certificate_id . '/evidence_items/'.$evidence_item_id);
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-  curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query( array('evidence_item' => array( 'string_object' => $grade ) ) ));
-  curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Authorization: Token token="'.$CFG->accredible_api_key.'"' ) );
+	$curl = curl_init(get_api_endpoint() . 'credentials/' . $certificate_id . '/evidence_items/'.$evidence_item_id);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+	curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query(array('evidence_item' => array('string_object' => $grade)), '', '&'));
+	curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Authorization: Token token="'.$CFG->accredible_api_key.'"' ) );
 
-  $result = curl_exec($curl);
-  return $result;
+	$result = curl_exec($curl);
+	return $result;
 }
 
 function accredible_get_transcript($course_id, $user_id, $final_quiz_id) {
@@ -713,17 +713,17 @@ function accredible_post_evidence($credential_id, $evidence_item, $allow_excepti
 
 	$curl = curl_init(get_api_endpoint() . 'credentials/' . $credential_id . '/evidence_items');
 	curl_setopt($curl, CURLOPT_POST, true);
-	curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query( array('evidence_item' => $evidence_item) ));
+	curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query(array('evidence_item' => $evidence_item), '', '&'));
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($curl, CURLOPT_FAILONERROR, true);
 	curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Authorization: Token token="'.$CFG->accredible_api_key.'"' ) );
 	$result = curl_exec($curl);
 	if(!$result && $allow_exceptions) {
-    // throw API exception
-    // include the user id that triggered the error
-    // direct the user to accredible's support
-    // dump the post to debug_info
-    throw new moodle_exception('evidenceadderror', 'accredible', 'https://help.accredible.com/hc/en-us', $credential_id, curl_error($curl));
+		// throw API exception
+		// include the user id that triggered the error
+		// direct the user to accredible's support
+		// dump the post to debug_info
+		throw new moodle_exception('evidenceadderror', 'accredible', 'https://help.accredible.com/hc/en-us', $credential_id, curl_error($curl));
 	}
 	curl_close($curl);
 }
@@ -761,15 +761,15 @@ function accredible_post_essay_answers($user_id, $course_id, $credential_id) {
 			
 			if($quiz_attempt) {
 				$sql = "SELECT
-				    qa.id,
-				    quiza.quiz,
-				    quiza.id AS quizattemptid,
-				    quiza.timestart,
-				    quiza.timefinish,
-				    qa.slot,
-				    qa.behaviour,
-				    qa.questionsummary AS question,
-				    qa.responsesummary AS answer
+						qa.id,
+						quiza.quiz,
+						quiza.id AS quizattemptid,
+						quiza.timestart,
+						quiza.timefinish,
+						qa.slot,
+						qa.behaviour,
+						qa.questionsummary AS question,
+						qa.responsesummary AS answer
 				 
 				FROM ".$CFG->prefix."quiz_attempts quiza
 				JOIN ".$CFG->prefix."question_usages qu ON qu.id = quiza.uniqueid
@@ -885,19 +885,19 @@ function accredible_manual_issue_completion_timestamp($accredible_record, $user)
 }
 
 function number_ending ($number) {
-  return ($number > 1) ? 's' : '';
+	return ($number > 1) ? 's' : '';
 }
 
 function seconds_to_str ($seconds) {
-  $hours = floor(($seconds %= 86400) / 3600);
-  if ($hours) {
-    return $hours . ' hour' . number_ending($hours);
-  }
-  $minutes = floor(($seconds %= 3600) / 60);
-  if ($minutes) {
-    return $minutes . ' minute' . number_ending($minutes);
-  }
-  return $seconds . ' second' . number_ending($seconds);
+	$hours = floor(($seconds %= 86400) / 3600);
+	if ($hours) {
+		return $hours . ' hour' . number_ending($hours);
+	}
+	$minutes = floor(($seconds %= 3600) / 60);
+	if ($minutes) {
+		return $minutes . ' minute' . number_ending($minutes);
+	}
+	return $seconds . ' second' . number_ending($seconds);
 }
 
 function get_api_endpoint() {

@@ -33,14 +33,14 @@ class Html2Text {
      * @throws Html2TextException if the HTML could not be loaded as a {@link DOMDocument}
      */
     public static function convert($html, $ignore_error = false) {
-        // replace &nbsp; with spaces.
+        // Replace &nbsp; with spaces.
         $html = str_replace("&nbsp;", " ", $html);
         $html = str_replace("\xc2\xa0", " ", $html);
 
         $is_office_document = static::isOfficeDocument($html);
 
         if ($is_office_document) {
-            // remove office namespace.
+            // Remove office namespace.
             $html = str_replace(array("<o:p>", "</o:p>"), "", $html);
         }
 
@@ -53,17 +53,17 @@ class Html2Text {
 
         $output = static::iterateOverNode($doc, null, false, $is_office_document);
 
-        // remove leading and trailing spaces on each line.
+        // Remove leading and trailing spaces on each line.
         $output = preg_replace("/[ \t]*\n[ \t]*/im", "\n", $output);
         $output = preg_replace("/ *\t */im", "\t", $output);
 
-        // unarmor pre blocks.
+        // Unarmor pre blocks.
         $output = str_replace("\r", "\n", $output);
 
-        // remove unnecessary empty lines.
+        // Remove unnecessary empty lines.
         $output = preg_replace("/\n\n\n*/im", "\n\n", $output);
 
-        // remove leading and trailing whitespace.
+        // Remove leading and trailing whitespace.
         $output = trim($output);
 
         return $output;
@@ -78,9 +78,9 @@ class Html2Text {
      * @return string the fixed text
      */
     static function fixNewlines($text) {
-        // replace \r\n to \n.
+        // Replace \r\n to \n.
         $text = str_replace("\r\n", "\n", $text);
-        // remove \rs.
+        // Remove \rs.
         $text = str_replace("\r", "\n", $text);
 
         return $text;
@@ -143,7 +143,7 @@ class Html2Text {
     }
 
     static function nextChildName($node) {
-        // get the next child.
+        // Get the next child.
         $nextNode = $node->nextSibling;
         while ($nextNode != null) {
             if ($nextNode instanceof \DOMText) {

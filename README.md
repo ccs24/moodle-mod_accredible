@@ -101,3 +101,64 @@ https://github.com/accredible/acms-php-api/issues
 #### Why is nothing showing up? I can't see a certificate.
 
 A certificate isn't created until you've either manually created one or had a student go through the criteria you set on the activity. For example if you select some required activities then a certificate won't be created until an enrolled student has completed them. Completing an activity or quiz as a course admin won't create a certificate.
+
+---
+
+## Development Information
+
+### Coding style
+
+This plugin is trying to be consistent and follow the recommendations according to [the Moodle coding style](http://docs.moodle.org/dev/Coding_style).
+ 
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/)
+- [An Accredible account](https://www.accredible.com/)
+
+### Development setup
+
+#### Initial installation
+
+Run `docker-compose.yml` without any plugins for the first time to successfully complete initial installation.
+
+```
+docker-compose up -d
+```
+
+If the initial installation is successfully completed, `==> ** Moodle setup finished! **` will be displayed in the docker log and you will be able to access the moodle instance at `http://127.0.0.1:8080`.
+
+After the installation, you can stop the containers to re-run them with the Accredible plugin.
+
+```
+docker-compose down
+```
+
+#### Run Moodle with the Accredible plugin
+
+Run the Moodle instance with the plugin based on your local code.
+
+```
+docker-compose -f docker-compose.yml -f docker-compose.plugin.yml up -d
+```
+
+If you are using your Accredible account in the production, you need to set an empty value in `ACCREDIBLE_DEV_API_ENDPOINT` in `docker-compose.plugin.yml`. Otherwise, `http://127.0.0.1:3000/v1/` is used for the API calls.
+
+#### Moodle instance
+
+You can access the Moodle instance at `http://127.0.0.1:8080` and log into the admin page with:
+
+```
+MOODLE_USERNAME: user
+MOODLE_PASSWORD: bitnami
+```
+
+#### phpMyAdmin
+
+You can access the phpMyAdmin at `http://127.0.0.1:8081` and log into it with:
+
+```
+MOODLE_DATABASE_USER : bn_moodle
+MOODLE_DATABASE_PASSWORD: (No password)
+```
+

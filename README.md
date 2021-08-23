@@ -161,3 +161,6 @@ MOODLE_DATABASE_USER : bn_moodle
 MOODLE_DATABASE_PASSWORD: (No password)
 ```
 
+#### Environment variables
+
+You can find available environment variables on [README.md](https://github.com/bitnami/bitnami-docker-moodle) of the original docker-compose repository from bitnami.

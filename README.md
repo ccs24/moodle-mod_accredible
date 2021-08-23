@@ -109,14 +109,13 @@ A certificate isn't created until you've either manually created one or had a st
 ### Coding style
 
 This plugin is trying to be consistent and follow the recommendations according to [the Moodle coding style](http://docs.moodle.org/dev/Coding_style).
- 
 
-### Prerequisites
+### Development setup
+
+#### Prerequisites
 
 - [Docker](https://www.docker.com/)
 - [An Accredible account](https://www.accredible.com/)
-
-### Development setup
 
 #### Initial installation
 
@@ -136,7 +135,7 @@ docker-compose down
 
 #### Run Moodle with the Accredible plugin
 
-Run the Moodle instance with the plugin based on your local code.
+Run the Moodle instance with the Accredible plugin in your local repo.
 
 ```
 docker-compose -f docker-compose.yml -f docker-compose.plugin.yml up -d

@@ -27,7 +27,8 @@ class client {
             'CURLOPT_FAILONERROR'    => true,
             'CURLOPT_HTTPHEADER'     => array(
                 'Authorization: Token '.$token,
-                'Content-Type: application/json; charset=utf-8'
+                'Content-Type: application/json; charset=utf-8',
+                'Accredible-Integration: Moodle'
             )
         );
 

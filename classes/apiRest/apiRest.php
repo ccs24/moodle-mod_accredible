@@ -24,7 +24,7 @@ class apiRest {
 
     private $token;
 
-    public function __construct($token, $url = null) {
+    public function __construct($token) {
         global $CFG;
 
         $this->api_endpoint = "https://api.accredible.com/v1/";
@@ -33,14 +33,9 @@ class apiRest {
             $this->api_endpoint = "https://eu.api.accredible.com/v1/";
         }
 
-        if(empty($url)) {
-            $this->url = "https://staging.accredible.com/v1/";
-        }
-
         $dev_api_endpoint = getenv("ACCREDIBLE_DEV_API_ENDPOINT");
         if($dev_api_endpoint) {
             $this->api_endpoint = $dev_api_endpoint;
-            $this->url = $dev_api_endpoint;
         }
 
         $this->token = $token;

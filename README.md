@@ -192,7 +192,7 @@ Please refer to [Writing PHPUnit tests](https://docs.moodle.org/dev/Writing_PHPU
 
 #### Setup PHPUnit
 
-After the development setup above, log in to the Moodle container.
+After running Moodle with the Accredible plugin, log in to the Moodle container.
 
 ```
 docker exec -it moodle-mod_accredible_moodle_1 bash

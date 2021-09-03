@@ -213,7 +213,7 @@ $CFG->phpunit_dblibrary = 'native';
 $CFG->phpunit_dbhost    = 'mariadb';
 $CFG->phpunit_dbname    = 'test';
 $CFG->phpunit_dbuser    = 'bn_moodle';
-$CFiG->phpunit_dbpass    = '';
+$CFG->phpunit_dbpass    = '';
 ```
 
 Initialise the test environment using the following command.

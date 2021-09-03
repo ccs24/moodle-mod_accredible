@@ -21,10 +21,9 @@ use mod_accredible\client\client;
 
 class apiRest {
     private $api_endpoint;
-
     private $token;
 
-    public function __construct($token) {
+    public function __construct() {
         global $CFG;
 
         $this->api_endpoint = "https://api.accredible.com/v1/";
@@ -38,7 +37,7 @@ class apiRest {
             $this->api_endpoint = $dev_api_endpoint;
         }
 
-        $this->token = $token;
+        $this->token = $CFG->accredible_api_key;
     }
 
     /**

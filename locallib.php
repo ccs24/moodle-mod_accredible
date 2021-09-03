@@ -39,7 +39,7 @@ use mod_accredible\Html2Text\Html2Text;
 function sync_course_with_accredible($course, $instance_id = null, $group_id = null) {
     global $DB, $CFG;
 
-    $apiRest = new apiRest($CFG->accredible_api_key);
+    $apiRest = new apiRest();
 
     $description = Html2Text::convert($course->summary);
     if (empty($description)) {
@@ -98,7 +98,7 @@ function accredible_get_credentials($group_id, $email= null) {
     // Maximum number of pages to request to avoid possible infinite loop.
     $loop_limit = 100;
 
-    $apiRest = new apiRest($CFG->accredible_api_key);
+    $apiRest = new apiRest();
 
     try {
 
@@ -145,7 +145,7 @@ function accredible_get_credentials($group_id, $email= null) {
 function accredible_check_for_existing_credential($group_id, $email) {
     global $CFG;
 
-    $apiRest = new apiRest($CFG->accredible_api_key);
+    $apiRest = new apiRest();
     try {
         $credentials = $apiRest->get_credentials($group_id, $email);
 
@@ -244,7 +244,7 @@ function accredible_check_if_cert_earned($record, $course, $user) {
 function create_credential($user, $group_id, $event = null, $issued_on = null) {
     global $CFG;
 
-    $apiRest = new apiRest($CFG->accredible_api_key);
+    $apiRest = new apiRest();
 
     try {
         $credential = $apiRest->create_credential(fullname($user), $user->email, $group_id, $issued_on);
@@ -280,7 +280,7 @@ function create_credential($user, $group_id, $event = null, $issued_on = null) {
 function create_credential_legacy($user, $achievement_name, $course_name, $course_description, $course_link, $issued_on, $event = null){
     global $CFG;
 
-    $apiRest = new apiRest($CFG->accredible_api_key);
+    $apiRest = new apiRest();
 
     try {
         $credential = $apiRest->create_credential_legacy(fullname($user), $user->email, $achievement_name, $issued_on, null, $course_name, $course_description, $course_link);
@@ -312,7 +312,7 @@ function create_credential_legacy($user, $achievement_name, $course_name, $cours
 function accredible_get_groups() {
     global $CFG;
 
-    $apiRest = new apiRest($CFG->accredible_api_key);
+    $apiRest = new apiRest();
     try {
         $response = $apiRest->get_groups(10000, 1);
 
@@ -338,7 +338,7 @@ function accredible_get_groups() {
 function accredible_get_recipient_sso_linik($group_id, $email) {
     global $CFG;
 
-    $apiRest = new apiRest($CFG->accredible_api_key);
+    $apiRest = new apiRest();
 
     try {
         $response = $apiRest->recipient_sso_link(null, null, $email, null, $group_id, null);
@@ -396,7 +396,7 @@ function accredible_issue_default_certificate($user_id, $certificate_id, $name, 
     $course_url = new moodle_url('/course/view.php', array('id' => $accredible_certificate->course));
     $course_link = $course_url->__toString();
 
-    $restApi = new apiRest($CFG->accredible_api_key);
+    $restApi = new apiRest();
     $credential = $restApi->create_credential_legacy($name, $email, $accredible_certificate->achievementid, $issued_on, null, $accredible_certificate->certificatename, $accredible_certificate->description, $course_link);
 
     // Evidence item posts.
@@ -814,7 +814,7 @@ function accredible_course_duration_evidence($user_id, $course_id, $credential_i
     }
 
     if ($enrolment_timestamp && $enrolment_timestamp != 0 && (strtotime($enrolment_timestamp) < strtotime($completed_timestamp))) {
-        $apiRest = new apiRest($CFG->accredible_api_key);
+        $apiRest = new apiRest();
 
         $apiRest->create_evidence_item_duration($enrolment_timestamp, $completed_timestamp, $credential_id, true);
     }

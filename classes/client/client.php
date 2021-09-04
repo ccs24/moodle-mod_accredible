@@ -18,20 +18,19 @@ namespace mod_accredible\client;
 defined('MOODLE_INTERNAL') || die();
 
 class client {
-
-    public static function get($url, $token) {
-        return self::create_req($url, $token, 'GET');
+    function get($url, $token) {
+        return $this->send_req($url, $token, 'GET');
     }
 
-    public static function post($url, $token, $postBody) {
-        return self::create_req($url, $token, 'POST', $postBody);
+    function post($url, $token, $postBody) {
+        return $this->send_req($url, $token, 'POST', $postBody);
     }
 
-    public static function put($url, $token, $putBody) {
-        return self::create_req($url, $token, 'PUT', $putBody);
+    function put($url, $token, $putBody) {
+        return $this->send_req($url, $token, 'PUT', $putBody);
     }
 
-    static function create_req($url, $token, $method, $postBody = null) {
+    private function send_req($url, $token, $method, $postBody = null) {
         global $CFG;
         require_once($CFG->libdir . '/filelib.php');
 

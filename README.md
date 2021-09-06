@@ -233,5 +233,6 @@ docker exec -it moodle-mod_accredible_moodle_1 bash
 Run unit tests of this plugin using the following command.
 
 ```
-/bitnami/moodle/vendor/bin/phpunit --testsuite mod_accredible_testsuite
+cd /bitnami/moodle
+vendor/bin/phpunit --testsuite mod_accredible_testsuite
 ```

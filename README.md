@@ -183,3 +183,56 @@ MOODLE_DATABASE_PASSWORD: (No password)
 ### Environment variables
 
 You can find available environment variables on [README.md](https://github.com/bitnami/bitnami-docker-moodle) of the original docker-compose repository from bitnami.
+
+### Test
+
+This plugin uses [PHPUnit](https://docs.moodle.org/dev/PHPUnit) for the unit tests.
+
+Please refer to [Writing PHPUnit tests](https://docs.moodle.org/dev/Writing_PHPUnit_tests) for more deitals about how to write unit tests.
+
+#### Setup PHPUnit
+
+After running Moodle with the Accredible plugin, log in to the Moodle container.
+
+```
+docker exec -it moodle-mod_accredible_moodle_1 bash
+```
+
+Add the following lines to `config.php`.
+
+```
+vim /bitnami/moodle/config.php
+```
+
+```php
+// PHPUnit
+$CFG->phpunit_prefix = 'phpu_';
+$CFG->phpunit_dataroot = '/bitnami/phpu_moodledata';
+$CFG->phpunit_dbtype    = 'mariadb';
+$CFG->phpunit_dblibrary = 'native';
+$CFG->phpunit_dbhost    = 'mariadb';
+$CFG->phpunit_dbname    = 'test';
+$CFG->phpunit_dbuser    = 'bn_moodle';
+$CFG->phpunit_dbpass    = '';
+```
+
+Initialise the test environment using the following command.
+
+```
+php /bitnami/moodle/admin/tool/phpunit/cli/init.php
+```
+
+#### Run tests
+
+Log in to the Moodle container.
+
+```
+docker exec -it moodle-mod_accredible_moodle_1 bash
+```
+
+Run unit tests of this plugin using the following command.
+
+```
+cd /bitnami/moodle
+vendor/bin/phpunit --testsuite mod_accredible_testsuite
+```

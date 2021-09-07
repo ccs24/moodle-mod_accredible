@@ -21,7 +21,6 @@ use mod_accredible\client\client;
 
 class apiRest {
     private $api_endpoint;
-    private $token;
     private $client;
 
     public function __construct($client = null) {
@@ -37,8 +36,6 @@ class apiRest {
         if($dev_api_endpoint) {
             $this->api_endpoint = $dev_api_endpoint;
         }
-
-        $this->token = $CFG->accredible_api_key;
 
         if($client) {
             $this->client = $client;
@@ -56,7 +53,7 @@ class apiRest {
      * @return stdObject
      */
     function get_credentials($group_id = null, $email = null, $page_size = null, $page = 1) {
-        return $this->client->get("{$this->api_endpoint}all_credentials?group_id={$group_id}&email=" . rawurlencode($email) . "&page_size={$page_size}&page={$page}", $this->token);
+        return $this->client->get("{$this->api_endpoint}all_credentials?group_id={$group_id}&email=" . rawurlencode($email) . "&page_size={$page_size}&page={$page}");
     }
 
     /**
@@ -78,7 +75,7 @@ class apiRest {
 
         $data = json_encode($data);
 
-        return $this->client->post("{$this->api_endpoint}sso/generate_link", $this->token, $data);
+        return $this->client->post("{$this->api_endpoint}sso/generate_link", $data);
     }
 
     /**
@@ -106,7 +103,7 @@ class apiRest {
 
         $data = json_encode($data);
 
-        return $this->client->put("{$this->api_endpoint}issuer/groups/{$id}", $this->token, $data);
+        return $this->client->put("{$this->api_endpoint}issuer/groups/{$id}", $data);
     }
 
     /**
@@ -130,7 +127,7 @@ class apiRest {
 
         $data = json_encode($data);
 
-        return $this->client->post("{$this->api_endpoint}issuer/groups", $this->token, $data);
+        return $this->client->post("{$this->api_endpoint}issuer/groups", $data);
     }
 
     /**
@@ -160,7 +157,7 @@ class apiRest {
 
         $data = json_encode($data);
 
-        return $this->client->post("{$this->api_endpoint}credentials", $this->token, $data);
+        return $this->client->post("{$this->api_endpoint}credentials", $data);
     }
 
     /**
@@ -172,7 +169,7 @@ class apiRest {
 
         $data = json_encode($evidence_item);
 
-        return $this->client->post("{$this->api_endpoint}credentials/{$credential_id}/evidence_items", $this->token, $data);
+        return $this->client->post("{$this->api_endpoint}credentials/{$credential_id}/evidence_items", $data);
     }
 
     /**
@@ -256,7 +253,7 @@ class apiRest {
 
         $data = json_encode($data);
 
-        return $this->client->post("{$this->api_endpoint}credentials", $this->token, $data);
+        return $this->client->post("{$this->api_endpoint}credentials", $data);
     }
 
     /**
@@ -266,7 +263,7 @@ class apiRest {
      * @return stdObject
      */
     function get_groups($page_size = nil, $page = 1) {
-        return $this->client->get($this->api_endpoint.'issuer/all_groups?page_size=' . $page_size . '&page=' . $page, $this->token);
+        return $this->client->get($this->api_endpoint.'issuer/all_groups?page_size=' . $page_size . '&page=' . $page);
     }
 
 

@@ -18,33 +18,40 @@ namespace mod_accredible\client;
 defined('MOODLE_INTERNAL') || die();
 
 class client {
-    function get($url, $token) {
-        return $this->send_req($url, $token, 'GET');
-    }
+    private $curl_options;
 
-    function post($url, $token, $postBody) {
-        return $this->send_req($url, $token, 'POST', $postBody);
-    }
-
-    function put($url, $token, $putBody) {
-        return $this->send_req($url, $token, 'PUT', $putBody);
-    }
-
-    private function send_req($url, $token, $method, $postBody = null) {
+    public function __construct() {
         global $CFG;
-        require_once($CFG->libdir . '/filelib.php');
-
-        $curl = new \curl();
-        $options = array(
+        $token = $CFG->accredible_api_key;
+        $this->curl_options = array(
             'CURLOPT_RETURNTRANSFER' => true,
             'CURLOPT_FAILONERROR'    => true,
             'CURLOPT_HTTPHEADER'     => array(
-                'Authorization: Token '.$token,
+                'Authorization: Token ' . $token,
                 'Content-Type: application/json; charset=utf-8',
                 'Accredible-Integration: Moodle'
             )
         );
+    }
 
+    function get($url) {
+        return $this->send_req($url, 'GET');
+    }
+
+    function post($url, $postBody) {
+        return $this->send_req($url, 'POST', $postBody);
+    }
+
+    function put($url, $putBody) {
+        return $this->send_req($url, 'PUT', $putBody);
+    }
+
+    private function send_req($url, $method, $postBody = null) {
+        global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
+
+        $curl = new \curl();
+        $options = $this->curl_options;
         switch($method) {
             case 'GET':
                 $response = $curl->get($url, $postBody, $options);

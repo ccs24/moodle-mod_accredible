@@ -20,6 +20,8 @@ defined('MOODLE_INTERNAL') || die();
 class client {
     private $curl_options;
 
+    public $error;
+
     public function __construct() {
         global $CFG;
         $token = $CFG->accredible_api_key;
@@ -32,6 +34,8 @@ class client {
                 'Accredible-Integration: Moodle'
             )
         );
+
+        $error = null;
     }
 
     function get($url) {
@@ -70,6 +74,7 @@ class client {
         }
 
         if($curl->error) {
+            $this->error = $curl->error;
             debugging('<div style="padding-top: 70px; font-size: 0.9rem;"><b>ACCREDIBLE API ERROR</b> ' .
                 $curl->error . '<br />' . $method . ' ' . $url . '</div>', DEBUG_DEVELOPER);
         };

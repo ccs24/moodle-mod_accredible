@@ -165,11 +165,15 @@ class apiRest {
      * @param stdObject $evidence_item
      * @return stdObject
      */
-    function create_evidence_item($evidence_item, $credential_id) {
-
+    function create_evidence_item($evidence_item, $credential_id, $throw_error = false) {
         $data = json_encode($evidence_item);
-
-        return $this->client->post("{$this->api_endpoint}credentials/{$credential_id}/evidence_items", $data);
+        $result = $this->client->post("{$this->api_endpoint}credentials/{$credential_id}/evidence_items", $data);
+        if($throw_error && $this->client->error) {
+            throw new moodle_exception(
+                'evidenceadderror', 'accredible', 'https://help.accredible.com/hc/en-us', $credential_id, $this->client->error
+            );
+        }
+        return $result;
     }
 
     /**

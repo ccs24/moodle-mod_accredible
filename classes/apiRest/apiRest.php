@@ -304,4 +304,22 @@ class apiRest {
             throw new \InvalidArgumentException("$grade must be a numeric value between 0 and 100.");
         }
     }
+
+    /**
+     * Updates an evidence item on a given credential.
+     * @param Integer $credential_id
+     * @param Integer $evidence_item_id
+     * @param String $grade - value must be between 0 and 100
+     * @return stdObject
+     */
+    function update_evidence_item_grade($credential_id, $evidence_item_id, $grade) {
+        if (is_numeric($grade) && intval($grade) >= 0 && intval($grade) <= 100) {
+            $evidence_item = array('evidence_item' => array('string_object' => $grade));
+            $data = json_encode($evidence_item);
+            $url = "{$this->api_endpoint}credentials/{$credential_id}/evidence_items/{$evidence_item_id}";
+            return $this->client->put($url, $data);
+        } else {
+            throw new \InvalidArgumentException("$grade must be a numeric value between 0 and 100.");
+        }
+    }
 }

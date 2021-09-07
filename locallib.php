@@ -461,7 +461,6 @@ function accredible_quiz_submission_handler($event) {
         foreach ($accredible_certificate_records as $record) {
             // Check for the existence of an activity instance and an auto-issue rule.
             if ( $record and ($record->finalquiz or $record->completionactivities) ) {
-
                 // Check if we have a group mapping - if not use the old logic.
                 if ($record->groupid) {
                     // Check which quiz is used as the deciding factor in this course.
@@ -484,8 +483,8 @@ function accredible_quiz_submission_handler($event) {
                             foreach ($existing_certificate->evidence_items as $evidence_item) {
                                 if ($evidence_item->type == "grade") {
                                     $highest_grade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
-                                    // Only update if higher.
-                                    if ($evidence_item->string_object->grade < $highest_grade) {
+                                    $api_grade = intval($evidence_item->string_object->grade);
+                                    if ($api_grade < $highest_grade) {
                                         accredible_update_certificate_grade($existing_certificate->id, $evidence_item->id, $highest_grade);
                                     }
                                 }
@@ -555,8 +554,8 @@ function accredible_quiz_submission_handler($event) {
                             foreach ($existing_certificate->evidence_items as $evidence_item) {
                                 if ($evidence_item->type == "grade") {
                                     $highest_grade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
-                                    // only update if higher
-                                    if ($evidence_item->string_object->grade < $highest_grade) {
+                                    $api_grade = intval($evidence_item->string_object->grade);
+                                    if ($api_grade < $highest_grade) {
                                         accredible_update_certificate_grade($existing_certificate->id, $evidence_item->id, $highest_grade);
                                     }
                                 }
@@ -650,17 +649,9 @@ function accredible_course_completed_handler($event) {
     }
 }
 
-
 function accredible_update_certificate_grade($certificate_id, $evidence_item_id, $grade) {
-    global $CFG;
-
-    $curl = curl_init(get_api_endpoint() . 'credentials/' . $certificate_id . '/evidence_items/'.$evidence_item_id);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-    curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query(array('evidence_item' => array('string_object' => $grade)), '', '&'));
-    curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Authorization: Token token="'.$CFG->accredible_api_key.'"' ) );
-
-    $result = curl_exec($curl);
+    $api = new apiRest();
+    $result = $api->update_evidence_item_grade($certificate_id, $evidence_item_id, $grade);
     return $result;
 }
 

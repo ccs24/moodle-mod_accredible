@@ -20,7 +20,13 @@ defined('MOODLE_INTERNAL') || die();
 use mod_accredible\client\client;
 
 class apiRest {
-    private $api_endpoint;
+    /**
+     * API base URL.
+     * Use `public` to make unit testing possible.
+     * @var string
+     */
+    public $api_endpoint;
+
     private $client;
 
     public function __construct($client = null) {

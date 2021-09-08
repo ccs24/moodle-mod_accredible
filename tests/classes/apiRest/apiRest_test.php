@@ -31,7 +31,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
     /**
      * Tests that the default endpoint is used when is_eu is NOT enabled.
      */
-    public function test_default_endpoint() {
+    public function test_default_api_endpoint() {
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -50,7 +50,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
     /**
      * Tests that the EU endpoint is used when is_eu is enabled.
      */
-    public function test_eu_endpoint() {
+    public function test_eu_api_endpoint() {
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -63,6 +63,26 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         $this->assertEquals($rest->api_endpoint, "https://api.accredible.com/v1/");
 
         // Reset the devlopment environment variable.
+        putenv("ACCREDIBLE_DEV_API_ENDPOINT={$dev_api_endpoint}");
+    }
+
+    /**
+     * Tests that the development endpoint is used when the environemnt variable is set.
+     * Regardless of the is_eu option.
+     */
+    public function test_dev_api_endpoint() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Save the actual devlopment environment variable if it exists.
+        $dev_api_endpoint = getenv("ACCREDIBLE_DEV_API_ENDPOINT");
+        putenv("ACCREDIBLE_DEV_API_ENDPOINT=http://host.docker.internal:3000/v1/");
+
+        set_config("is_eu", "1", "accredible");
+        $rest = new apiRest();
+        $this->assertEquals($rest->api_endpoint, "http://host.docker.internal:3000/v1/");
+
+        // Reset the actual devlopment environment variable.
         putenv("ACCREDIBLE_DEV_API_ENDPOINT={$dev_api_endpoint}");
     }
 }

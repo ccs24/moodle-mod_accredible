@@ -270,21 +270,6 @@ class apiRest {
         return $this->client->get($this->api_endpoint.'issuer/all_groups?page_size=' . $page_size . '&page=' . $page);
     }
 
-
-    /**
-     * Strip out keys with a null value from an object http://stackoverflow.com/a/15953991
-     * @param stdObject $object
-     * @return stdObject
-     */
-    function strip_empty_keys($object) {
-
-        $json = json_encode($object);
-        $json = preg_replace('/,\s*"[^"]+":null|"[^"]+":null,?/', '', $json);
-        $object = json_decode($json);
-
-        return $object;
-    }
-
     /**
      * Creates a Grade evidence item on a given credential.
      * @param String $grade - value must be between 0 and 100
@@ -325,5 +310,19 @@ class apiRest {
         } else {
             throw new \InvalidArgumentException("$grade must be a numeric value between 0 and 100.");
         }
+    }
+
+    /**
+     * Strip out keys with a null value from an object http://stackoverflow.com/a/15953991
+     * @param stdObject $object
+     * @return stdObject
+     */
+    private function strip_empty_keys($object) {
+
+        $json = json_encode($object);
+        $json = preg_replace('/,\s*"[^"]+":null|"[^"]+":null,?/', '', $json);
+        $object = json_decode($json);
+
+        return $object;
     }
 }

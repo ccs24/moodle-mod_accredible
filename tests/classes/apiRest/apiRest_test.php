@@ -26,44 +26,54 @@
 defined('MOODLE_INTERNAL') || die();
 
 use mod_accredible\apiRest\apiRest;
+use mod_accredible\client\client;
 
 class mod_accredible_apiRest_testcase extends advanced_testcase {
+    /**
+     * Setup before every test.
+     */
+    public function setUp(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Add plugin settings
+        set_config('accredible_api_key', 'sometestapikey');
+        set_config('is_eu', 0);
+
+        // Unset the devlopment environment variable.
+        $dev_api_endpoint = getenv('ACCREDIBLE_DEV_API_ENDPOINT');
+        putenv('ACCREDIBLE_DEV_API_ENDPOINT');
+
+        $this->mockapi = new class {
+            /**
+             * Returns a mock API response based on the fixture json.
+             * @param string $jsonpath
+             * @return array
+             */
+            public function resdata($jsonpath) {
+                global $CFG;
+                $fixturedir = $CFG->dirroot . '/mod/accredible/tests/fixtures/mockapi/v1/';
+                $filepath = $fixturedir . $jsonpath;
+                return json_decode(file_get_contents($filepath));
+            }
+        };
+    }
+
     /**
      * Tests that the default endpoint is used when is_eu is NOT enabled.
      */
     public function test_default_api_endpoint() {
-        $this->resetAfterTest();
-        $this->setAdminUser();
-
-        // Unset the devlopment environment variable.
-        $dev_api_endpoint = getenv("ACCREDIBLE_DEV_API_ENDPOINT");
-        putenv('ACCREDIBLE_DEV_API_ENDPOINT');
-
-        set_config("is_eu", "0", "accredible");
-        $rest = new apiRest();
-        $this->assertEquals($rest->api_endpoint, "https://api.accredible.com/v1/");
-
-        // Reset the devlopment environment variable.
-        putenv("ACCREDIBLE_DEV_API_ENDPOINT={$dev_api_endpoint}");
+        $api = new apiRest();
+        $this->assertEquals($api->api_endpoint, 'https://api.accredible.com/v1/');
     }
 
     /**
      * Tests that the EU endpoint is used when is_eu is enabled.
      */
     public function test_eu_api_endpoint() {
-        $this->resetAfterTest();
-        $this->setAdminUser();
-
-        // Unset the devlopment environment variable.
-        $dev_api_endpoint = getenv("ACCREDIBLE_DEV_API_ENDPOINT");
-        putenv("ACCREDIBLE_DEV_API_ENDPOINT");
-
-        set_config("is_eu", "1", "accredible");
-        $rest = new apiRest();
-        $this->assertEquals($rest->api_endpoint, "https://api.accredible.com/v1/");
-
-        // Reset the devlopment environment variable.
-        putenv("ACCREDIBLE_DEV_API_ENDPOINT={$dev_api_endpoint}");
+        set_config('is_eu', 1);
+        $api = new apiRest();
+        $this->assertEquals($api->api_endpoint, 'https://eu.api.accredible.com/v1/');
     }
 
     /**
@@ -71,18 +81,72 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
      * Regardless of the is_eu option.
      */
     public function test_dev_api_endpoint() {
-        $this->resetAfterTest();
-        $this->setAdminUser();
+        putenv('ACCREDIBLE_DEV_API_ENDPOINT=http://host.docker.internal:3000/v1/');
+        set_config('is_eu', 1);
+        $api = new apiRest();
+        $this->assertEquals($api->api_endpoint, 'http://host.docker.internal:3000/v1/');
+    }
 
-        // Save the actual devlopment environment variable if it exists.
-        $dev_api_endpoint = getenv("ACCREDIBLE_DEV_API_ENDPOINT");
-        putenv("ACCREDIBLE_DEV_API_ENDPOINT=http://host.docker.internal:3000/v1/");
+    /**
+     * Tests if `PUT /v1/credentials/:credential_id/evidence_items/:id`
+     * is properly called.
+     */
+    public function test_update_evidence_item_grade() {
+        /**
+         * When the grade is valid number
+         */
+        $mockclient = $this->getMockBuilder('client')
+                           ->setMethods(['put'])
+                           ->getMock();
 
-        set_config("is_eu", "1", "accredible");
-        $rest = new apiRest();
-        $this->assertEquals($rest->api_endpoint, "http://host.docker.internal:3000/v1/");
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('evidence_items/update_success.json');
 
-        // Reset the actual devlopment environment variable.
-        putenv("ACCREDIBLE_DEV_API_ENDPOINT={$dev_api_endpoint}");
+        // Expect to call the endpoint once with url and reqdata
+        $url = 'https://api.accredible.com/v1/credentials/1/evidence_items/1';
+        $reqdata = '{"evidence_item":{"string_object":"100"}}';
+        $mockclient->expects($this->once())
+                   ->method('put')
+                   ->with($this->equalTo($url),
+                          $this->equalTo($reqdata))
+                   ->willReturn($resdata);
+        
+        // Expect to return resdata
+        $api = new apiRest($mockclient);
+        $result = $api->update_evidence_item_grade(1, 1, '100');
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the grade is NOT number
+         */
+        $foundexception1 = false;
+        try {
+            $api->update_evidence_item_grade(1, 1, '0x539');
+        } catch (\InvalidArgumentException $error) {
+            $foundexception1 = true;
+        }
+        $this->assertTrue($foundexception1);
+
+        /**
+         * When the grade is negative
+         */
+        $foundexception2 = false;
+        try {
+            $api->update_evidence_item_grade(1, 1, -1);
+        } catch (\InvalidArgumentException $error) {
+            $foundexception2 = true;
+        }
+        $this->assertTrue($foundexception2);
+
+        /**
+         * When the grade is greater than 100
+         */
+        $foundexception3 = false;
+        try {
+            $api->update_evidence_item_grade(1, 1, 101);
+        } catch (\InvalidArgumentException $error) {
+            $foundexception3 = true;
+        }
+        $this->assertTrue($foundexception3);
     }
 }

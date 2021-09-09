@@ -27,22 +27,27 @@ class apiRest {
      */
     public $api_endpoint;
 
+    /**
+     * HTTP request client.
+     * @var client
+     */
     private $client;
 
     public function __construct($client = null) {
         global $CFG;
 
-        $this->api_endpoint = "https://api.accredible.com/v1/";
+        $this->api_endpoint = 'https://api.accredible.com/v1/';
 
         if($CFG->is_eu) {
-            $this->api_endpoint = "https://eu.api.accredible.com/v1/";
+            $this->api_endpoint = 'https://eu.api.accredible.com/v1/';
         }
 
-        $dev_api_endpoint = getenv("ACCREDIBLE_DEV_API_ENDPOINT");
+        $dev_api_endpoint = getenv('ACCREDIBLE_DEV_API_ENDPOINT');
         if($dev_api_endpoint) {
             $this->api_endpoint = $dev_api_endpoint;
         }
 
+        // A mock client is passed when unit testing.
         if($client) {
             $this->client = $client;
         } else {

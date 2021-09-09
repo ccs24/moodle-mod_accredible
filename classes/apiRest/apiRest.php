@@ -180,7 +180,7 @@ class apiRest {
         $data = json_encode($evidence_item);
         $result = $this->client->post("{$this->api_endpoint}credentials/{$credential_id}/evidence_items", $data);
         if($throw_error && $this->client->error) {
-            throw new moodle_exception(
+            throw new \moodle_exception(
                 'evidenceadderror', 'accredible', 'https://help.accredible.com/hc/en-us', $credential_id, $this->client->error
             );
         }

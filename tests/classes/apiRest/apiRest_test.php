@@ -88,6 +88,94 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
     }
 
     /**
+     * Tests if `POST /v1/credentials/:credential_id/evidence_items`
+     * is properly called.
+     */
+    public function test_create_evidence_item() {
+        /**
+         * When the throw_error is FALSE and the response is successful.
+         */
+        $mockclient1 = $this->getMockBuilder('client')
+                            ->setMethods(['post'])
+                            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('evidence_items/create_success.json');
+
+        // Expect to call the endpoint once with url and reqdata
+        $url = 'https://api.accredible.com/v1/credentials/1/evidence_items';
+        $evidence_item = array(
+            'evidence_item' => array(
+                "string_object" => "100",
+                "description" => "Quiz",
+                "custom" => true,
+                "category" => "grade"
+            )
+        );
+        $reqdata = json_encode($evidence_item);
+
+        $mockclient1->expects($this->once())
+                    ->method('post')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata))
+                    ->willReturn($resdata);
+
+        // Expect to return resdata
+        $api = new apiRest($mockclient1);
+        $result = $api->create_evidence_item($evidence_item, 1);
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the throw_error is FALSE and the response is NOT successful.
+         */
+        $mockclient2 = $this->getMockBuilder('client')
+                            ->setMethods(['post'])
+                            ->getMock();
+        $mockclient2->error = "The requested URL returned error: 401 Unauthorized";
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('unauthorized_error.json');
+
+        $mockclient2->expects($this->once())
+                    ->method('post')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata))
+                    ->willReturn($resdata);
+
+        // Expect to return resdata without throwing an exception
+        $api = new apiRest($mockclient2);
+        $result = $api->create_evidence_item($evidence_item, 1);
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the throw_error is TRUE and the response is NOT successful.
+         */
+        $mockclient3 = $this->getMockBuilder('client')
+                            ->setMethods(['post'])
+                            ->getMock();
+        $mockclient3->error = "The requested URL returned error: 401 Unauthorized";
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('unauthorized_error.json');
+
+        $mockclient3->expects($this->once())
+                    ->method('post')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata))
+                    ->willReturn($resdata);
+
+        // Expect to return resdata without throwing an exception
+        $api = new apiRest($mockclient3);
+        $foundexception = false;
+        try {
+            $api->create_evidence_item($evidence_item, 1, true);
+        } catch (\moodle_exception $error) {
+            $foundexception = true;
+        }
+        $this->assertTrue($foundexception);
+    }
+
+    /**
      * Tests if `PUT /v1/credentials/:credential_id/evidence_items/:id`
      * is properly called.
      */

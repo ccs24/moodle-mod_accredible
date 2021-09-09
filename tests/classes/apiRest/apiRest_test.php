@@ -60,29 +60,20 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
     }
 
     /**
-     * Tests that the default endpoint is used when is_eu is NOT enabled.
+     * Tests that the api endpoint changes depending on the config.
      */
-    public function test_default_api_endpoint() {
+    public function test_api_endpoint() {
+        // When is_eu is NOT enabled.
         $api = new apiRest();
         $this->assertEquals($api->api_endpoint, 'https://api.accredible.com/v1/');
-    }
 
-    /**
-     * Tests that the EU endpoint is used when is_eu is enabled.
-     */
-    public function test_eu_api_endpoint() {
+        // When is_eu is enabled.
         set_config('is_eu', 1);
         $api = new apiRest();
         $this->assertEquals($api->api_endpoint, 'https://eu.api.accredible.com/v1/');
-    }
 
-    /**
-     * Tests that the development endpoint is used when the environemnt variable is set.
-     * Regardless of the is_eu option.
-     */
-    public function test_dev_api_endpoint() {
+        // When the environemnt variable is set.
         putenv('ACCREDIBLE_DEV_API_ENDPOINT=http://host.docker.internal:3000/v1/');
-        set_config('is_eu', 1);
         $api = new apiRest();
         $this->assertEquals($api->api_endpoint, 'http://host.docker.internal:3000/v1/');
     }

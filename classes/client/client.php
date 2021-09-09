@@ -18,12 +18,27 @@ namespace mod_accredible\client;
 defined('MOODLE_INTERNAL') || die();
 
 class client {
+    /**
+     * The curl object used to make the request.
+     * @var curl
+     */
+    private $curl;
+
     private $curl_options;
 
     public $error;
 
-    public function __construct() {
+    public function __construct($curl = null) {
         global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
+
+        // A mock curl is passed when unit testing.
+        if($curl) {
+            $this->curl = $curl;
+        } else {
+            $this->curl = new \curl();
+        }
+
         $token = $CFG->accredible_api_key;
         $this->curl_options = array(
             'CURLOPT_RETURNTRANSFER' => true,
@@ -39,39 +54,20 @@ class client {
     }
 
     function get($url) {
-        return $this->send_req($url, 'GET');
+        return $this->send_req($url, 'get');
     }
 
     function post($url, $postBody) {
-        return $this->send_req($url, 'POST', $postBody);
+        return $this->send_req($url, 'post', $postBody);
     }
 
     function put($url, $putBody) {
-        return $this->send_req($url, 'PUT', $putBody);
+        return $this->send_req($url, 'put', $putBody);
     }
 
     private function send_req($url, $method, $postBody = null) {
-        global $CFG;
-        require_once($CFG->libdir . '/filelib.php');
-
-        $curl = new \curl();
-        $options = $this->curl_options;
-        switch($method) {
-            case 'GET':
-                $response = $curl->get($url, $postBody, $options);
-                break;
-            case 'POST':
-                $response = $curl->post($url, $postBody, $options);
-                break;
-            case 'PUT':
-                $response = $curl->put($url, $postBody, $options);
-                break;
-            case 'DELETE':
-                $response = $curl->delete($url, $postBody, $options);
-                break;
-            default:
-                throw new \coding_exception('Invalid HTTP method');
-        }
+        $curl = $this->curl;
+        $response = $curl->$method($url, $postBody, $this->curl_options);
 
         if($curl->error) {
             $this->error = $curl->error;

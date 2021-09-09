@@ -36,7 +36,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        // Add plugin settings
+        // Add plugin settings.
         set_config('accredible_api_key', 'sometestapikey');
         set_config('is_eu', 0);
 
@@ -144,7 +144,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         $mockclient3 = $this->getMockBuilder('client')
                             ->setMethods(['post'])
                             ->getMock();
-        $mockclient3->error = "The requested URL returned error: 401 Unauthorized";
+        $mockclient3->error = 'The requested URL returned error: 401 Unauthorized';
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('unauthorized_error.json');

@@ -453,6 +453,8 @@ function accredible_quiz_submission_handler($event) {
     global $DB, $CFG;
     require_once($CFG->dirroot . '/mod/quiz/lib.php');
 
+    $api = new apiRest();
+
     $attempt = $event->get_record_snapshot('quiz_attempts', $event->objectid);
 
     $quiz = $event->get_record_snapshot('quiz', $attempt->quiz);
@@ -485,7 +487,7 @@ function accredible_quiz_submission_handler($event) {
                                     $highest_grade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
                                     $api_grade = intval($evidence_item->string_object->grade);
                                     if ($api_grade < $highest_grade) {
-                                        accredible_update_certificate_grade($existing_certificate->id, $evidence_item->id, $highest_grade);
+                                        $api->update_evidence_item_grade($existing_certificate->id, $evidence_item->id, $highest_grade);
                                     }
                                 }
                             }
@@ -556,7 +558,7 @@ function accredible_quiz_submission_handler($event) {
                                     $highest_grade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
                                     $api_grade = intval($evidence_item->string_object->grade);
                                     if ($api_grade < $highest_grade) {
-                                        accredible_update_certificate_grade($existing_certificate->id, $evidence_item->id, $highest_grade);
+                                        $api->update_evidence_item_grade($existing_certificate->id, $evidence_item->id, $highest_grade);
                                     }
                                 }
                             }
@@ -647,12 +649,6 @@ function accredible_course_completed_handler($event) {
             }
         }
     }
-}
-
-function accredible_update_certificate_grade($certificate_id, $evidence_item_id, $grade) {
-    $api = new apiRest();
-    $result = $api->update_evidence_item_grade($certificate_id, $evidence_item_id, $grade);
-    return $result;
 }
 
 function accredible_get_transcript($course_id, $user_id, $final_quiz_id) {

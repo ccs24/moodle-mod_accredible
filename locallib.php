@@ -482,7 +482,8 @@ function accredible_quiz_submission_handler($event) {
                             }
                         } else {
                             // Check the existing grade to see if this one is higher and update the credential if so.                   
-                            foreach ($existing_certificate->evidence_items as $evidence_item) {
+                            $credential = $api->get_credential($existing_certificate->id)->credential;
+                            foreach ($credential->evidence_items as $evidence_item) {
                                 if ($evidence_item->type == "grade") {
                                     $highest_grade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
                                     $api_grade = intval($evidence_item->string_object->grade);
@@ -553,7 +554,8 @@ function accredible_quiz_submission_handler($event) {
                             }
                         } else {
                             // Check the existing grade to see if this one is higher.
-                            foreach ($existing_certificate->evidence_items as $evidence_item) {
+                            $credential = $api->get_credential($existing_certificate->id)->credential;
+                            foreach ($credential->evidence_items as $evidence_item) {
                                 if ($evidence_item->type == "grade") {
                                     $highest_grade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
                                     $api_grade = intval($evidence_item->string_object->grade);

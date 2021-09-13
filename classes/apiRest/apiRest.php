@@ -68,6 +68,15 @@ class apiRest {
     }
 
     /**
+     * Get a Credential with EnvidenceItems
+     * @param Integer $credential_id
+     * @return stdObject
+     */
+    function get_credential($credential_id) {
+        return $this->client->get("{$this->api_endpoint}credentials/{$credential_id}");
+    }
+
+    /**
      * Generaate a Single Sign On Link for a recipient for a particular credential.
      * @return stdObject
      */

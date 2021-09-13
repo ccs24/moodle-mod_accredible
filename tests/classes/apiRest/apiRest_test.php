@@ -79,6 +79,30 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
     }
 
     /**
+     * Tests if `GET /v1/credentials/:id` is properly called.
+     */
+    public function test_get_credential() {
+        $mockclient = $this->getMockBuilder('client')
+                           ->setMethods(['get'])
+                           ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('credentials/show_success.json');
+
+        // Expect to call the endpoint once with id.
+        $url = 'https://api.accredible.com/v1/credentials/1';
+        $mockclient->expects($this->once())
+                   ->method('get')
+                   ->with($this->equalTo($url))
+                   ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient);
+        $result = $api->get_credential(1);
+        $this->assertEquals($result, $resdata);
+    }
+
+    /**
      * Tests if `POST /v1/credentials/:credential_id/evidence_items`
      * is properly called.
      */

@@ -65,7 +65,7 @@ class mod_accredible_client_testcase extends advanced_testcase {
                         $this->equalTo(null),
                         $this->equalTo($options));
 
-        // Expect to call curl get
+        // Expect to call curl get.
         $client = new client($mockcurl);
         $client->get($url);
     }
@@ -97,7 +97,7 @@ class mod_accredible_client_testcase extends advanced_testcase {
                         $this->equalTo($reqdata),
                         $this->equalTo($options));
 
-        // Expect to call curl post
+        // Expect to call curl post.
         $client = new client($mockcurl);
         $client->post($url, $reqdata);
     }
@@ -129,7 +129,7 @@ class mod_accredible_client_testcase extends advanced_testcase {
                         $this->equalTo($reqdata),
                         $this->equalTo($options));
 
-        // Expect to call curl put
+        // Expect to call curl put.
         $client = new client($mockcurl);
         $client->put($url, $reqdata);
     }
@@ -162,11 +162,11 @@ class mod_accredible_client_testcase extends advanced_testcase {
 
         $mockcurl->error = 'The requested URL returned error: 401 Unauthorized';
     
-        // Expect to call debugging
+        // Expect to call debugging.
         $client = new client($mockcurl);
         $this->assertDebuggingCalled($client->get($url));
     
-        // Expect to return an error message
+        // Expect to return an error message.
         $this->assertEquals($client->error, 'The requested URL returned error: 401 Unauthorized');
     }
 }

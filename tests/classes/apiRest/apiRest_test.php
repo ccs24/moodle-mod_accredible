@@ -111,7 +111,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
                            $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
-        // Expect to return resdata
+        // Expect to return resdata.
         $api = new apiRest($mockclient1);
         $result = $api->create_evidence_item($evidence_item, 1);
         $this->assertEquals($result, $resdata);
@@ -133,7 +133,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
                            $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
-        // Expect to return resdata without throwing an exception
+        // Expect to return resdata without throwing an exception.
         $api = new apiRest($mockclient2);
         $result = $api->create_evidence_item($evidence_item, 1);
         $this->assertEquals($result, $resdata);
@@ -155,7 +155,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
                            $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
-        // Expect to return resdata without throwing an exception
+        // Expect to return resdata without throwing an exception.
         $api = new apiRest($mockclient3);
         $foundexception = false;
         try {
@@ -181,7 +181,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         // Mock API response data.
         $resdata = $this->mockapi->resdata('evidence_items/update_success.json');
 
-        // Expect to call the endpoint once with url and reqdata
+        // Expect to call the endpoint once with url and reqdata.
         $url = 'https://api.accredible.com/v1/credentials/1/evidence_items/1';
         $reqdata = '{"evidence_item":{"string_object":"100"}}';
         $mockclient->expects($this->once())
@@ -190,7 +190,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
                           $this->equalTo($reqdata))
                    ->willReturn($resdata);
         
-        // Expect to return resdata
+        // Expect to return resdata.
         $api = new apiRest($mockclient);
         $result = $api->update_evidence_item_grade(1, 1, '100');
         $this->assertEquals($result, $resdata);

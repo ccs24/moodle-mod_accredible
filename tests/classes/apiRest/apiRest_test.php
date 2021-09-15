@@ -82,22 +82,71 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
      * Tests if `GET /v1/credentials/:id` is properly called.
      */
     public function test_get_credential() {
-        $mockclient = $this->getMockBuilder('client')
-                           ->setMethods(['get'])
-                           ->getMock();
+        /**
+         * When the response is successful.
+         */
+        $mockclient1 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('credentials/show_success.json');
 
         // Expect to call the endpoint once with id.
         $url = 'https://api.accredible.com/v1/credentials/1';
-        $mockclient->expects($this->once())
-                   ->method('get')
-                   ->with($this->equalTo($url))
-                   ->willReturn($resdata);
+        $mockclient1->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient);
+        $api = new apiRest($mockclient1);
+        $result = $api->get_credential(1);
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the credential is not found.
+         */
+        $mockclient2 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+        $mockclient2->error = 'The requested URL returned error: 404 Not found';
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('credentials/show_not_found.json');
+
+        // Expect to call the endpoint once with id.
+        $url = 'https://api.accredible.com/v1/credentials/9999';
+        $mockclient2->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient2);
+        $result = $api->get_credential(9999);
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the api key is invalid.
+         */
+        $mockclient3 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+        $mockclient3->error = 'The requested URL returned error: 401 Unauthorized';
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('unauthorized_error.json');
+
+        // Expect to call the endpoint once with id.
+        $url = 'https://api.accredible.com/v1/credentials/1';
+        $mockclient3->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient3);
         $result = $api->get_credential(1);
         $this->assertEquals($result, $resdata);
     }
@@ -146,7 +195,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         $mockclient2 = $this->getMockBuilder('client')
                             ->setMethods(['post'])
                             ->getMock();
-        $mockclient2->error = "The requested URL returned error: 401 Unauthorized";
+        $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('unauthorized_error.json');
@@ -196,11 +245,11 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
      */
     public function test_update_evidence_item_grade() {
         /**
-         * When the grade is valid number
+         * When the grade is a valid number and the response is successful.
          */
-        $mockclient = $this->getMockBuilder('client')
-                           ->setMethods(['put'])
-                           ->getMock();
+        $mockclient1 = $this->getMockBuilder('client')
+                            ->setMethods(['put'])
+                            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('evidence_items/update_success.json');
@@ -208,19 +257,69 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         // Expect to call the endpoint once with url and reqdata.
         $url = 'https://api.accredible.com/v1/credentials/1/evidence_items/1';
         $reqdata = '{"evidence_item":{"string_object":"100"}}';
-        $mockclient->expects($this->once())
-                   ->method('put')
-                   ->with($this->equalTo($url),
-                          $this->equalTo($reqdata))
-                   ->willReturn($resdata);
-        
+        $mockclient1->expects($this->once())
+                    ->method('put')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata))
+                    ->willReturn($resdata);
+
         // Expect to return resdata.
-        $api = new apiRest($mockclient);
+        $api = new apiRest($mockclient1);
         $result = $api->update_evidence_item_grade(1, 1, '100');
         $this->assertEquals($result, $resdata);
 
         /**
-         * When the grade is NOT number
+         * When the grade is a valid number but the evidence item is not found.
+         */
+        $mockclient2 = $this->getMockBuilder('client')
+                            ->setMethods(['put'])
+                            ->getMock();
+        $mockclient2->error = 'The requested URL returned error: 404 Not found';
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('evidence_items/update_not_found.json');
+
+        // Expect to call the endpoint once with url and reqdata.
+        $url = 'https://api.accredible.com/v1/credentials/1/evidence_items/9999';
+        $reqdata = '{"evidence_item":{"string_object":"100"}}';
+        $mockclient2->expects($this->once())
+                    ->method('put')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata))
+                    ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient2);
+        $result = $api->update_evidence_item_grade(1, 9999, '100');
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the grade is a valid number but the api key is invalid.
+         */
+        $mockclient3 = $this->getMockBuilder('client')
+                            ->setMethods(['put'])
+                            ->getMock();
+        $mockclient3->error = 'The requested URL returned error: 401 Unauthorized';
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('unauthorized_error.json');
+
+        // Expect to call the endpoint once with url and reqdata.
+        $url = 'https://api.accredible.com/v1/credentials/1/evidence_items/2';
+        $reqdata = '{"evidence_item":{"string_object":"100"}}';
+        $mockclient3->expects($this->once())
+                    ->method('put')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata))
+                    ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient3);
+        $result = $api->update_evidence_item_grade(1, 2, '100');
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the grade is NOT a number.
          */
         $foundexception1 = false;
         try {
@@ -231,7 +330,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         $this->assertTrue($foundexception1);
 
         /**
-         * When the grade is negative
+         * When the grade is negative.
          */
         $foundexception2 = false;
         try {
@@ -242,7 +341,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         $this->assertTrue($foundexception2);
 
         /**
-         * When the grade is greater than 100
+         * When the grade is greater than 100.
          */
         $foundexception3 = false;
         try {

@@ -358,22 +358,20 @@ function accredible_get_recipient_sso_linik($group_id, $email) {
  * @return array[stdClass] $templates
  */
 function accredible_get_templates() {
-    global $CFG;
-
-    $curl = curl_init(get_api_endpoint().'issuer/templates');
-    curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Authorization: Token token="'.$CFG->accredible_api_key.'"' ) );
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    if (!$result = json_decode( curl_exec($curl) )) {
+    $api = new apiRest();
+    $response = $api->search_groups(10000, 1);
+    $groups = $response->groups;
+    if (!isset($groups)) {
         // Throw API exception.
         // Include the achievement id that triggered the error.
         // Direct the user to accredible's support.
         // Dump the achievement id to debug_info.
         throw new moodle_exception('gettemplateserror', 'accredible', 'https://help.accredible.com/hc/en-us');
     }
-    curl_close($curl);
+
     $templates = array();
-    for ($i = 0, $size = count($result->templates); $i < $size; ++$i) {
-        $templates[$result->templates[$i]->name] = $result->templates[$i]->name;
+    for ($i = 0, $size = count($groups); $i < $size; ++$i) {
+        $templates[$groups[$i]->name] = $groups[$i]->name;
     }
     return $templates;
 }

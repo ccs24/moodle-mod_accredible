@@ -79,75 +79,83 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
     }
 
     /**
-     * Tests if `GET /v1/credentials/:id` is properly called.
+     * Tests if `POST /v1/issuer/groups/search` is properly called.
      */
-    public function test_get_credential() {
+    public function test_search_groups() {
         /**
          * When the response is successful.
          */
         $mockclient1 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
+                            ->setMethods(['post'])
                             ->getMock();
 
         // Mock API response data.
-        $resdata = $this->mockapi->resdata('credentials/show_success.json');
+        $resdata = $this->mockapi->resdata('groups/search_success.json');
 
-        // Expect to call the endpoint once with id.
-        $url = 'https://api.accredible.com/v1/credentials/1';
+        $reqdata = json_encode(array('page' => 1, 'page_size' => 10000));
+
+        // Expect to call the endpoint once with page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/groups/search';
         $mockclient1->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
+                    ->method('post')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata),)
                     ->willReturn($resdata);
 
         // Expect to return resdata.
         $api = new apiRest($mockclient1);
-        $result = $api->get_credential(1);
+        $result = $api->search_groups(10000, 1);
         $this->assertEquals($result, $resdata);
 
         /**
-         * When the credential is not found.
+         * When the arguments are empty and the response is successful.
          */
         $mockclient2 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
+                            ->setMethods(['post'])
                             ->getMock();
-        $mockclient2->error = 'The requested URL returned error: 404 Not found';
 
         // Mock API response data.
-        $resdata = $this->mockapi->resdata('credentials/show_not_found.json');
+        $resdata = $this->mockapi->resdata('groups/search_success.json');
 
-        // Expect to call the endpoint once with id.
-        $url = 'https://api.accredible.com/v1/credentials/9999';
+        $reqdata = json_encode(array('page' => 1, 'page_size' => 50));
+
+        // Expect to call the endpoint once with default page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/groups/search';
         $mockclient2->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
+                    ->method('post')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata),)
                     ->willReturn($resdata);
 
         // Expect to return resdata.
         $api = new apiRest($mockclient2);
-        $result = $api->get_credential(9999);
+        $result = $api->search_groups();
         $this->assertEquals($result, $resdata);
 
         /**
          * When the api key is invalid.
          */
         $mockclient3 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
+                            ->setMethods(['post'])
                             ->getMock();
         $mockclient3->error = 'The requested URL returned error: 401 Unauthorized';
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('unauthorized_error.json');
 
-        // Expect to call the endpoint once with id.
-        $url = 'https://api.accredible.com/v1/credentials/1';
+        $reqdata = json_encode(array('page' => 1, 'page_size' => 10000));
+
+        // Expect to call the endpoint once with page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/groups/search';
         $mockclient3->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
+                    ->method('post')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata),)
                     ->willReturn($resdata);
 
         // Expect to return resdata.
         $api = new apiRest($mockclient3);
-        $result = $api->get_credential(1);
+        $result = $api->search_groups(10000, 1);
         $this->assertEquals($result, $resdata);
     }
 

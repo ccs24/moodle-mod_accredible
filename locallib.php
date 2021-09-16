@@ -866,19 +866,3 @@ function seconds_to_str ($seconds) {
     }
     return $seconds . ' second' . number_ending($seconds);
 }
-
-function get_api_endpoint() {
-    global $CFG;
-
-    $api_endpoint = "https://api.accredible.com/v1/";
-    if ($CFG->is_eu) {
-        $api_endpoint = "https://eu.api.accredible.com/v1/";
-    }
-
-	$dev_api_endpoint = getenv("ACCREDIBLE_DEV_API_ENDPOINT");
-	if($dev_api_endpoint) {
-		$api_endpoint = $dev_api_endpoint;
-	}
-
-    return $api_endpoint;
-}

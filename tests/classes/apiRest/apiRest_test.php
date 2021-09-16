@@ -79,6 +79,79 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
     }
 
     /**
+     * Tests if `GET /v1/credentials/:id` is properly called.
+     */
+    public function test_get_credential() {
+        /**
+         * When the response is successful.
+         */
+        $mockclient1 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('credentials/show_success.json');
+
+        // Expect to call the endpoint once with id.
+        $url = 'https://api.accredible.com/v1/credentials/1';
+        $mockclient1->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient1);
+        $result = $api->get_credential(1);
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the credential is not found.
+         */
+        $mockclient2 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+        $mockclient2->error = 'The requested URL returned error: 404 Not found';
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('credentials/show_not_found.json');
+
+        // Expect to call the endpoint once with id.
+        $url = 'https://api.accredible.com/v1/credentials/9999';
+        $mockclient2->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient2);
+        $result = $api->get_credential(9999);
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the api key is invalid.
+         */
+        $mockclient3 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+        $mockclient3->error = 'The requested URL returned error: 401 Unauthorized';
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('unauthorized_error.json');
+
+        // Expect to call the endpoint once with id.
+        $url = 'https://api.accredible.com/v1/credentials/1';
+        $mockclient3->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient3);
+        $result = $api->get_credential(1);
+        $this->assertEquals($result, $resdata);
+    }
+
+    /**
      * Tests if `POST /v1/issuer/groups/search` is properly called.
      */
     public function test_search_groups() {

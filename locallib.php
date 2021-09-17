@@ -355,13 +355,16 @@ function accredible_get_recipient_sso_linik($group_id, $email) {
 /**
  * List all of the issuer's templates
  *
+ * @param apiRest $apiRest
  * @return array[stdClass] $templates
  */
-function accredible_get_templates() {
-    $api = new apiRest();
-    $response = $api->search_groups(10000, 1);
-    $groups = $response->groups;
-    if (!isset($groups)) {
+function accredible_get_templates($apiRest = null) {
+    // An apiRest with a mock client is passed when unit testing.
+    if(!$apiRest) {
+        $apiRest = new apiRest();
+    }
+    $response = $apiRest->search_groups(10000, 1);
+    if (!isset($response->groups)) {
         // Throw API exception.
         // Include the achievement id that triggered the error.
         // Direct the user to accredible's support.
@@ -369,6 +372,7 @@ function accredible_get_templates() {
         throw new moodle_exception('gettemplateserror', 'accredible', 'https://help.accredible.com/hc/en-us');
     }
 
+    $groups = $response->groups;
     $templates = array();
     for ($i = 0, $size = count($groups); $i < $size; ++$i) {
         $templates[$groups[$i]->name] = $groups[$i]->name;

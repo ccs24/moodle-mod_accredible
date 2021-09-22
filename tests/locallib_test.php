@@ -31,9 +31,6 @@ require_once($CFG->dirroot . '/mod/accredible/locallib.php');
 class mod_accredible_locallib_testcase extends advanced_testcase {
     function setUp(): void {
         $this->resetAfterTest();
-        global $DB;
-        $this->realDB = $DB;
-
         $this->user = $this->getDataGenerator()->create_user();
         $this->course = $this->getDataGenerator()->create_course();
     }
@@ -53,7 +50,7 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         $this->assertEquals($result, false);
 
         /**
-         * When user has taken multiple quiz.
+         * When user has taken multiple quizzes.
          */
         $quiz1 = $this->createQuizModule();
         $quiz2 = $this->createQuizModule();
@@ -89,7 +86,7 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         $this->setUp();
 
         /**
-         * When user has taken multiple quiz.
+         * When user has taken multiple quizzes.
          */
         $quiz1 = $this->createQuizModule();
         $quiz2 = $this->createQuizModule();

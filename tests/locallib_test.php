@@ -52,16 +52,16 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         /**
          * When user has taken multiple quizzes.
          */
-        $quiz1 = $this->createQuizModule();
-        $quiz2 = $this->createQuizModule();
-        $quiz3 = $this->createQuizModule();
+        $quiz1 = $this->createQuizModule($this->course->id);
+        $quiz2 = $this->createQuizModule($this->course->id);
+        $quiz3 = $this->createQuizModule($this->course->id);
 
         /**
         * When user has completed multiple quizzes and has a passing grade.
         */
-        $this->createQuizGrades($quiz1, 10);
-        $this->createQuizGrades($quiz2, 5);
-        $this->createQuizGrades($quiz3, 5);
+        $this->createQuizGrades($quiz1->id, $this->user->id, 10);
+        $this->createQuizGrades($quiz2->id, $this->user->id, 5);
+        $this->createQuizGrades($quiz3->id, $this->user->id, 5);
 
         $result = accredible_get_transcript($this->course->id, $this->user->id, 0);
 
@@ -88,16 +88,16 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         /**
          * When user has taken multiple quizzes.
          */
-        $quiz1 = $this->createQuizModule();
-        $quiz2 = $this->createQuizModule();
-        $quiz3 = $this->createQuizModule();
+        $quiz1 = $this->createQuizModule($this->course->id);
+        $quiz2 = $this->createQuizModule($this->course->id);
+        $quiz3 = $this->createQuizModule($this->course->id);
 
         /**
         * When user has completed multiple quizzes and has a failing grade.
         */
-        $this->createQuizGrades($quiz1, 0);
-        $this->createQuizGrades($quiz2, 5);
-        $this->createQuizGrades($quiz3, 5);
+        $this->createQuizGrades($quiz1->id, $this->user->id, 0);
+        $this->createQuizGrades($quiz2->id, $this->user->id, 5);
+        $this->createQuizGrades($quiz3->id, $this->user->id, 5);
 
         $result = accredible_get_transcript($this->course->id, $this->user->id, 0);
 
@@ -107,14 +107,14 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         $this->assertEquals($result, false);
     }
 
-    private function createQuizModule() {
-        $quiz = array("course" => $this->course->id, "grade" => 10);
+    private function createQuizModule($course_id) {
+        $quiz = array("course" => $course_id, "grade" => 10);
         return $this->getDataGenerator()->create_module('quiz', $quiz);
     }
 
-    private function createQuizGrades($quiz, $grade) {
+    private function createQuizGrades($quiz_id, $user_id, $grade) {
         global $DB;
-        $quiz_grade = array("quiz" => $quiz->id, "userid" => $this->user->id, "grade" => $grade);
+        $quiz_grade = array("quiz" => $quiz_id, "userid" => $user_id, "grade" => $grade);
         $DB->insert_record('quiz_grades', $quiz_grade);
     }
 }

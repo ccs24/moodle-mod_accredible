@@ -680,7 +680,7 @@ function accredible_get_transcript($course_id, $user_id, $final_quiz_id) {
 
     // if they've completed over 2/3 of items
     // and have a passing average, make a transcript
-    if ( $items_completed / max($total_items, 1) >= 0.66 && $total_score / max($items_completed, 1) > 50 ) {
+    if ( $total_items !== 0 && $items_completed !== 0 && $items_completed / $total_items >= 0.66 && $total_score / $items_completed > 50 ) {
         return array(
                 'description' => 'Course Transcript',
                 'string_object' => json_encode($transcript_items),

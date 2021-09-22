@@ -41,7 +41,7 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         /**
         * When no quiz available for user.
         */
-        $result = accredible_get_transcript($this->course->id, $this->user->id, 5);
+        $result = accredible_get_transcript($this->course->id, $this->user->id, 0);
 
         /**
         * it responds with false
@@ -50,15 +50,12 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         $this->assertEquals($result, false);
 
         /**
-         * When user has taken multiple quizzes.
-         */
+        * When user has completed multiple quizzes and has a passing grade.
+        */
         $quiz1 = $this->createQuizModule($this->course->id);
         $quiz2 = $this->createQuizModule($this->course->id);
         $quiz3 = $this->createQuizModule($this->course->id);
 
-        /**
-        * When user has completed multiple quizzes and has a passing grade.
-        */
         $this->createQuizGrades($quiz1->id, $this->user->id, 10);
         $this->createQuizGrades($quiz2->id, $this->user->id, 5);
         $this->createQuizGrades($quiz3->id, $this->user->id, 5);
@@ -86,15 +83,45 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         $this->setUp();
 
         /**
-         * When user has taken multiple quizzes.
-         */
+        * When user has completed multiple quizzes and has a passing grade. The final_quiz_id is one of the valid quizzes and so it will be excluded from the transcripts.
+        */
         $quiz1 = $this->createQuizModule($this->course->id);
         $quiz2 = $this->createQuizModule($this->course->id);
         $quiz3 = $this->createQuizModule($this->course->id);
 
+        $this->createQuizGrades($quiz1->id, $this->user->id, 10);
+        $this->createQuizGrades($quiz2->id, $this->user->id, 5);
+        $this->createQuizGrades($quiz3->id, $this->user->id, 5);
+
+        $result = accredible_get_transcript($this->course->id, $this->user->id, $quiz2->id);
+
+        $transcript_items = [["category" => $quiz1->name, "percent" => 100],
+            ["category" => $quiz3->name, "percent" => 50]];
+
+        $res_data = array(
+            "description" => "Course Transcript",
+            "string_object" => json_encode($transcript_items),
+            "category" => "transcript",
+            "custom" => true,
+            "hidden" => true
+        );
+
+        /**
+        * it responds with transcript_items.
+        * final_quiz_id is excluded from the transcripts returned.
+        */
+        $this->assertEquals($result, $res_data);
+
+        //reset DB
+        $this->setUp();
+
         /**
         * When user has completed multiple quizzes and has a failing grade.
         */
+        $quiz1 = $this->createQuizModule($this->course->id);
+        $quiz2 = $this->createQuizModule($this->course->id);
+        $quiz3 = $this->createQuizModule($this->course->id);
+
         $this->createQuizGrades($quiz1->id, $this->user->id, 0);
         $this->createQuizGrades($quiz2->id, $this->user->id, 5);
         $this->createQuizGrades($quiz3->id, $this->user->id, 5);

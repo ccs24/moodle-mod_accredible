@@ -236,3 +236,9 @@ Run unit tests of this plugin using the following command.
 cd /bitnami/moodle
 vendor/bin/phpunit --testsuite mod_accredible_testsuite
 ```
+
+Run unit tests for a single test class.
+
+```
+vendor/bin/phpunit --filter mod_accredible_xxx_testcase
+```

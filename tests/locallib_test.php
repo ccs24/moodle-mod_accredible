@@ -43,6 +43,9 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         set_config('accredible_api_key', 'sometestapikey');
         set_config('is_eu', 0);
 
+        // Unset the devlopment environment variable.
+        putenv('ACCREDIBLE_DEV_API_ENDPOINT');
+
         $this->mockapi = new class {
             /**
              * Returns a mock API response based on the fixture json.
@@ -222,7 +225,7 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         $this->assertTrue($foundexception);
 
         /**
-         * When the apiRest returns no groups
+         * When the apiRest returns no groups.
          */
         $mockclient3 = $this->getMockBuilder('client')
                             ->setMethods(['post'])

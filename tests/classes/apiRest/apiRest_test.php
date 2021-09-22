@@ -41,7 +41,6 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         set_config('is_eu', 0);
 
         // Unset the devlopment environment variable.
-        $dev_api_endpoint = getenv('ACCREDIBLE_DEV_API_ENDPOINT');
         putenv('ACCREDIBLE_DEV_API_ENDPOINT');
 
         $this->mockapi = new class {

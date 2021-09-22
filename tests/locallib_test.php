@@ -34,9 +34,10 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
     /**
      * Setup before every test.
      */
-    public function setUp(): void {
+    function setUp(): void {
         $this->resetAfterTest();
-        $this->setAdminUser();
+        $this->user = $this->getDataGenerator()->create_user();
+        $this->course = $this->getDataGenerator()->create_course();
 
         // Add plugin settings.
         set_config('accredible_api_key', 'sometestapikey');
@@ -56,6 +57,106 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
             }
         };
     }
+
+    public function test_accredible_get_transcript() {
+        global $DB;
+
+        /**
+        * When no quiz available for user.
+        */
+        $result = accredible_get_transcript($this->course->id, $this->user->id, 0);
+
+        /**
+        * it responds with false
+        */
+        $this->assertEmpty($DB->get_records('quiz'));
+        $this->assertEquals($result, false);
+
+        /**
+        * When user has completed multiple quizzes and has a passing grade.
+        */
+        $quiz1 = $this->createQuizModule($this->course->id);
+        $quiz2 = $this->createQuizModule($this->course->id);
+        $quiz3 = $this->createQuizModule($this->course->id);
+
+        $this->createQuizGrades($quiz1->id, $this->user->id, 10);
+        $this->createQuizGrades($quiz2->id, $this->user->id, 5);
+        $this->createQuizGrades($quiz3->id, $this->user->id, 5);
+
+        $result = accredible_get_transcript($this->course->id, $this->user->id, 0);
+
+        $transcript_items = [["category" => $quiz1->name, "percent" => 100],
+            ["category" => $quiz2->name, "percent" => 50],
+            ["category" => $quiz3->name, "percent" => 50]];
+
+        $res_data = array(
+            "description" => "Course Transcript",
+            "string_object" => json_encode($transcript_items),
+            "category" => "transcript",
+            "custom" => true,
+            "hidden" => true
+        );
+
+        /**
+        * it responds with transcript_items
+        */
+        $this->assertEquals($result, $res_data);
+
+        //reset DB
+        $this->setUp();
+
+        /**
+        * When user has completed multiple quizzes and has a passing grade. The final_quiz_id is one of the valid quizzes and so it will be excluded from the transcripts.
+        */
+        $quiz1 = $this->createQuizModule($this->course->id);
+        $quiz2 = $this->createQuizModule($this->course->id);
+        $quiz3 = $this->createQuizModule($this->course->id);
+
+        $this->createQuizGrades($quiz1->id, $this->user->id, 10);
+        $this->createQuizGrades($quiz2->id, $this->user->id, 5);
+        $this->createQuizGrades($quiz3->id, $this->user->id, 5);
+
+        $result = accredible_get_transcript($this->course->id, $this->user->id, $quiz2->id);
+
+        $transcript_items = [["category" => $quiz1->name, "percent" => 100],
+            ["category" => $quiz3->name, "percent" => 50]];
+
+        $res_data = array(
+            "description" => "Course Transcript",
+            "string_object" => json_encode($transcript_items),
+            "category" => "transcript",
+            "custom" => true,
+            "hidden" => true
+        );
+
+        /**
+        * it responds with transcript_items.
+        * final_quiz_id is excluded from the transcripts returned.
+        */
+        $this->assertEquals($result, $res_data);
+
+        //reset DB
+        $this->setUp();
+
+        /**
+        * When user has completed multiple quizzes and has a failing grade.
+        */
+        $quiz1 = $this->createQuizModule($this->course->id);
+        $quiz2 = $this->createQuizModule($this->course->id);
+        $quiz3 = $this->createQuizModule($this->course->id);
+
+        $this->createQuizGrades($quiz1->id, $this->user->id, 0);
+        $this->createQuizGrades($quiz2->id, $this->user->id, 5);
+        $this->createQuizGrades($quiz3->id, $this->user->id, 5);
+
+        $result = accredible_get_transcript($this->course->id, $this->user->id, 0);
+
+        /**
+        * it responds with false
+        */
+        $this->assertEquals($result, false);
+    }
+
 
     /**
      * Test whether it returns group name arrays
@@ -144,5 +245,16 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         $api = new apiRest($mockclient3);
         $result = accredible_get_templates($api);
         $this->assertEquals($result, array());
+    }
+
+    private function createQuizModule($course_id) {
+        $quiz = array("course" => $course_id, "grade" => 10);
+        return $this->getDataGenerator()->create_module('quiz', $quiz);
+    }
+
+    private function createQuizGrades($quiz_id, $user_id, $grade) {
+        global $DB;
+        $quiz_grade = array("quiz" => $quiz_id, "userid" => $user_id, "grade" => $grade);
+        $DB->insert_record('quiz_grades', $quiz_grade);
     }
 }

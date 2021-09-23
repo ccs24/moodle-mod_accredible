@@ -374,9 +374,7 @@ function accredible_get_templates($apiRest = null) {
 
     $groups = $response->groups;
     $templates = array();
-    for ($i = 0, $size = count($groups); $i < $size; ++$i) {
-        $templates[$groups[$i]->name] = $groups[$i]->name;
-    }
+    foreach ($groups as $group) { $templates[$group->name] = $group->name; }
     return $templates;
 }
 

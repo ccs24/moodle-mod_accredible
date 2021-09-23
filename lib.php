@@ -144,10 +144,7 @@ function accredible_update_instance($post) {
                     if ($post->finalquiz) {
                         $quiz = $DB->get_record('quiz', array('id' => $post->finalquiz), '*', MUST_EXIST);
                         $grade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
-                    } // else?
-                        // This is an older activity that now uses the course completion to issue cert.
-                        // Can't use accredible_issue_default_certificate, but create_credential only works with groupid.
-
+                    }
                     // TODO: testing.
                     $result = accredible_issue_default_certificate($user->id,
                         $accrediblecertificate->id, fullname($user), $user->email,

@@ -41,7 +41,6 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         set_config('is_eu', 0);
 
         // Unset the devlopment environment variable.
-        $dev_api_endpoint = getenv('ACCREDIBLE_DEV_API_ENDPOINT');
         putenv('ACCREDIBLE_DEV_API_ENDPOINT');
 
         $this->mockapi = new class {
@@ -148,6 +147,87 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         // Expect to return resdata.
         $api = new apiRest($mockclient3);
         $result = $api->get_credential(1);
+        $this->assertEquals($result, $resdata);
+    }
+
+    /**
+     * Tests if `POST /v1/issuer/groups/search` is properly called.
+     */
+    public function test_search_groups() {
+        /**
+         * When the response is successful.
+         */
+        $mockclient1 = $this->getMockBuilder('client')
+                            ->setMethods(['post'])
+                            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('groups/search_success.json');
+
+        $reqdata = json_encode(array('page' => 1, 'page_size' => 10000));
+
+        // Expect to call the endpoint once with page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/groups/search';
+        $mockclient1->expects($this->once())
+                    ->method('post')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata),)
+                    ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient1);
+        $result = $api->search_groups(10000, 1);
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the arguments are empty and the response is successful.
+         */
+        $mockclient2 = $this->getMockBuilder('client')
+                            ->setMethods(['post'])
+                            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('groups/search_success.json');
+
+        $reqdata = json_encode(array('page' => 1, 'page_size' => 50));
+
+        // Expect to call the endpoint once with default page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/groups/search';
+        $mockclient2->expects($this->once())
+                    ->method('post')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata),)
+                    ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient2);
+        $result = $api->search_groups();
+        $this->assertEquals($result, $resdata);
+
+        /**
+         * When the api key is invalid.
+         */
+        $mockclient3 = $this->getMockBuilder('client')
+                            ->setMethods(['post'])
+                            ->getMock();
+        $mockclient3->error = 'The requested URL returned error: 401 Unauthorized';
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('unauthorized_error.json');
+
+        $reqdata = json_encode(array('page' => 1, 'page_size' => 10000));
+
+        // Expect to call the endpoint once with page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/groups/search';
+        $mockclient3->expects($this->once())
+                    ->method('post')
+                    ->with($this->equalTo($url),
+                           $this->equalTo($reqdata),)
+                    ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient3);
+        $result = $api->search_groups(10000, 1);
         $this->assertEquals($result, $resdata);
     }
 

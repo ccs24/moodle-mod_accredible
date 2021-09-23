@@ -291,6 +291,17 @@ class apiRest {
     }
 
     /**
+     * Get all Groups
+     * @param Integer $page_size
+     * @param Integer $page
+     * @return stdObject
+     */
+    function search_groups($page_size = 50, $page = 1) {
+        $data = json_encode(array('page' => $page, 'page_size' => $page_size));
+        return $this->client->post("{$this->api_endpoint}issuer/groups/search", $data);
+    }
+
+    /**
      * Creates a Grade evidence item on a given credential.
      * @param String $grade - value must be between 0 and 100
      * @return stdObject

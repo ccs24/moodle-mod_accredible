@@ -355,26 +355,26 @@ function accredible_get_recipient_sso_linik($group_id, $email) {
 /**
  * List all of the issuer's templates
  *
+ * @param apiRest $apiRest
  * @return array[stdClass] $templates
  */
-function accredible_get_templates() {
-    global $CFG;
-
-    $curl = curl_init(get_api_endpoint().'issuer/templates');
-    curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Authorization: Token token="'.$CFG->accredible_api_key.'"' ) );
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    if (!$result = json_decode( curl_exec($curl) )) {
+function accredible_get_templates($apiRest = null) {
+    // An apiRest with a mock client is passed when unit testing.
+    if(!$apiRest) {
+        $apiRest = new apiRest();
+    }
+    $response = $apiRest->search_groups(10000, 1);
+    if (!isset($response->groups)) {
         // Throw API exception.
         // Include the achievement id that triggered the error.
         // Direct the user to accredible's support.
         // Dump the achievement id to debug_info.
         throw new moodle_exception('gettemplateserror', 'accredible', 'https://help.accredible.com/hc/en-us');
     }
-    curl_close($curl);
+
+    $groups = $response->groups;
     $templates = array();
-    for ($i = 0, $size = count($result->templates); $i < $size; ++$i) {
-        $templates[$result->templates[$i]->name] = $result->templates[$i]->name;
-    }
+    foreach ($groups as $group) { $templates[$group->name] = $group->name; }
     return $templates;
 }
 
@@ -867,20 +867,4 @@ function seconds_to_str ($seconds) {
         return $minutes . ' minute' . number_ending($minutes);
     }
     return $seconds . ' second' . number_ending($seconds);
-}
-
-function get_api_endpoint() {
-    global $CFG;
-
-    $api_endpoint = "https://api.accredible.com/v1/";
-    if ($CFG->is_eu) {
-        $api_endpoint = "https://eu.api.accredible.com/v1/";
-    }
-
-	$dev_api_endpoint = getenv("ACCREDIBLE_DEV_API_ENDPOINT");
-	if($dev_api_endpoint) {
-		$api_endpoint = $dev_api_endpoint;
-	}
-
-    return $api_endpoint;
 }

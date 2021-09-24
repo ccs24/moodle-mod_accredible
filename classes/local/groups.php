@@ -27,6 +27,7 @@ namespace mod_accredible\local;
 defined('MOODLE_INTERNAL') || die();
 
 use mod_accredible\apiRest\apiRest;
+use mod_accredible\Html2Text\Html2Text;
 
 class groups {
     /**
@@ -74,5 +75,42 @@ class groups {
         $templates = array();
         foreach ($groups as $group) { $templates[$group->name] = $group->name; }
         return $templates;
+    }
+
+    /**
+     * Sync the selected course information with a group on Accredible - returns a group ID.
+     * Optionally takes a group ID so we can set it and change the assigned group.
+     *
+     * @param stdClass $course
+     * @param int|null $instanceid
+     * @return int $groupid
+     */
+    function sync_group_with($course, $instanceid = null, $groupid = null) {
+        global $DB;
+
+        $description = Html2Text::convert($course->summary);
+        if (empty($description)) {
+            $description = "Recipient has compeleted the achievement.";
+        }
+
+        $courselink = new \moodle_url('/course/view.php', array('id' => $course->id));
+
+        try {
+            if ($instanceid != null) {
+                // Update the group.
+                $accredible = $DB->get_record('accredible', array('id' => $instanceid), '*', MUST_EXIST);
+                // Get the group id.
+                if (!isset($groupid)) {
+                    $groupid = $accredible->groupid;
+                }
+                $group = $this->apiRest->update_group($groupid, null, null, null, $courselink);
+            } else {
+                // Make a new Group on Accredible - use a random number to deal with duplicate course names.
+                $group = $this->apiRest->create_group($course->shortname . mt_rand(), $course->fullname, $description, $courselink);
+            }
+            return $group->group->id;
+        }  catch (\Exception $e) {
+            throw new \moodle_exception('syncgroupwitherror', 'accredible', 'https://help.accredible.com/hc/en-us', $course->id, $course->id);
+        }
     }
 }

@@ -59,6 +59,89 @@ class mod_accredible_groups_testcase extends advanced_testcase {
     }
 
     /**
+     * Test whether it returns groups
+     */
+    public function test_get_groups() {
+        /**
+         * When the apiRest returns groups.
+         */
+        $mockclient1 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('groups/all_groups_success.json');
+
+        // Expect to call the endpoint once with page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
+        $mockclient1->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to return group name arrays.
+        $api = new apiRest($mockclient1);
+        $localgroups = new groups($api);
+        $result = $localgroups->get_groups();
+        $this->assertEquals($result, array(
+            '12472' => 'new group1',
+            '12473' => 'new group2',
+        ));
+
+        /**
+         * When the apiRest returns an error response.
+         */
+        $mockclient2 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+
+        // Mock API response data.
+        $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
+        $resdata = $this->mockapi->resdata('unauthorized_error.json');
+
+        // Expect to call the endpoint once with page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
+        $mockclient2->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to raise an exception.
+        $api = new apiRest($mockclient2);
+        $localgroups = new groups($api);
+        $foundexception = false;
+        try {
+            $localgroups->get_groups();
+        } catch (\moodle_exception $error) {
+            $foundexception = true;
+        }
+        $this->assertTrue($foundexception);
+
+        /**
+         * When the apiRest returns no groups.
+         */
+        $mockclient3 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('groups/all_groups_success_empty.json');
+
+        // Expect to call the endpoint once with page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
+        $mockclient3->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to return an empty array.
+        $api = new apiRest($mockclient3);
+        $localgroups = new groups($api);
+        $result = $localgroups->get_groups();
+        $this->assertEquals($result, array());
+    }
+
+    /**
      * Test whether it returns group name arrays
      */
     public function test_get_templates() {

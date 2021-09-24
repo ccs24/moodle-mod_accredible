@@ -45,6 +45,21 @@ class groups {
     }
 
     /**
+     * Get the groups for the issuer
+     * @return array[stdClass] $groups
+     */
+    function get_groups() {
+        $response = $this->apiRest->get_groups(10000, 1);
+        if (!isset($response->groups)) {
+            throw new \moodle_exception('getgroupserror', 'accredible', 'https://help.accredible.com/hc/en-us');
+        }
+
+        $groups = array();
+        foreach ($response->groups as $group) { $groups[$group->id] = $group->name; }
+        return $groups;
+    }
+
+    /**
      * List all of the issuer's templates
      *
      * @return array[stdClass] $templates
@@ -52,10 +67,6 @@ class groups {
     function get_templates() {
         $response = $this->apiRest->search_groups(10000, 1);
         if (!isset($response->groups)) {
-            // Throw API exception.
-            // Include the achievement id that triggered the error.
-            // Direct the user to accredible's support.
-            // Dump the achievement id to debug_info.
             throw new \moodle_exception('gettemplateserror', 'accredible', 'https://help.accredible.com/hc/en-us');
         }
 

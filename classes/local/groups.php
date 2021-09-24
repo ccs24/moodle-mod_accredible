@@ -88,11 +88,6 @@ class groups {
     function sync_group_with($course, $instanceid = null, $groupid = null) {
         global $DB;
 
-        $description = Html2Text::convert($course->summary);
-        if (empty($description)) {
-            $description = "Recipient has compeleted the achievement.";
-        }
-
         $courselink = new \moodle_url('/course/view.php', array('id' => $course->id));
 
         try {
@@ -103,12 +98,18 @@ class groups {
                 if (!isset($groupid)) {
                     $groupid = $accredible->groupid;
                 }
-                $group = $this->apiRest->update_group($groupid, null, null, null, $courselink);
+                $res = $this->apiRest->update_group($groupid, null, null, null, $courselink);
             } else {
-                // Make a new Group on Accredible - use a random number to deal with duplicate course names.
-                $group = $this->apiRest->create_group($course->shortname . mt_rand(), $course->fullname, $description, $courselink);
+                // Create a new Group on Accredible.
+                $description = Html2Text::convert($course->summary);
+                if (empty($description)) {
+                    $description = "Recipient has compeleted the achievement.";
+                }
+                // Add a date string + course ID to deal with duplicate course names.
+                $name = $course->shortname . date("Ymd") . $course->id;
+                $res = $this->apiRest->create_group($name, $course->fullname, $description, $courselink);
             }
-            return $group->group->id;
+            return $res->group->id;
         }  catch (\Exception $e) {
             throw new \moodle_exception('syncgroupwitherror', 'accredible', 'https://help.accredible.com/hc/en-us', $course->id, $course->id);
         }

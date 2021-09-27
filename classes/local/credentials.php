@@ -65,7 +65,7 @@ class credentials {
 	        // Include the achievement id that triggered the error.
 	        // Direct the user to accredible's support.
 	        // Dump the achievement id to debug_info.
-	        throw new moodle_exception('credentialcreateerror', 'accredible', 'https://help.accredible.com/hc/en-us', $user->email, $group_id);
+	        throw new \moodle_exception('credentialcreateerror', 'accredible', 'https://help.accredible.com/hc/en-us', $user->email, $group_id);
 	    }
 	}
 
@@ -97,7 +97,7 @@ class credentials {
 	        // Include the achievement id that triggered the error.
 	        // Direct the user to accredible's support.
 	        // Dump the achievement id to debug_info.
-	        throw new moodle_exception('credentialcreateerror', 'accredible', 'https://help.accredible.com/hc/en-us', $user->email, $credential->credential->group_id);
+	        throw new \moodle_exception('credentialcreateerror', 'accredible', 'https://help.accredible.com/hc/en-us', $user->email, $achievement_name);
 	    }
 	}
 

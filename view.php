@@ -100,7 +100,7 @@ if (has_capability('mod/accredible:manage', $context)) {
     }
 
     if ($accredible_certificate->groupid){
-        $users_certificate_link = $credential->get_recipient_sso_linik($accredible_certificate->groupid, $USER->email);
+        $users_certificate_link = accredible_get_recipient_sso_linik($accredible_certificate->groupid, $USER->email);
     // legacy achievment ID
     } else {
         foreach ($certificates as $certificate) {

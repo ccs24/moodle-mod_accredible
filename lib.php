@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/accredible/locallib.php');
+use mod_accredible\local\credentials;
 
 /**
  * Add certificate instance.
@@ -43,6 +44,8 @@ function accredible_add_instance($post) {
 
     $groupid = sync_course_with_accredible($course, $post->instance, $post->groupid);
 
+    $credentialobj = new credentials();
+
     // Issue certs.
     if ( isset($post->users) ) {
         // Checklist array from the form comes in the format:
@@ -51,7 +54,7 @@ function accredible_add_instance($post) {
             if ($issuecertificate) {
                 $user = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
 
-                $credential = create_credential($user, $groupid);
+                $credential = $credentialobj->create_credential($user, $groupid);
 
                 // Evidence item posts.
                 $credentialid = $credential->id;
@@ -97,6 +100,8 @@ function accredible_update_instance($post) {
     // To update your certificate details, go to accredible.com.
     global $DB;
 
+    $credentialobj = new credentials();
+
     $accrediblecertificate = $DB->get_record('accredible', array('id' => $post->instance), '*', MUST_EXIST);
 
     $course = $DB->get_record('course', array('id' => $post->course), '*', MUST_EXIST);
@@ -122,7 +127,7 @@ function accredible_update_instance($post) {
                 $completeddate = date('Y-m-d', (int) $completedtimestamp);
                 if ($accrediblecertificate->groupid) {
                     // Create the credential.
-                    $result = create_credential($user, $groupid, null, $completeddate);
+                    $result = $credentialobj->create_credential($user, $groupid, null, $completeddate);
                     $credentialid = $result->id;
                     // Evidence item posts.
                     if ($post->finalquiz) {
@@ -177,10 +182,10 @@ function accredible_update_instance($post) {
                     $courseurl = new moodle_url('/course/view.php', array('id' => $post->course));
                     $courselink = $courseurl->__toString();
 
-                    $credential = create_credential_legacy($user, $post->achievementid,
+                    $credential = $credentialobj->create_credential_legacy($user, $post->achievementid,
                         $post->certificatename, $post->description, $courselink, $completeddate);
                 } else {
-                    $credential = create_credential($user, $accrediblecertificate->groupid, null, $completeddate);
+                    $credential = $credentialobj->create_credential($user, $accrediblecertificate->groupid, null, $completeddate);
                 }
 
                 // Evidence item posts.

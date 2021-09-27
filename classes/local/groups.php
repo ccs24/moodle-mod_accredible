@@ -38,7 +38,7 @@ class groups {
 
     public function __construct($apiRest = null) {
         // An apiRest with a mock client is passed when unit testing.
-        if($apiRest) {
+        if ($apiRest) {
             $this->apiRest = $apiRest;
         } else {
             $this->apiRest = new apiRest();
@@ -49,14 +49,16 @@ class groups {
      * Get the groups for the issuer
      * @return array[stdClass] $groups
      */
-    function get_groups() {
+    public function get_groups() {
         $response = $this->apiRest->get_groups(10000, 1);
         if (!isset($response->groups)) {
             throw new \moodle_exception('getgroupserror', 'accredible', 'https://help.accredible.com/hc/en-us');
         }
 
         $groups = array();
-        foreach ($response->groups as $group) { $groups[$group->id] = $group->name; }
+        foreach ($response->groups as $group) {
+            $groups[$group->id] = $group->name;
+        }
         return $groups;
     }
 
@@ -65,7 +67,7 @@ class groups {
      *
      * @return array[stdClass] $templates
      */
-    function get_templates() {
+    public function get_templates() {
         $response = $this->apiRest->search_groups(10000, 1);
         if (!isset($response->groups)) {
             throw new \moodle_exception('gettemplateserror', 'accredible', 'https://help.accredible.com/hc/en-us');
@@ -73,7 +75,9 @@ class groups {
 
         $groups = $response->groups;
         $templates = array();
-        foreach ($groups as $group) { $templates[$group->name] = $group->name; }
+        foreach ($groups as $group) {
+            $templates[$group->name] = $group->name;
+        }
         return $templates;
     }
 
@@ -85,7 +89,7 @@ class groups {
      * @param int|null $instanceid
      * @return int $groupid
      */
-    function sync_group_with($course, $instanceid = null, $groupid = null) {
+    public function sync_group_with($course, $instanceid = null, $groupid = null) {
         global $DB;
 
         $courselink = new \moodle_url('/course/view.php', array('id' => $course->id));
@@ -110,8 +114,12 @@ class groups {
                 $res = $this->apiRest->create_group($name, $course->fullname, $description, $courselink);
             }
             return $res->group->id;
-        }  catch (\Exception $e) {
-            throw new \moodle_exception('syncgroupwitherror', 'accredible', 'https://help.accredible.com/hc/en-us', $course->id, $course->id);
+        } catch (\Exception $e) {
+            throw new \moodle_exception('syncgroupwitherror',
+                                        'accredible',
+                                        'https://help.accredible.com/hc/en-us',
+                                        $course->id,
+                                        $course->id);
         }
     }
 }

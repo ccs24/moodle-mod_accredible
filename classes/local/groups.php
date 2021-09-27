@@ -42,7 +42,6 @@ class groups {
      */
     private $rand;
 
-
     public function __construct($apiRest = null, $rand = null) {
         // An apiRest with a mock client is passed when unit testing.
         if ($apiRest) {

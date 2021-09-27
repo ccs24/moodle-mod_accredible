@@ -36,12 +36,26 @@ class groups {
      */
     private $apiRest;
 
-    public function __construct($apiRest = null) {
+    /**
+     * A random value for a new group name.
+     * @var int
+     */
+    private $rand;
+
+
+    public function __construct($apiRest = null, $rand = null) {
         // An apiRest with a mock client is passed when unit testing.
         if ($apiRest) {
             $this->apiRest = $apiRest;
         } else {
             $this->apiRest = new apiRest();
+        }
+
+        // A fixed value is passed when unit testing.
+        if ($rand) {
+            $this->rand = $rand;
+        } else {
+            $this->rand = mt_rand();
         }
     }
 
@@ -109,8 +123,8 @@ class groups {
                 if (empty($description)) {
                     $description = "Recipient has compeleted the achievement.";
                 }
-                // Add a date string + course ID to deal with duplicate course names.
-                $name = $course->shortname . date("Ymd") . $course->id;
+                // Add a random number to deal with duplicate course names.
+                $name = $course->shortname . $this->rand;
                 $res = $this->apiRest->create_group($name, $course->fullname, $description, $courselink);
             }
             return $res->group->id;

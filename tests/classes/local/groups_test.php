@@ -358,11 +358,13 @@ class mod_accredible_groups_testcase extends advanced_testcase {
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/create_success.json');
+        // Mock a random value.
+        $mockrand = '123456789';
 
         $reqdata = json_encode(
             array(
                 'group' => array(
-                    "name" => $course->shortname . date("Ymd") . $course->id,
+                    "name" => $course->shortname . $mockrand,
                     "course_name" => $course->fullname,
                     "course_description" => Html2Text::convert($course->summary),
                     'course_link' => $courselink
@@ -380,7 +382,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
 
         // Expect to return the groupid.
         $api = new apiRest($mockclient4);
-        $localgroups = new groups($api);
+        $localgroups = new groups($api, $mockrand);
         $result = $localgroups->sync_group_with($course);
         $this->assertEquals($result, $mockgroupid);
 
@@ -397,11 +399,13 @@ class mod_accredible_groups_testcase extends advanced_testcase {
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/create_success.json');
+        // Mock a random value.
+        $mockrand = '123456789';
 
         $reqdata = json_encode(
             array(
                 'group' => array(
-                    "name" => $course2->shortname . date("Ymd") . $course2->id,
+                    "name" => $course2->shortname . $mockrand,
                     "course_name" => $course2->fullname,
                     "course_description" => "Recipient has compeleted the achievement.",
                     'course_link' => $courselink2
@@ -419,7 +423,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
 
         // Expect to return the groupid.
         $api = new apiRest($mockclient5);
-        $localgroups = new groups($api);
+        $localgroups = new groups($api, $mockrand);
         $result = $localgroups->sync_group_with($course2);
         $this->assertEquals($result, $mockgroupid);
 
@@ -433,11 +437,13 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Mock API response data.
         $mockclient6->error = 'The requested URL returned error: 401 Unauthorized';
         $resdata = $this->mockapi->resdata('unauthorized_error.json');
+        // Mock a random value.
+        $mockrand = '123456789';
 
         $reqdata = json_encode(
             array(
                 'group' => array(
-                    "name" => $course->shortname . date("Ymd") . $course->id,
+                    "name" => $course->shortname . $mockrand,
                     "course_name" => $course->fullname,
                     "course_description" => Html2Text::convert($course->summary),
                     'course_link' => $courselink
@@ -455,7 +461,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
 
         // Expect to raise an error.
         $api = new apiRest($mockclient6);
-        $localgroups = new groups($api);
+        $localgroups = new groups($api, $mockrand);
         $foundexception = false;
         try {
             $localgroups->sync_group_with($course);

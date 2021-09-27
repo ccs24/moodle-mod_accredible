@@ -32,6 +32,7 @@ require_once($CFG->dirroot.'/mod/accredible/lib.php');
 require_once($CFG->dirroot.'/mod/accredible/locallib.php');
 
 use mod_accredible\Html2Text\Html2Text;
+use mod_accredible\local\groups;
 
 class mod_accredible_mod_form extends moodleform_mod {
 
@@ -104,7 +105,8 @@ class mod_accredible_mod_form extends moodleform_mod {
         // If we're updating and have a group then let the issuer choose to edit this
         if($updatingcert && $accredible_certificate->groupid){
             // Grab the list of groups available
-            $templates = accredible_get_groups();
+            $localgroups = new groups();
+            $templates = $localgroups->get_groups();
             $mform->addElement('static', 'usestemplatesdescription', '', get_string('usestemplatesdescription', 'accredible'));
             $mform->addElement('select', 'groupid', get_string('templatename', 'accredible'), $templates);
             $mform->addRule('groupid', null, 'required', null, 'client');
@@ -113,7 +115,8 @@ class mod_accredible_mod_form extends moodleform_mod {
 
         if($updatingcert && $accredible_certificate->achievementid){
             // Grab the list of templates available
-            $templates = accredible_get_templates();
+            $localgroups = new groups();
+            $templates = $localgroups->get_templates();
             $mform->addElement('static', 'usestemplatesdescription', '', get_string('usestemplatesdescription', 'accredible'));
             $mform->addElement('select', 'achievementid', get_string('groupselect', 'accredible'), $templates);
             $mform->addRule('achievementid', null, 'required', null, 'client');

@@ -72,7 +72,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
                             ->getMock();
 
         // Mock API response data.
-        $resdata = $this->mockapi->resdata('credentials/create_credential_success.json');
+        $resdata = $this->mockapi->resdata('credentials/create_success.json');
 
         // The groupid from the mock response.
         $mockgroupid = 9549;
@@ -146,7 +146,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
                             ->getMock();
 
         // Mock API response data.
-        $resdata = $this->mockapi->resdata('credentials/create_credential_success.json');
+        $resdata = $this->mockapi->resdata('credentials/create_success.json');
 
         // The groupid from the mock response.
         $mockgroupid = 9549;
@@ -226,5 +226,80 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             $foundexception = true;
         }
         $this->assertTrue($foundexception);
+    }
+
+    function test_get_credentials() {
+        /**
+         * When the apiRest returns groups.
+         */
+        $mockclient1 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('credentials/search_success.json');
+
+        // Expect to call the endpoint once with page and page_size.
+        $url = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=&page_size=50&page=1";
+        $mockclient1->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to return groups.
+        $api = new apiRest($mockclient1);
+        $localcredentials = new credentials($api);
+        $result = $localcredentials->get_credentials(9549);
+        $this->assertEquals($result, $resdata->credentials);
+
+        /**
+         * When the apiRest returns an error response.
+         */
+        $mockclient2 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+
+        // Mock API response data.
+        $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
+        $resdata = $this->mockapi->resdata('unauthorized_error.json');
+
+        // Expect to call the endpoint once with page and page_size.
+        $mockclient2->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to raise an exception.
+        $api = new apiRest($mockclient2);
+        $localcredentials = new credentials($api);
+        $foundexception = false;
+        try {
+            $localcredentials->get_credentials(9549);
+        } catch (\moodle_exception $error) {
+            $foundexception = true;
+        }
+        $this->assertTrue($foundexception);
+
+        /**
+         * When the apiRest returns no groups.
+         */
+        $mockclient3 = $this->getMockBuilder('client')
+                            ->setMethods(['get'])
+                            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('credentials/search_success_empty.json');
+
+        // Expect to call the endpoint once with page and page_size.
+        $mockclient3->expects($this->once())
+                    ->method('get')
+                    ->with($this->equalTo($url))
+                    ->willReturn($resdata);
+
+        // Expect to return an empty array.
+        $api = new apiRest($mockclient3);
+        $localcredentials = new credentials($api);
+        $result = $localcredentials->get_credentials(9549);
+        $this->assertEquals($result, array());
     }
 }

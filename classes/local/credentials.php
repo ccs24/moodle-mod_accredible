@@ -143,11 +143,13 @@ class credentials {
 	        // Include the achievement id that triggered the error.
 	        // Direct the user to accredible's support.
 	        // Dump the achievement id to debug_info.
-	        $exceptionparam = new stdClass();
+	        $exceptionparam = new \stdClass();
 	        $exceptionparam->group_id = $group_id;
 	        $exceptionparam->email = $email;
-	        $exceptionparam->last_response = $credentials_page;
-	        throw new moodle_exception('getcredentialserror', 'accredible', 'https://help.accredible.com/hc/en-us', $exceptionparam);
+	        if(isset($credentials_page)){
+	        	$exceptionparam->last_response = $credentials_page;
+	        }
+	        throw new \moodle_exception('getcredentialserror', 'accredible', 'https://help.accredible.com/hc/en-us', $exceptionparam);
 	    }
 	}
 
@@ -173,7 +175,7 @@ class credentials {
 	          // include the achievement id that triggered the error
 	          // direct the user to accredible's support
 	          // dump the achievement id to debug_info
-	          throw new moodle_exception('groupsyncerror', 'accredible', 'https://help.accredible.com/hc/en-us', $group_id, $group_id);
+	          throw new \moodle_exception('groupsyncerror', 'accredible', 'https://help.accredible.com/hc/en-us', $group_id, $group_id);
 	    }
 	}
 

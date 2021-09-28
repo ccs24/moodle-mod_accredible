@@ -39,7 +39,7 @@ class mod_accredible_mod_form extends moodleform_mod {
     function definition() {
         global $DB, $COURSE, $CFG;
 
-        $credentialobj = new credentials();
+        $localcredentials = new credentials();
 
         $updatingcert = false;
         $alreadyexists = false;
@@ -144,10 +144,10 @@ class mod_accredible_mod_form extends moodleform_mod {
         if ($updatingcert) {
             // Grab existing certificates and cross-reference emails
             if ($accredible_certificate->achievementid) {
-                $certificates = $credentialobj->get_credentials($accredible_certificate->achievementid);
+                $certificates = $localcredentials->get_credentials($accredible_certificate->achievementid);
             }
             elseif ($accredible_certificate->groupid) {
-                $certificates = $credentialobj->get_credentials($accredible_certificate->groupid);
+                $certificates = $localcredentials->get_credentials($accredible_certificate->groupid);
             }
         }
 
@@ -199,9 +199,9 @@ class mod_accredible_mod_form extends moodleform_mod {
 
             // Grab existing credentials and cross-reference emails
             if($accredible_certificate->achievementid){
-                $certificates = $credentialobj->get_credentials($accredible_certificate->achievementid);
+                $certificates = $localcredentials->get_credentials($accredible_certificate->achievementid);
             } else {
-                $certificates = $credentialobj->get_credentials($accredible_certificate->groupid);
+                $certificates = $localcredentials->get_credentials($accredible_certificate->groupid);
             }
             
             foreach ($users as $user) {

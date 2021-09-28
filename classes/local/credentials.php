@@ -179,6 +179,12 @@ class credentials {
 	    }
 	}
 
+	/**
+	 * Check's if a credential exists for an user in a particular group
+	 * @param int $achievement_id
+	 * @param stdObject $user
+	 * @return array[stdClass] || false
+	 */
 	function check_for_existing_certificate($achievement_id, $user) {
 	    global $DB;
 	    $existing_certificate = false;

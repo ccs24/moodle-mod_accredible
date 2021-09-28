@@ -305,7 +305,7 @@ function accredible_quiz_submission_handler($event) {
     require_once($CFG->dirroot . '/mod/quiz/lib.php');
 
     $api = new apiRest();
-    $credentialobj = new credentials();
+    $localcredentials = new credentials();
 
     $attempt = $event->get_record_snapshot('quiz_attempts', $event->objectid);
 
@@ -320,7 +320,7 @@ function accredible_quiz_submission_handler($event) {
                     // Check which quiz is used as the deciding factor in this course.
                     if ($quiz->id == $record->finalquiz) {
                         // Check for an existing certificate.
-                        $existing_certificate = $credentialobj->check_for_existing_credential($record->groupid, $user->email);
+                        $existing_certificate = $localcredentials->check_for_existing_credential($record->groupid, $user->email);
 
                         // Create that credential if it doesn't exist.
                         if (!$existing_certificate) {
@@ -330,7 +330,7 @@ function accredible_quiz_submission_handler($event) {
                             // Check for pass.
                             if ($grade_is_high_enough) {
                                 // Issue a ceritificate.
-                                $credentialobj->create_credential($user, $record->groupid);
+                                $localcredentials->create_credential($user, $record->groupid);
                             }
                         } else {
                             // Check the existing grade to see if this one is higher and update the credential if so.                   
@@ -372,11 +372,11 @@ function accredible_quiz_submission_handler($event) {
                         }
                         // If it was the final activity.
                         if ($course_complete) {
-                            $existing_certificate = $credentialobj->check_for_existing_credential($record->groupid, $user->email);
+                            $existing_certificate = $localcredentials->check_for_existing_credential($record->groupid, $user->email);
                             // make sure there isn't already a certificate
                             if (!$existing_certificate) {
                                 // issue a ceritificate
-                                $credentialobj->create_credential($user, $record->groupid);
+                                $localcredentials->create_credential($user, $record->groupid);
                             }
                         }
                     }
@@ -384,7 +384,7 @@ function accredible_quiz_submission_handler($event) {
                 } else {
                     // Check which quiz is used as the deciding factor in this course.
                     if ($quiz->id == $record->finalquiz) {
-                        $existing_certificate = $credentialobj->check_for_existing_certificate (
+                        $existing_certificate = $localcredentials->check_for_existing_certificate (
                             $record->achievementid, $user
                         );
 
@@ -444,7 +444,7 @@ function accredible_quiz_submission_handler($event) {
                         }
                         // if it was the final activity
                         if ($course_complete) {
-                            $existing_certificate = $credentialobj->check_for_existing_certificate (
+                            $existing_certificate = $localcredentials->check_for_existing_certificate (
                                 $record->achievementid, $user
                             );
                             // make sure there isn't already a certificate
@@ -477,7 +477,7 @@ function accredible_course_completed_handler($event) {
 
     global $DB, $CFG;
 
-    $credentialobj = new credentials();
+    $localcredentials = new credentials();
 
     $user = $DB->get_record('user', array('id' => $event->relateduserid));
 
@@ -490,7 +490,7 @@ function accredible_course_completed_handler($event) {
                 // Check if we have a group mapping - if not use the old logic
                 if ($record->groupid) {
                     // create the credential
-                    $credentialobj->create_credential($user, $record->groupid);
+                    $localcredentials->create_credential($user, $record->groupid);
 
                 } else {
                     $api_response = accredible_issue_default_certificate( $user->id, $record->id, fullname($user), $user->email, null, null);

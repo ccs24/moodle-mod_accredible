@@ -45,16 +45,16 @@ $PAGE->set_cm($cm);
 $PAGE->set_title(format_string($accredible_certificate->name));
 $PAGE->set_heading(format_string($course->fullname));
 
-$credentialobj = new credentials();
+$localcredentials = new credentials();
 
 // User has admin privileges, show table of certificates.
 if (has_capability('mod/accredible:manage', $context)) {
 
     // Get array of certificates.
     if ($accredible_certificate->achievementid) { // legacy achievment ID.
-        $certificates = $credentialobj->get_credentials($accredible_certificate->achievementid);
+        $certificates = $localcredentials->get_credentials($accredible_certificate->achievementid);
     } else { // group id.
-        $certificates = $credentialobj->get_credentials($accredible_certificate->groupid);
+        $certificates = $localcredentials->get_credentials($accredible_certificate->groupid);
     }
 
     $table = new html_table();
@@ -94,9 +94,9 @@ if (has_capability('mod/accredible:manage', $context)) {
     $users_certificate_link = null;
 
     if ($accredible_certificate->achievementid){ // legacy achievment ID
-        $certificates = $credentialobj->get_credentials($accredible_certificate->achievementid, $USER->email);
+        $certificates = $localcredentials->get_credentials($accredible_certificate->achievementid, $USER->email);
     } else { // group id
-        $certificates = $credentialobj->get_credentials($accredible_certificate->groupid, $USER->email);
+        $certificates = $localcredentials->get_credentials($accredible_certificate->groupid, $USER->email);
     }
 
     if ($accredible_certificate->groupid){

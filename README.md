@@ -243,9 +243,9 @@ vendor/bin/phpunit --filter mod_accredible_xxx_testcase
 
 This plugin is trying to be consistent and follow the recommendations according to [the Moodle coding style](http://docs.moodle.org/dev/Coding_style).
 
-#### Code checker setup
+### Code checker setup
 
-##### PHP_CodeSniffer
+#### 1. PHP_CodeSniffer
 
 Install [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) (PHPCS) if your local machine hasn't installed it yet.
 
@@ -256,7 +256,7 @@ brew install php-code-sniffer
 phpcs --version
 ```
 
-##### Code checker
+#### 2. Code checker
 
 Download the Moodle coding standard with [Code checker](https://github.com/moodlehq/moodle-local_codechecker) if your local machine hasn't installed it yet.
 
@@ -278,7 +278,7 @@ phpcs -i
 
 Confirm that `moodle` is displayed in the installed coding standards.
 
-#### Run Code checker
+### Run Code checker
 
 Replace `[FILE_PATH]` by the target directory or file path.
 

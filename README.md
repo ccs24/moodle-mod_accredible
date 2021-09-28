@@ -282,7 +282,7 @@ Confirm that `moodle` is displayed in the installed coding standards.
 
 ### Run Code checker
 
-Replace `[FILE_PATH]` by the target directory or file path.
+Replace `[FILE_PATH]` by the target directory or file path, and run the following command to check the coding style.
 
 ```
 phpcs --standard=moodle [FILE_PATH]

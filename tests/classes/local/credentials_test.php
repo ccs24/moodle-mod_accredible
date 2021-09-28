@@ -33,7 +33,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
     /**
      * Setup before every test.
      */
-    function setUp(): void {
+    public function setUp(): void {
         $this->resetAfterTest();
 
         // Add plugin settings.
@@ -58,25 +58,22 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         };
 
         $this->user = $this->getDataGenerator()->create_user();
-        $this->userwithemail = $this->getDataGenerator()->create_user(array('email'=>'person2@example.com'));
+        $this->userwithemail = $this->getDataGenerator()->create_user(array('email' => 'person2@example.com'));
         $this->course = $this->getDataGenerator()->create_course();
     }
 
-    function test_create_credential() {
-        global $DB;
-        /**
-         * When the credential creation is successful.
-         */
+    public function test_create_credential() {
+        // When the credential creation is successful.
         $mockclient1 = $this->getMockBuilder('client')
-                            ->setMethods(['post'])
-                            ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('credentials/create_success.json');
 
         $mockgroupid = 9549;
 
-        // Expect to call the endpoint with this URL
+        // Expect to call the endpoint with this URL.
         $url = 'https://api.accredible.com/v1/credentials';
 
         $reqdata = json_encode(array(
@@ -93,9 +90,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         ));
 
         $mockclient1->expects($this->once())
-                    ->method('post')
-                    ->with($this->equalTo($url), $this->equalTo($reqdata),)
-                    ->willReturn($resdata);
+            ->method('post')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to return the created credential.
         $api = new apiRest($mockclient1);
@@ -103,12 +100,10 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $result = $localcredentials->create_credential($this->user, $mockgroupid);
         $this->assertEquals($result, $resdata->credential);
 
-        /**
-         * When the apiRest returns an error response.
-         */
+        // When the apiRest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
-                            ->setMethods(['post'])
-                            ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         // Mock API response data.
         $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
@@ -117,9 +112,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         // Expect to call the endpoint once.
         $url = 'https://api.accredible.com/v1/credentials';
         $mockclient2->expects($this->once())
-                    ->method('post')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('post')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to raise an exception.
         $api = new apiRest($mockclient2);
@@ -128,21 +123,19 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
 
         try {
             $localcredentials->create_credential($this->user, $mockgroupid);
-        $this->assertEquals($result, $resdata->credential);
+            $this->assertEquals($result, $resdata->credential);
         } catch (\moodle_exception $error) {
             $foundexception = true;
         }
         $this->assertTrue($foundexception);
     }
 
-    function test_create_credential_legacy() {
+    public function test_create_credential_legacy() {
         global $DB;
-        /**
-         * When the credential creation is successful.
-         */
+        // When the credential creation is successful.
         $mockclient1 = $this->getMockBuilder('client')
-                            ->setMethods(['post'])
-                            ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('credentials/create_success.json');
@@ -179,9 +172,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         ));
 
         $mockclient1->expects($this->once())
-                    ->method('post')
-                    ->with($this->equalTo($url), $this->equalTo($reqdata),)
-                    ->willReturn($resdata);
+            ->method('post')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to return the created credential.
         $api = new apiRest($mockclient1);
@@ -190,12 +183,10 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             "", null, $courselink, $completeddate);
         $this->assertEquals($result, $resdata->credential);
 
-        /**
-         * When the apiRest returns an error response.
-         */
+        // When the apiRest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
-                            ->setMethods(['post'])
-                            ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         // Mock API response data.
         $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
@@ -204,9 +195,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         // Expect to call the endpoint once.
         $url = 'https://api.accredible.com/v1/credentials';
         $mockclient2->expects($this->once())
-                    ->method('post')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('post')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to raise an exception.
         $api = new apiRest($mockclient2);
@@ -223,13 +214,11 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $this->assertTrue($foundexception);
     }
 
-    function test_get_credentials() {
-        /**
-         * When the credential search is successful.
-         */
+    public function test_get_credentials() {
+        // When the credential search is successful.
         $mockclient1 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('credentials/search_success.json');
@@ -237,9 +226,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         // Expect to call the endpoint once with page and page_size.
         $url = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=&page_size=50&page=1";
         $mockclient1->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to return all credentials of the group_id in the param.
         $api = new apiRest($mockclient1);
@@ -247,12 +236,10 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $result = $localcredentials->get_credentials(9549);
         $this->assertEquals($result, $resdata->credentials);
 
-        /**
-         * When apiRest returns an error response.
-         */
+        // When apiRest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
@@ -260,9 +247,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
 
         // Expect to call the endpoint once with page and page_size.
         $mockclient2->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to raise an exception.
         $api = new apiRest($mockclient2);
@@ -275,21 +262,19 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         }
         $this->assertTrue($foundexception);
 
-        /**
-         * When the credential search returns no credentials.
-         */
+        // When the credential search returns no credentials.
         $mockclient3 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('credentials/search_success_empty.json');
 
         // Expect to call the endpoint once with page and page_size.
         $mockclient3->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to return an empty array.
         $api = new apiRest($mockclient3);
@@ -298,23 +283,22 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $this->assertEquals($result, array());
     }
 
-    function test_check_for_existing_credential() {
-        /**
-         * When an existing credential exists for a group_id and user_email. 
-         */
+    public function test_check_for_existing_credential() {
+        // When an existing credential exists for a group_id and user_email.
         $mockclient1 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('credentials/search_success.json');
 
         // Expect to call the endpoint once with page and page_size.
-        $url = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=".rawurlencode($this->userwithemail->email)."&page_size=&page=1";
+        $url = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=".
+            rawurlencode($this->userwithemail->email)."&page_size=&page=1";
         $mockclient1->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to return a credential belonging to the user.
         $api = new apiRest($mockclient1);
@@ -322,12 +306,10 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $result = $localcredentials->check_for_existing_credential(9549, $this->userwithemail->email);
         $this->assertEquals($result, $resdata->credentials[0]);
 
-        /**
-         * When apiRest returns an error response.
-         */
+        // When apiRest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
@@ -335,9 +317,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
 
         // Expect to call the endpoint once with page and page_size.
         $mockclient2->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to raise an exception.
         $api = new apiRest($mockclient2);
@@ -350,21 +332,19 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         }
         $this->assertTrue($foundexception);
 
-        /**
-         * When there is no credential for the group_id.
-         */
+        // When there is no credential for the group_id.
         $mockclient3 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('credentials/search_success_empty.json');
 
         // Expect to call the endpoint once with page and page_size.
         $mockclient3->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to return an empty array.
         $api = new apiRest($mockclient3);
@@ -373,39 +353,36 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $this->assertEquals($result, false);
     }
 
-    function test_check_for_existing_certificate() {
-        /**
-         * When an existing credential exists for a group_id and user_email.
-         */
+    public function test_check_for_existing_certificate() {
+        // When an existing credential exists for a group_id and user_email.
         $mockclient1 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('credentials/search_success.json');
 
         // Expect to call the endpoint once.
-        $url = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=".rawurlencode($this->userwithemail->email)."&page_size=50&page=1";
+        $url = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=".
+            rawurlencode($this->userwithemail->email)."&page_size=50&page=1";
         $mockclient1->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to return a credential belonging to the user.
         $api = new apiRest($mockclient1);
         $localcredentials = new credentials($api);
 
-        //send the userwithemail as the function returns the credential only if the recipient email matches the user email
+        // Send the userwithemail as the function returns the credential only if the recipient email matches the user email.
         $result = $localcredentials->check_for_existing_certificate(9549, $this->userwithemail);
 
         $this->assertEquals($result, $resdata->credentials[1]);
 
-        /**
-         * When apiRest returns an error response.
-         */
+        // When apiRest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
@@ -413,9 +390,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
 
         // Expect to call the endpoint once.
         $mockclient2->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to raise an exception.
         $api = new apiRest($mockclient2);
@@ -428,21 +405,19 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         }
         $this->assertTrue($foundexception);
 
-        /**
-         * When no credential exists for the group_id and user_id.
-         */
+        // When no credential exists for the group_id and user_id.
         $mockclient3 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('credentials/search_success_empty.json');
 
         // Expect to call the endpoint once.
         $mockclient3->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to return an empty array.
         $api = new apiRest($mockclient3);

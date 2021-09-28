@@ -106,10 +106,6 @@ A certificate isn't created until you've either manually created one or had a st
 
 ## Development Information
 
-### Coding style
-
-This plugin is trying to be consistent and follow the recommendations according to [the Moodle coding style](http://docs.moodle.org/dev/Coding_style).
-
 ### Development setup
 
 #### Prerequisites
@@ -241,4 +237,51 @@ Run unit tests for a single test class.
 
 ```
 vendor/bin/phpunit --filter mod_accredible_xxx_testcase
+```
+
+### Coding style
+
+This plugin is trying to be consistent and follow the recommendations according to [the Moodle coding style](http://docs.moodle.org/dev/Coding_style).
+
+#### Code checker setup
+
+##### PHP_CodeSniffer
+
+Install [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) (PHPCS) if your local machine hasn't installed it yet.
+
+For Mac:
+
+```
+brew install php-code-sniffer
+phpcs --version
+```
+
+##### Code checker
+
+Download the Moodle coding standard with [Code checker](https://github.com/moodlehq/moodle-local_codechecker) if your local machine hasn't installed it yet.
+
+```
+git clone git://github.com/moodlehq/moodle-local_codechecker.git .codechecker
+```
+
+Add the Moodle coding standard to PHPCS.
+
+```
+phpcs --config-set installed_paths $(pwd)/.codechecker
+```
+
+Check the installed coding standards with the following command:
+
+```
+phpcs -i
+```
+
+Confirm that `moodle` is displayed in the installed coding standards.
+
+#### Run Code checker
+
+Replace `[FILE_PATH]` by the target directory or file path.
+
+```
+phpcs --standard=moodle [FILE_PATH]
 ```

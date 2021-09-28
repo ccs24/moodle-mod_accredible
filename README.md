@@ -245,6 +245,8 @@ This plugin is trying to be consistent and follow the recommendations according 
 
 ### Code checker setup
 
+You can check if the code meets the Moodle coding style with PHP_CodeSniffer and Code checker. 
+
 #### 1. PHP_CodeSniffer
 
 Install [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) (PHPCS) if your local machine hasn't installed it yet.

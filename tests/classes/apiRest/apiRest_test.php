@@ -431,4 +431,70 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
         }
         $this->assertTrue($foundexception3);
     }
+
+    /**
+     * Tests if `GET /v1/issuer/all_groups` is properly called.
+     */
+    public function test_get_groups() {
+        // When the response is successful.
+        $mockclient1 = $this->getMockBuilder('client')
+            ->setMethods(['get'])
+            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('groups/all_groups_success.json');
+
+        // Expect to call the endpoint once with page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
+        $mockclient1->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient1);
+        $result = $api->get_groups(10000, 1);
+        $this->assertEquals($result, $resdata);
+
+        // When the arguments are empty and the response is successful.
+        $mockclient2 = $this->getMockBuilder('client')
+            ->setMethods(['get'])
+            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('groups/all_groups_success.json');
+
+        // Expect to call the endpoint once with default page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=50&page=1';
+        $mockclient2->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient2);
+        $result = $api->get_groups();
+        $this->assertEquals($result, $resdata);
+
+        // When the api key is invalid.
+        $mockclient3 = $this->getMockBuilder('client')
+            ->setMethods(['get'])
+            ->getMock();
+        $mockclient3->error = 'The requested URL returned error: 401 Unauthorized';
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('unauthorized_error.json');
+
+        // Expect to call the endpoint once with page and page_size.
+        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
+        $mockclient3->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apiRest($mockclient3);
+        $result = $api->get_groups(10000, 1);
+        $this->assertEquals($result, $resdata);
+    }
 }

@@ -127,7 +127,7 @@ function accredible_update_instance($post) {
                 $completeddate = date('Y-m-d', (int) $completedtimestamp);
                 if ($accrediblecertificate->groupid) {
                     // Create the credential.
-                    $result = $localcredentials->create_credential($user, $groupid, null, $completeddate);
+                    $result = $localcredentials->create_credential($user, $groupid, $completeddate);
                     $credentialid = $result->id;
                     // Evidence item posts.
                     if ($post->finalquiz) {
@@ -185,7 +185,7 @@ function accredible_update_instance($post) {
                     $credential = $localcredentials->create_credential_legacy($user, $post->achievementid,
                         $post->certificatename, $post->description, $courselink, $completeddate);
                 } else {
-                    $credential = $localcredentials->create_credential($user, $accrediblecertificate->groupid, null, $completeddate);
+                    $credential = $localcredentials->create_credential($user, $accrediblecertificate->groupid, $completeddate);
                 }
 
                 // Evidence item posts.

@@ -41,22 +41,12 @@ class credentials {
      * @param int $groupid
      * @return stdObject
      */
-    public function create_credential($user, $groupid, $event = null, $issuedon = null) {
+    public function create_credential($user, $groupid, $issuedon = null) {
         global $CFG;
 
         try {
             $credential = $this->apirest->create_credential(fullname($user), $user->email, $groupid, $issuedon);
 
-            // Log an event now we've created the credential if possible.
-            if ($event != null) {
-                $certificateevent = \mod_accredible\event\certificate_created::create(array(
-                    'objectid' => $credential->credential->id,
-                    'context' => context_module::instance($event->contextinstanceid),
-                    'relateduserid' => $event->relateduserid,
-                    'issued_on' => $issuedon
-                ));
-                $certificateevent->trigger();
-            }
             return $credential->credential;
         } catch (\Exception $e) {
             // Throw API exception.
@@ -75,20 +65,12 @@ class credentials {
      * @return stdObject
      */
     public function create_credential_legacy($user, $achievementname, $coursename,
-        $coursedescription, $courselink, $issuedon, $event = null) {
+        $coursedescription, $courselink, $issuedon) {
         global $CFG;
         try {
             $credential = $this->apirest->create_credential_legacy(fullname($user),
                 $user->email, $achievementname, $issuedon, null, $coursename, $coursedescription, $courselink);
-            // Log an event now we've created the credential if possible.
-            if ($event != null) {
-                $certificateevent = \mod_accredible\event\certificate_created::create(array(
-                    'objectid' => $credential->credential->id,
-                    'context' => context_module::instance($event->contextinstanceid),
-                    'relateduserid' => $event->relateduserid
-                ));
-                $certificateevent->trigger();
-            }
+            
             return $credential->credential;
         } catch (\Exception $e) {
             // Throw API exception.

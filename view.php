@@ -25,6 +25,7 @@
 
 require_once("../../config.php");
 require_once("$CFG->dirroot/mod/accredible/lib.php");
+use mod_accredible\local\credentials;
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 
@@ -44,14 +45,16 @@ $PAGE->set_cm($cm);
 $PAGE->set_title(format_string($accredible_certificate->name));
 $PAGE->set_heading(format_string($course->fullname));
 
+$localcredentials = new credentials();
+
 // User has admin privileges, show table of certificates.
 if (has_capability('mod/accredible:manage', $context)) {
 
     // Get array of certificates.
     if ($accredible_certificate->achievementid) { // legacy achievment ID.
-        $certificates = accredible_get_credentials($accredible_certificate->achievementid);
+        $certificates = $localcredentials->get_credentials($accredible_certificate->achievementid);
     } else { // group id.
-        $certificates = accredible_get_credentials($accredible_certificate->groupid);
+        $certificates = $localcredentials->get_credentials($accredible_certificate->groupid);
     }
 
     $table = new html_table();
@@ -91,9 +94,9 @@ if (has_capability('mod/accredible:manage', $context)) {
     $users_certificate_link = null;
 
     if ($accredible_certificate->achievementid){ // legacy achievment ID
-        $certificates = accredible_get_credentials($accredible_certificate->achievementid, $USER->email);
+        $certificates = $localcredentials->get_credentials($accredible_certificate->achievementid, $USER->email);
     } else { // group id
-        $certificates = accredible_get_credentials($accredible_certificate->groupid, $USER->email);
+        $certificates = $localcredentials->get_credentials($accredible_certificate->groupid, $USER->email);
     }
 
     if ($accredible_certificate->groupid){

@@ -31,6 +31,7 @@ require_once ($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/mod/accredible/lib.php');
 require_once($CFG->dirroot.'/mod/accredible/locallib.php');
 
+use mod_accredible\local\credentials;
 use mod_accredible\Html2Text\Html2Text;
 use mod_accredible\local\groups;
 
@@ -38,6 +39,9 @@ class mod_accredible_mod_form extends moodleform_mod {
 
     function definition() {
         global $DB, $COURSE, $CFG;
+
+        $localcredentials = new credentials();
+
         $updatingcert = false;
         $alreadyexists = false;
 
@@ -143,10 +147,10 @@ class mod_accredible_mod_form extends moodleform_mod {
         if ($updatingcert) {
             // Grab existing certificates and cross-reference emails
             if ($accredible_certificate->achievementid) {
-                $certificates = accredible_get_credentials($accredible_certificate->achievementid);
+                $certificates = $localcredentials->get_credentials($accredible_certificate->achievementid);
             }
             elseif ($accredible_certificate->groupid) {
-                $certificates = accredible_get_credentials($accredible_certificate->groupid);
+                $certificates = $localcredentials->get_credentials($accredible_certificate->groupid);
             }
         }
 
@@ -198,9 +202,9 @@ class mod_accredible_mod_form extends moodleform_mod {
 
             // Grab existing credentials and cross-reference emails
             if($accredible_certificate->achievementid){
-                $certificates = accredible_get_credentials($accredible_certificate->achievementid);
+                $certificates = $localcredentials->get_credentials($accredible_certificate->achievementid);
             } else {
-                $certificates = accredible_get_credentials($accredible_certificate->groupid);
+                $certificates = $localcredentials->get_credentials($accredible_certificate->groupid);
             }
             
             foreach ($users as $user) {

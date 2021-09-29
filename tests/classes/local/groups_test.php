@@ -34,7 +34,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
     /**
      * Setup before every test.
      */
-    function setUp(): void {
+    public function setUp(): void {
         $this->resetAfterTest();
 
         // Add plugin settings.
@@ -63,12 +63,10 @@ class mod_accredible_groups_testcase extends advanced_testcase {
      * Test whether it returns groups
      */
     public function test_get_groups() {
-        /**
-         * When the apiRest returns groups.
-         */
+        // When the apiRest returns groups.
         $mockclient1 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/all_groups_success.json');
@@ -76,9 +74,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the endpoint once with page and page_size.
         $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
         $mockclient1->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to return groups.
         $api = new apiRest($mockclient1);
@@ -89,12 +87,10 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             '12473' => 'new group2',
         ));
 
-        /**
-         * When the apiRest returns an error response.
-         */
+        // When the apiRest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
@@ -103,9 +99,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the endpoint once with page and page_size.
         $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
         $mockclient2->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to raise an exception.
         $api = new apiRest($mockclient2);
@@ -118,12 +114,10 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         }
         $this->assertTrue($foundexception);
 
-        /**
-         * When the apiRest returns no groups.
-         */
+        // When the apiRest returns no groups.
         $mockclient3 = $this->getMockBuilder('client')
-                            ->setMethods(['get'])
-                            ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/all_groups_success_empty.json');
@@ -131,9 +125,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the endpoint once with page and page_size.
         $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
         $mockclient3->expects($this->once())
-                    ->method('get')
-                    ->with($this->equalTo($url))
-                    ->willReturn($resdata);
+            ->method('get')
+            ->with($this->equalTo($url))
+            ->willReturn($resdata);
 
         // Expect to return an empty array.
         $api = new apiRest($mockclient3);
@@ -146,12 +140,10 @@ class mod_accredible_groups_testcase extends advanced_testcase {
      * Test whether it returns group name arrays
      */
     public function test_get_templates() {
-        /**
-         * When the apiRest returns groups.
-         */
+        // When the apiRest returns groups.
         $mockclient1 = $this->getMockBuilder('client')
-                            ->setMethods(['post'])
-                            ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/search_success.json');
@@ -161,10 +153,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the endpoint once with page and page_size.
         $url = 'https://api.accredible.com/v1/issuer/groups/search';
         $mockclient1->expects($this->once())
-                    ->method('post')
-                    ->with($this->equalTo($url),
-                           $this->equalTo($reqdata))
-                    ->willReturn($resdata);
+            ->method('post')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to return group name arrays.
         $api = new apiRest($mockclient1);
@@ -175,12 +166,10 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             'new group2' => 'new group2',
         ));
 
-        /**
-         * When the apiRest returns an error response.
-         */
+        // When the apiRest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
-                            ->setMethods(['post'])
-                            ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         // Mock API response data.
         $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
@@ -191,10 +180,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the endpoint once with page and page_size.
         $url = 'https://api.accredible.com/v1/issuer/groups/search';
         $mockclient2->expects($this->once())
-                    ->method('post')
-                    ->with($this->equalTo($url),
-                           $this->equalTo($reqdata))
-                    ->willReturn($resdata);
+            ->method('post')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to raise an exception.
         $api = new apiRest($mockclient2);
@@ -207,12 +195,10 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         }
         $this->assertTrue($foundexception);
 
-        /**
-         * When the apiRest returns no groups.
-         */
+        // When the apiRest returns no groups.
         $mockclient3 = $this->getMockBuilder('client')
-                            ->setMethods(['post'])
-                            ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/search_success_empty.json');
@@ -222,10 +208,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the endpoint once with page and page_size.
         $url = 'https://api.accredible.com/v1/issuer/groups/search';
         $mockclient3->expects($this->once())
-                    ->method('post')
-                    ->with($this->equalTo($url),
-                           $this->equalTo($reqdata))
-                    ->willReturn($resdata);
+            ->method('post')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to return an empty array.
         $api = new apiRest($mockclient3);
@@ -252,12 +237,10 @@ class mod_accredible_groups_testcase extends advanced_testcase {
                                                              'passinggrade' => 0,
                                                              'groupid' => $mockgroupid));
 
-        /**
-         * When instanceid is passed and the apiRest responds successfully.
-         */
+        // When instanceid is passed and the apiRest responds successfully.
         $mockclient1 = $this->getMockBuilder('client')
-                            ->setMethods(['put'])
-                            ->getMock();
+            ->setMethods(['put'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/update_success.json');
@@ -271,10 +254,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the update endpoint once with the groupid.
         $url = "https://api.accredible.com/v1/issuer/groups/{$mockgroupid}";
         $mockclient1->expects($this->once())
-                    ->method('put')
-                    ->with($this->equalTo($url),
-                           $this->equalTo($reqdata))
-                    ->willReturn($resdata);
+            ->method('put')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to return the groupid.
         $api = new apiRest($mockclient1);
@@ -282,13 +264,11 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $result = $localgroups->sync_group_with($course, $instanceid);
         $this->assertEquals($result, $mockgroupid);
 
-        /**
-         * When instanceid and groupid are passed and the apiRest responds successfully.
-         */
+        // When instanceid and groupid are passed and the apiRest responds successfully.
         $groupid = 1;
         $mockclient2 = $this->getMockBuilder('client')
-                            ->setMethods(['put'])
-                            ->getMock();
+            ->setMethods(['put'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/update_success.json');
@@ -302,10 +282,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the update endpoint once with the groupid.
         $url = "https://api.accredible.com/v1/issuer/groups/{$groupid}";
         $mockclient2->expects($this->once())
-                    ->method('put')
-                    ->with($this->equalTo($url),
-                           $this->equalTo($reqdata))
-                    ->willReturn($resdata);
+            ->method('put')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to return the groupid.
         $api = new apiRest($mockclient2);
@@ -313,12 +292,10 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $result = $localgroups->sync_group_with($course, $instanceid, $groupid);
         $this->assertEquals($result, $mockgroupid);
 
-        /**
-         * When instanceid is passed and the apiRest returns an error.
-         */
+        // When instanceid is passed and the apiRest returns an error.
         $mockclient3 = $this->getMockBuilder('client')
-                            ->setMethods(['put'])
-                            ->getMock();
+            ->setMethods(['put'])
+            ->getMock();
 
         // Mock API response data.
         $mockclient3->error = 'The requested URL returned error: 401 Unauthorized';
@@ -333,10 +310,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the update endpoint once with the groupid.
         $url = "https://api.accredible.com/v1/issuer/groups/{$mockgroupid}";
         $mockclient3->expects($this->once())
-                    ->method('put')
-                    ->with($this->equalTo($url),
-                           $this->equalTo($reqdata))
-                    ->willReturn($resdata);
+            ->method('put')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to raise an error.
         $api = new apiRest($mockclient3);
@@ -349,12 +325,10 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         }
         $this->assertTrue($foundexception);
 
-        /**
-         * When instanceid is NOT passed and the apiRest responds successfully.
-         */
+        // When instanceid is NOT passed and the apiRest responds successfully.
         $mockclient4 = $this->getMockBuilder('client')
-                            ->setMethods(['post'])
-                            ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/create_success.json');
@@ -375,10 +349,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the create endpoint once.
         $url = "https://api.accredible.com/v1/issuer/groups";
         $mockclient4->expects($this->once())
-                    ->method('post')
-                    ->with($this->equalTo($url),
-                           $this->equalTo($reqdata))
-                    ->willReturn($resdata);
+            ->method('post')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to return the groupid.
         $api = new apiRest($mockclient4);
@@ -386,16 +359,14 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $result = $localgroups->sync_group_with($course);
         $this->assertEquals($result, $mockgroupid);
 
-        /**
-         * When instanceid is NOT passed, the course does not have a summary, and the apiRest responds successfully.
-         */
-        // A course without summary
+        // When instanceid is NOT passed, the course does not have a summary, and the apiRest responds successfully.
+        // A course without summary.
         $course2 = $this->getDataGenerator()->create_course(array('summary' => ''));
         $courselink2 = new \moodle_url('/course/view.php', array('id' => $course2->id));
 
         $mockclient5 = $this->getMockBuilder('client')
-                            ->setMethods(['post'])
-                            ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/create_success.json');
@@ -416,10 +387,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the create endpoint once.
         $url = "https://api.accredible.com/v1/issuer/groups";
         $mockclient5->expects($this->once())
-                    ->method('post')
-                    ->with($this->equalTo($url),
-                           $this->equalTo($reqdata))
-                    ->willReturn($resdata);
+            ->method('post')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to return the groupid.
         $api = new apiRest($mockclient5);
@@ -427,12 +397,10 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $result = $localgroups->sync_group_with($course2);
         $this->assertEquals($result, $mockgroupid);
 
-        /**
-         * When instanceid is NOT passed and the apiRest returns an error.
-         */
+        // When instanceid is NOT passed and the apiRest returns an error.
         $mockclient6 = $this->getMockBuilder('client')
-                            ->setMethods(['post'])
-                            ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         // Mock API response data.
         $mockclient6->error = 'The requested URL returned error: 401 Unauthorized';
@@ -454,10 +422,9 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Expect to call the create endpoint once.
         $url = "https://api.accredible.com/v1/issuer/groups";
         $mockclient6->expects($this->once())
-                    ->method('post')
-                    ->with($this->equalTo($url),
-                           $this->equalTo($reqdata))
-                    ->willReturn($resdata);
+            ->method('post')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
 
         // Expect to raise an error.
         $api = new apiRest($mockclient6);

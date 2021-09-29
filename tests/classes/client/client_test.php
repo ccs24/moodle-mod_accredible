@@ -56,14 +56,14 @@ class mod_accredible_client_testcase extends advanced_testcase {
 
         // Mock curl.
         $mockcurl = $this->getMockBuilder('curl')
-                         ->setMethods(['get'])
-                         ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         $mockcurl->expects($this->once())
-                 ->method('get')
-                 ->with($this->equalTo($url),
-                        $this->equalTo(null),
-                        $this->equalTo($options));
+            ->method('get')
+            ->with($this->equalTo($url),
+                $this->equalTo(null),
+                $this->equalTo($options));
 
         // Expect to call curl get.
         $client = new client($mockcurl);
@@ -87,15 +87,15 @@ class mod_accredible_client_testcase extends advanced_testcase {
 
         // Mock curl.
         $mockcurl = $this->getMockBuilder('curl')
-                         ->setMethods(['post'])
-                         ->getMock();
+            ->setMethods(['post'])
+            ->getMock();
 
         $reqdata = '{"evidence_item":{"string_object":"100"}}';
         $mockcurl->expects($this->once())
-                 ->method('post')
-                 ->with($this->equalTo($url),
-                        $this->equalTo($reqdata),
-                        $this->equalTo($options));
+            ->method('post')
+            ->with($this->equalTo($url),
+                $this->equalTo($reqdata),
+                $this->equalTo($options));
 
         // Expect to call curl post.
         $client = new client($mockcurl);
@@ -119,15 +119,15 @@ class mod_accredible_client_testcase extends advanced_testcase {
 
         // Mock curl.
         $mockcurl = $this->getMockBuilder('curl')
-                         ->setMethods(['put'])
-                         ->getMock();
+            ->setMethods(['put'])
+            ->getMock();
 
         $reqdata = '{"evidence_item":{"string_object":"100"}}';
         $mockcurl->expects($this->once())
-                 ->method('put')
-                 ->with($this->equalTo($url),
-                        $this->equalTo($reqdata),
-                        $this->equalTo($options));
+            ->method('put')
+            ->with($this->equalTo($url),
+                $this->equalTo($reqdata),
+                $this->equalTo($options));
 
         // Expect to call curl put.
         $client = new client($mockcurl);
@@ -151,21 +151,21 @@ class mod_accredible_client_testcase extends advanced_testcase {
 
         // Mock curl.
         $mockcurl = $this->getMockBuilder('curl')
-                         ->setMethods(['get'])
-                         ->getMock();
+            ->setMethods(['get'])
+            ->getMock();
 
         $mockcurl->expects($this->once())
-                 ->method('get')
-                 ->with($this->equalTo($url),
-                        $this->equalTo(null),
-                        $this->equalTo($options));
+            ->method('get')
+            ->with($this->equalTo($url),
+                $this->equalTo(null),
+                $this->equalTo($options));
 
         $mockcurl->error = 'The requested URL returned error: 401 Unauthorized';
-    
+
         // Expect to call debugging.
         $client = new client($mockcurl);
         $this->assertDebuggingCalled($client->get($url));
-    
+
         // Expect to return an error message.
         $this->assertEquals($client->error, 'The requested URL returned error: 401 Unauthorized');
     }

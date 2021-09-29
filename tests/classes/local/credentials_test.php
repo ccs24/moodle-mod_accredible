@@ -221,20 +221,23 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->getMock();
 
         // Mock API response data.
-        $resdata = $this->mockapi->resdata('credentials/search_success.json');
+        $resdatapage1 = $this->mockapi->resdata('credentials/search_success.json');
+        $resdatapage2 = $this->mockapi->resdata('credentials/search_success_page_2.json');
 
         // Expect to call the endpoint once with page and page_size.
-        $url = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=&page_size=50&page=1";
-        $mockclient1->expects($this->once())
+        $urlpage1 = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=&page_size=50&page=1";
+        $urlpage2 = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=&page_size=50&page=2";
+        $mockclient1->expects($this->exactly(2))
             ->method('get')
-            ->with($this->equalTo($url))
-            ->willReturn($resdata);
+            ->withConsecutive([$this->equalTo($urlpage1)], [$this->equalTo($urlpage2)])
+            ->will($this->onConsecutiveCalls($resdatapage1, $resdatapage2));
 
         // Expect to return all credentials of the group_id in the param.
         $api = new apiRest($mockclient1);
         $localcredentials = new credentials($api);
         $result = $localcredentials->get_credentials(9549);
-        $this->assertEquals($result, $resdata->credentials);
+        $resdatapage12 = array_merge($resdatapage1->credentials, $resdatapage2->credentials);
+        $this->assertEquals($result, $resdatapage12);
 
         // When apiRest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
@@ -246,6 +249,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $resdata = $this->mockapi->resdata('unauthorized_error.json');
 
         // Expect to call the endpoint once with page and page_size.
+        $url = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=&page_size=50&page=1";
         $mockclient2->expects($this->once())
             ->method('get')
             ->with($this->equalTo($url))
@@ -360,7 +364,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->getMock();
 
         // Mock API response data.
-        $resdata = $this->mockapi->resdata('credentials/search_success.json');
+        $resdata = $this->mockapi->resdata('credentials/search_success_page_2.json');
 
         // Expect to call the endpoint once.
         $url = "https://api.accredible.com/v1/all_credentials?group_id=9549&email=".

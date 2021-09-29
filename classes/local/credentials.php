@@ -70,7 +70,7 @@ class credentials {
         try {
             $credential = $this->apirest->create_credential_legacy(fullname($user),
                 $user->email, $achievementname, $issuedon, null, $coursename, $coursedescription, $courselink);
-            
+
             return $credential->credential;
         } catch (\Exception $e) {
             // Throw API exception.

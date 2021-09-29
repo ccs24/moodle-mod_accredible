@@ -163,7 +163,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $mockclient1->expects($this->once())
                     ->method('post')
                     ->with($this->equalTo($url),
-                           $this->equalTo($reqdata),)
+                           $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
         // Expect to return group name arrays.
@@ -193,7 +193,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $mockclient2->expects($this->once())
                     ->method('post')
                     ->with($this->equalTo($url),
-                           $this->equalTo($reqdata),)
+                           $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
         // Expect to raise an exception.
@@ -224,7 +224,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $mockclient3->expects($this->once())
                     ->method('post')
                     ->with($this->equalTo($url),
-                           $this->equalTo($reqdata),)
+                           $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
         // Expect to return an empty array.
@@ -273,7 +273,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $mockclient1->expects($this->once())
                     ->method('put')
                     ->with($this->equalTo($url),
-                           $this->equalTo($reqdata),)
+                           $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
         // Expect to return the groupid.
@@ -304,7 +304,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $mockclient2->expects($this->once())
                     ->method('put')
                     ->with($this->equalTo($url),
-                           $this->equalTo($reqdata),)
+                           $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
         // Expect to return the groupid.
@@ -335,7 +335,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $mockclient3->expects($this->once())
                     ->method('put')
                     ->with($this->equalTo($url),
-                           $this->equalTo($reqdata),)
+                           $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
         // Expect to raise an error.
@@ -377,7 +377,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $mockclient4->expects($this->once())
                     ->method('post')
                     ->with($this->equalTo($url),
-                           $this->equalTo($reqdata),)
+                           $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
         // Expect to return the groupid.
@@ -418,7 +418,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $mockclient5->expects($this->once())
                     ->method('post')
                     ->with($this->equalTo($url),
-                           $this->equalTo($reqdata),)
+                           $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
         // Expect to return the groupid.
@@ -456,7 +456,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $mockclient6->expects($this->once())
                     ->method('post')
                     ->with($this->equalTo($url),
-                           $this->equalTo($reqdata),)
+                           $this->equalTo($reqdata))
                     ->willReturn($resdata);
 
         // Expect to raise an error.

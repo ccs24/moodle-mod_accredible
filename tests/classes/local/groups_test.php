@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use mod_accredible\apiRest\apiRest;
+use mod_accredible\apirest\apirest;
 use mod_accredible\client\client;
 use mod_accredible\Html2Text\Html2Text;
 use mod_accredible\local\groups;
@@ -63,7 +63,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
      * Test whether it returns groups
      */
     public function test_get_groups() {
-        // When the apiRest returns groups.
+        // When the apirest returns groups.
         $mockclient1 = $this->getMockBuilder('client')
             ->setMethods(['get'])
             ->getMock();
@@ -79,7 +79,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return groups.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $localgroups = new groups($api);
         $result = $localgroups->get_groups();
         $this->assertEquals($result, array(
@@ -87,7 +87,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             '12473' => 'new group2',
         ));
 
-        // When the apiRest returns an error response.
+        // When the apirest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
             ->setMethods(['get'])
             ->getMock();
@@ -104,7 +104,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to raise an exception.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $localgroups = new groups($api);
         $foundexception = false;
         try {
@@ -114,7 +114,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         }
         $this->assertTrue($foundexception);
 
-        // When the apiRest returns no groups.
+        // When the apirest returns no groups.
         $mockclient3 = $this->getMockBuilder('client')
             ->setMethods(['get'])
             ->getMock();
@@ -130,7 +130,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return an empty array.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $localgroups = new groups($api);
         $result = $localgroups->get_groups();
         $this->assertEquals($result, array());
@@ -140,7 +140,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
      * Test whether it returns group name arrays
      */
     public function test_get_templates() {
-        // When the apiRest returns groups.
+        // When the apirest returns groups.
         $mockclient1 = $this->getMockBuilder('client')
             ->setMethods(['post'])
             ->getMock();
@@ -158,7 +158,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return group name arrays.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $localgroups = new groups($api);
         $result = $localgroups->get_templates();
         $this->assertEquals($result, array(
@@ -166,7 +166,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             'new group2' => 'new group2',
         ));
 
-        // When the apiRest returns an error response.
+        // When the apirest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
             ->setMethods(['post'])
             ->getMock();
@@ -185,7 +185,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to raise an exception.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $localgroups = new groups($api);
         $foundexception = false;
         try {
@@ -195,7 +195,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         }
         $this->assertTrue($foundexception);
 
-        // When the apiRest returns no groups.
+        // When the apirest returns no groups.
         $mockclient3 = $this->getMockBuilder('client')
             ->setMethods(['post'])
             ->getMock();
@@ -213,7 +213,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return an empty array.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $localgroups = new groups($api);
         $result = $localgroups->get_templates();
         $this->assertEquals($result, array());
@@ -237,7 +237,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
                                                              'passinggrade' => 0,
                                                              'groupid' => $mockgroupid));
 
-        // When instanceid is passed and the apiRest responds successfully.
+        // When instanceid is passed and the apirest responds successfully.
         $mockclient1 = $this->getMockBuilder('client')
             ->setMethods(['put'])
             ->getMock();
@@ -259,12 +259,12 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return the groupid.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $localgroups = new groups($api);
         $result = $localgroups->sync_group_with($course, $instanceid);
         $this->assertEquals($result, $mockgroupid);
 
-        // When instanceid and groupid are passed and the apiRest responds successfully.
+        // When instanceid and groupid are passed and the apirest responds successfully.
         $groupid = 1;
         $mockclient2 = $this->getMockBuilder('client')
             ->setMethods(['put'])
@@ -287,12 +287,12 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return the groupid.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $localgroups = new groups($api);
         $result = $localgroups->sync_group_with($course, $instanceid, $groupid);
         $this->assertEquals($result, $mockgroupid);
 
-        // When instanceid is passed and the apiRest returns an error.
+        // When instanceid is passed and the apirest returns an error.
         $mockclient3 = $this->getMockBuilder('client')
             ->setMethods(['put'])
             ->getMock();
@@ -315,7 +315,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to raise an error.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $localgroups = new groups($api);
         $foundexception = false;
         try {
@@ -325,7 +325,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         }
         $this->assertTrue($foundexception);
 
-        // When instanceid is NOT passed and the apiRest responds successfully.
+        // When instanceid is NOT passed and the apirest responds successfully.
         $mockclient4 = $this->getMockBuilder('client')
             ->setMethods(['post'])
             ->getMock();
@@ -354,12 +354,12 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return the groupid.
-        $api = new apiRest($mockclient4);
+        $api = new apirest($mockclient4);
         $localgroups = new groups($api, $mockrand);
         $result = $localgroups->sync_group_with($course);
         $this->assertEquals($result, $mockgroupid);
 
-        // When instanceid is NOT passed, the course does not have a summary, and the apiRest responds successfully.
+        // When instanceid is NOT passed, the course does not have a summary, and the apirest responds successfully.
         // A course without summary.
         $course2 = $this->getDataGenerator()->create_course(array('summary' => ''));
         $courselink2 = new \moodle_url('/course/view.php', array('id' => $course2->id));
@@ -392,12 +392,12 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return the groupid.
-        $api = new apiRest($mockclient5);
+        $api = new apirest($mockclient5);
         $localgroups = new groups($api, $mockrand);
         $result = $localgroups->sync_group_with($course2);
         $this->assertEquals($result, $mockgroupid);
 
-        // When instanceid is NOT passed and the apiRest returns an error.
+        // When instanceid is NOT passed and the apirest returns an error.
         $mockclient6 = $this->getMockBuilder('client')
             ->setMethods(['post'])
             ->getMock();
@@ -427,7 +427,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to raise an error.
-        $api = new apiRest($mockclient6);
+        $api = new apirest($mockclient6);
         $localgroups = new groups($api, $mockrand);
         $foundexception = false;
         try {

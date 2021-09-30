@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for mod/accredible/classes/apiRest/apiRest.php
+ * Unit tests for mod/accredible/classes/apirest/apirest.php
  *
  * @package    mod
  * @subpackage accredible
@@ -25,10 +25,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use mod_accredible\apiRest\apiRest;
+use mod_accredible\apirest\apirest;
 use mod_accredible\client\client;
 
-class mod_accredible_apiRest_testcase extends advanced_testcase {
+class mod_accredible_apirest_testcase extends advanced_testcase {
     /**
      * Setup before every test.
      */
@@ -63,17 +63,17 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
      */
     public function test_api_endpoint() {
         // When is_eu is NOT enabled.
-        $api = new apiRest();
+        $api = new apirest();
         $this->assertEquals($api->api_endpoint, 'https://api.accredible.com/v1/');
 
         // When is_eu is enabled.
         set_config('is_eu', 1);
-        $api = new apiRest();
+        $api = new apirest();
         $this->assertEquals($api->api_endpoint, 'https://eu.api.accredible.com/v1/');
 
         // When the environemnt variable is set.
         putenv('ACCREDIBLE_DEV_API_ENDPOINT=http://host.docker.internal:3000/v1/');
-        $api = new apiRest();
+        $api = new apirest();
         $this->assertEquals($api->api_endpoint, 'http://host.docker.internal:3000/v1/');
     }
 
@@ -97,7 +97,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $result = $api->get_credential(1);
         $this->assertEquals($result, $resdata);
 
@@ -118,7 +118,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $result = $api->get_credential(9999);
         $this->assertEquals($result, $resdata);
 
@@ -139,7 +139,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $result = $api->get_credential(1);
         $this->assertEquals($result, $resdata);
     }
@@ -165,7 +165,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $result = $api->get_credentials(9549, "person2@example.com");
         $this->assertEquals($result, $resdata);
 
@@ -186,7 +186,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return empty array.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $result = $api->get_credentials(9549, "person2@example.com");
         $this->assertEquals($result, $resdata);
 
@@ -208,7 +208,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $result = $api->get_credentials(1000, "person2@example.com");
         $this->assertEquals($result, $resdata);
     }
@@ -247,7 +247,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $result = $api->create_credential("Jordan Smith", "person2@example.com", 1);
         $this->assertEquals($result, $resdata);
 
@@ -281,7 +281,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $result = $api->create_credential("Jordan Smith", "person2@example.com", 1);
         $this->assertEquals($result, $resdata);
     }
@@ -323,7 +323,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $result = $api->create_credential_legacy("Jordan Smith", "person2@example.com", "Example Certificate Design");
         $this->assertEquals($result, $resdata);
 
@@ -345,7 +345,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $result = $api->create_credential_legacy("Jordan Smith", "person2@example.com", "Example Certificate Design");
         $this->assertEquals($result, $resdata);
     }
@@ -373,7 +373,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $result = $api->search_groups(10000, 1);
         $this->assertEquals($result, $resdata);
 
@@ -396,7 +396,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $result = $api->search_groups();
         $this->assertEquals($result, $resdata);
 
@@ -420,7 +420,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $result = $api->search_groups(10000, 1);
         $this->assertEquals($result, $resdata);
     }
@@ -457,7 +457,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $result = $api->create_evidence_item($evidenceitem, 1);
         $this->assertEquals($result, $resdata);
 
@@ -477,7 +477,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata without throwing an exception.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $result = $api->create_evidence_item($evidenceitem, 1);
         $this->assertEquals($result, $resdata);
 
@@ -497,7 +497,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata without throwing an exception.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $foundexception = false;
         try {
             $api->create_evidence_item($evidenceitem, 1, true);
@@ -530,7 +530,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $result = $api->update_evidence_item_grade(1, 1, '100');
         $this->assertEquals($result, $resdata);
 
@@ -553,7 +553,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $result = $api->update_evidence_item_grade(1, 9999, '100');
         $this->assertEquals($result, $resdata);
 
@@ -576,7 +576,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $result = $api->update_evidence_item_grade(1, 2, '100');
         $this->assertEquals($result, $resdata);
 
@@ -628,7 +628,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $result = $api->get_groups(10000, 1);
         $this->assertEquals($result, $resdata);
 
@@ -648,7 +648,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $result = $api->get_groups();
         $this->assertEquals($result, $resdata);
 
@@ -669,7 +669,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $result = $api->get_groups(10000, 1);
         $this->assertEquals($result, $resdata);
     }
@@ -709,7 +709,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $result = $api->create_group($name, $coursename, $coursedescription, $courselink);
         $this->assertEquals($result, $resdata);
 
@@ -744,7 +744,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $result = $api->create_group($name, $coursename, $coursedescription);
         $this->assertEquals($result, $resdata);
 
@@ -780,7 +780,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $result = $api->create_group($name, $coursename, $coursedescription, $courselink);
         $this->assertEquals($result, $resdata);
     }
@@ -825,7 +825,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $result = $api->update_group($mockgroupid, $name, $coursename, $coursedescription, $courselink, $designid);
         $this->assertEquals($result, $resdata);
 
@@ -854,7 +854,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $result = $api->update_group($mockgroupid, null, null, null, $courselink);
         $this->assertEquals($result, $resdata);
 
@@ -892,7 +892,7 @@ class mod_accredible_apiRest_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return resdata.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $result = $api->update_group($mockgroupid, $name, $coursename, $coursedescription, $courselink, $designid);
         $this->assertEquals($result, $resdata);
     }

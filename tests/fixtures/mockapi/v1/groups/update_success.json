@@ -1,0 +1,23 @@
+{
+  "group": {
+    "id": 12472,
+    "name": "updated new group",
+    "course_description": "Desscription of course",
+    "course_name": "updated course name",
+    "learning_outcomes": null,
+    "attach_pdf": true,
+    "course_link": "http://www.example.com",
+    "language": "en",
+    "design_name": "test",
+    "updated_at": "2016-08-29T07:03:25.000Z",
+    "created_at": "2016-08-29T06:14:18.000Z",
+    "design_id": 23,
+    "blockchain": false,
+    "certificate_design_id": null,
+    "badge_design_id": null,
+    "department_id": 123,
+    "meta_data": {
+      "foo": "bar"
+    }
+  }
+}

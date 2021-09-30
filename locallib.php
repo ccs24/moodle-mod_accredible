@@ -30,61 +30,6 @@ use mod_accredible\Html2Text\Html2Text;
 use mod_accredible\local\credentials;
 
 /**
- * Sync the selected course information with a group on Accredible - returns a group ID.
- * Optionally takes a group ID so we can set it and change the assigned group.
- *
- * @param stdClass $course
- * @param int|null $instance_id
- * @return int $groupid
- */
-function sync_course_with_accredible($course, $instance_id = null, $group_id = null) {
-    global $DB, $CFG;
-
-    $apiRest = new apiRest();
-
-    $description = Html2Text::convert($course->summary);
-    if (empty($description)) {
-        $description = "Recipient has compeleted the achievement.";
-    }
-
-    // Update an existing.
-    if (null != $instance_id) {
-        // Get the group id.
-        $accredible_certificate = $DB->get_record('accredible', array('id' => $instance_id), '*', MUST_EXIST);
-
-        // Just use the saved group ID.
-        $group_id = isset($group_id) ? $group_id : $accredible_certificate->groupid;
-
-        try {
-            // Update the group.
-            $group = $apiRest->update_group($group_id, null, null, null, new moodle_url('/course/view.php', array('id' => $course->id)));
-
-            return $group->group->id;
-        } catch (\Exception $e) {
-            // Throw API exception.
-            // Include the achievement id that triggered the error.
-            // Direct the user to accredible's support.
-            // Dump the achievement id to debug_info.
-            throw new moodle_exception('groupsyncerror', 'accredible', 'https://help.accredible.com/hc/en-us', $course->id, $course->id);
-        }
-    } else {
-        // Making a new group.
-        try {
-            // Make a new Group on Accredible - use a random number to deal with duplicate course names.
-            $group = $apiRest->create_group($course->shortname . mt_rand(), $course->fullname, $description, new moodle_url('/course/view.php', array('id' => $course->id)));
-
-            return $group->group->id;
-        } catch (\Exception $e) {
-            // Throw API exception.
-            // Include the achievement id that triggered the error.
-            // Direct the user to accredible's support.
-            // Dump the achievement id to debug_info.
-            throw new moodle_exception('groupsyncerror', 'accredible', 'https://help.accredible.com/hc/en-us', $course->id, $course->id);
-        }
-    }
-}
-
-/**
  * Checks if a user has earned a specific credential according to the activity settings
  * @param stdObject $record An Accredible activity record
  * @param stdObject $course
@@ -157,32 +102,6 @@ function accredible_check_if_cert_earned($record, $course, $user) {
 }
 
 /**
- * Get the groups for the issuer
- * @return type
- */
-function accredible_get_groups() {
-    global $CFG;
-
-    $apiRest = new apiRest();
-    try {
-        $response = $apiRest->get_groups(10000, 1);
-
-        $groups = array();
-        for ($i = 0, $size = count($response->groups); $i < $size; ++$i) {
-            $groups[$response->groups[$i]->id] = $response->groups[$i]->name;
-        }
-        return $groups;
-
-    } catch (\Exception $e) {
-        // Throw API exception.
-        // Include the achievement id that triggered the error.
-        // Direct the user to accredible's support.
-        // Dump the achievement id to debug_info.
-        throw new moodle_exception('getgroupserror', 'accredible', 'https://help.accredible.com/hc/en-us');
-    }
-}
-
-/**
  * Get the SSO link for a recipient
  * @return type
  */
@@ -202,32 +121,6 @@ function accredible_get_recipient_sso_linik($group_id, $email) {
 }
 
 // old below here
-
-/**
- * List all of the issuer's templates
- *
- * @param apiRest $apiRest
- * @return array[stdClass] $templates
- */
-function accredible_get_templates($apiRest = null) {
-    // An apiRest with a mock client is passed when unit testing.
-    if(!$apiRest) {
-        $apiRest = new apiRest();
-    }
-    $response = $apiRest->search_groups(10000, 1);
-    if (!isset($response->groups)) {
-        // Throw API exception.
-        // Include the achievement id that triggered the error.
-        // Direct the user to accredible's support.
-        // Dump the achievement id to debug_info.
-        throw new moodle_exception('gettemplateserror', 'accredible', 'https://help.accredible.com/hc/en-us');
-    }
-
-    $groups = $response->groups;
-    $templates = array();
-    foreach ($groups as $group) { $templates[$group->name] = $group->name; }
-    return $templates;
-}
 
 /*
  * accredible_issue_default_certificate

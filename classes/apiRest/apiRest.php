@@ -286,7 +286,7 @@ class apiRest {
      * @param String $page
      * @return stdObject
      */
-    function get_groups($page_size = nil, $page = 1) {
+    function get_groups($page_size = 50, $page = 1) {
         return $this->client->get($this->api_endpoint.'issuer/all_groups?page_size=' . $page_size . '&page=' . $page);
     }
 

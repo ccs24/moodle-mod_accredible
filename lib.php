@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/accredible/locallib.php');
 use mod_accredible\local\credentials;
+use mod_accredible\local\groups;
 
 /**
  * Add certificate instance.
@@ -42,7 +43,8 @@ function accredible_add_instance($post) {
 
     $post->instance = isset($post->instance) ? $post->instance : null;
 
-    $groupid = sync_course_with_accredible($course, $post->instance, $post->groupid);
+    $localgroups = new groups();
+    $groupid = $localgroups->sync_group_with($course, $post->instance, $post->groupid);
 
     $localcredentials = new credentials();
 
@@ -108,7 +110,8 @@ function accredible_update_instance($post) {
 
     // Update the group if we have one to sync with.
     if ($accrediblecertificate->groupid) {
-        sync_course_with_accredible($course, $post->instance, $post->groupid);
+        $localgroups = new groups();
+        $localgroups->sync_group_with($course, $post->instance, $post->groupid);
     }
 
     // Issue certs for unissued users.

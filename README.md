@@ -260,15 +260,10 @@ phpcs --version
 
 #### 2. Code checker
 
-Download the Moodle coding standard with [Code checker](https://github.com/moodlehq/moodle-local_codechecker) if your local machine hasn't installed it yet.
+Download the Moodle coding standard with [Code checker](https://github.com/moodlehq/moodle-local_codechecker) and add it to PHPCS.
 
 ```
 git clone git://github.com/moodlehq/moodle-local_codechecker.git .codechecker
-```
-
-Add the Moodle coding standard to PHPCS.
-
-```
 phpcs --config-set installed_paths $(pwd)/.codechecker
 ```
 

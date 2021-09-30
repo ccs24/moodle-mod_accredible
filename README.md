@@ -249,7 +249,7 @@ You can check if the code meets the Moodle coding style with PHP_CodeSniffer and
 
 #### 1. PHP_CodeSniffer
 
-Install [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) (PHPCS) if your local machine hasn't installed it yet.
+Install [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) (PHPCS).
 
 For Mac:
 

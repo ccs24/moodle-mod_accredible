@@ -25,7 +25,7 @@
 
  defined('MOODLE_INTERNAL') || die();
 
-use mod_accredible\apiRest\apiRest;
+use mod_accredible\apirest\apirest;
 use mod_accredible\Html2Text\Html2Text;
 use mod_accredible\local\credentials;
 
@@ -108,7 +108,7 @@ function accredible_check_if_cert_earned($record, $course, $user) {
 function accredible_get_recipient_sso_linik($groupid, $email) {
     global $CFG;
 
-    $apirest = new apiRest();
+    $apirest = new apirest();
 
     try {
         $response = $apirest->recipient_sso_link(null, null, $email, null, $groupid, null);
@@ -141,7 +141,7 @@ function accredible_issue_default_certificate($userid, $certificateid, $name, $e
     $courseurl = new moodle_url('/course/view.php', array('id' => $accrediblecertificate->course));
     $courselink = $courseurl->__toString();
 
-    $restapi = new apiRest();
+    $restapi = new apirest();
     $credential = $restapi->create_credential_legacy($name, $email, $accrediblecertificate->achievementid, $issuedon, null,
         $accrediblecertificate->certificatename, $accrediblecertificate->description, $courselink);
 
@@ -199,7 +199,7 @@ function accredible_quiz_submission_handler($event) {
     global $DB, $CFG;
     require_once($CFG->dirroot . '/mod/quiz/lib.php');
 
-    $api = new apiRest();
+    $api = new apirest();
     $localcredentials = new credentials();
 
     $attempt = $event->get_record_snapshot('quiz_attempts', $event->objectid);
@@ -449,7 +449,7 @@ function accredible_get_transcript($courseid, $userid, $finalquizid) {
 }
 
 function accredible_post_evidence($credentialid, $evidenceitem, $throwerror = false) {
-    $api = new apiRest();
+    $api = new apirest();
     $api->create_evidence_item(array('evidence_item' => $evidenceitem), $credentialid, $throwerror);
 }
 
@@ -537,7 +537,7 @@ function accredible_course_duration_evidence($userid, $courseid, $credentialid, 
     }
 
     if ($enrolmenttimestamp && $enrolmenttimestamp != 0 && (strtotime($enrolmenttimestamp) < strtotime($completedtimestamp))) {
-        $apirest = new apiRest();
+        $apirest = new apirest();
 
         $apirest->create_evidence_item_duration($enrolmenttimestamp, $completedtimestamp, $credentialid, true);
     }

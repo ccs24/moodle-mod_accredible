@@ -17,7 +17,7 @@
 namespace mod_accredible\local;
 defined('MOODLE_INTERNAL') || die();
 
-use mod_accredible\apiRest\apiRest;
+use mod_accredible\apirest\apirest;
 
 class credentials {
     /**
@@ -31,7 +31,7 @@ class credentials {
         if ($apirest) {
             $this->apirest = $apirest;
         } else {
-            $this->apirest = new apiRest();
+            $this->apirest = new apirest();
         }
     }
 

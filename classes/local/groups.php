@@ -26,15 +26,15 @@
 namespace mod_accredible\local;
 defined('MOODLE_INTERNAL') || die();
 
-use mod_accredible\apiRest\apiRest;
+use mod_accredible\apirest\apirest;
 use mod_accredible\Html2Text\Html2Text;
 
 class groups {
     /**
-     * The apiRest object used to call API requests.
-     * @var apiRest
+     * The apirest object used to call API requests.
+     * @var apirest
      */
-    private $apiRest;
+    private $apirest;
 
     /**
      * A random value for a new group name.
@@ -42,12 +42,12 @@ class groups {
      */
     private $rand;
 
-    public function __construct($apiRest = null, $rand = null) {
-        // An apiRest with a mock client is passed when unit testing.
-        if ($apiRest) {
-            $this->apiRest = $apiRest;
+    public function __construct($apirest = null, $rand = null) {
+        // An apirest with a mock client is passed when unit testing.
+        if ($apirest) {
+            $this->apirest = $apirest;
         } else {
-            $this->apiRest = new apiRest();
+            $this->apirest = new apirest();
         }
 
         // A fixed value is passed when unit testing.
@@ -63,7 +63,7 @@ class groups {
      * @return array[stdClass] $groups
      */
     public function get_groups() {
-        $response = $this->apiRest->get_groups(10000, 1);
+        $response = $this->apirest->get_groups(10000, 1);
         if (!isset($response->groups)) {
             throw new \moodle_exception('getgroupserror', 'accredible', 'https://help.accredible.com/hc/en-us');
         }
@@ -81,7 +81,7 @@ class groups {
      * @return array[stdClass] $templates
      */
     public function get_templates() {
-        $response = $this->apiRest->search_groups(10000, 1);
+        $response = $this->apirest->search_groups(10000, 1);
         if (!isset($response->groups)) {
             throw new \moodle_exception('gettemplateserror', 'accredible', 'https://help.accredible.com/hc/en-us');
         }
@@ -115,7 +115,7 @@ class groups {
                 if (!isset($groupid)) {
                     $groupid = $accredible->groupid;
                 }
-                $res = $this->apiRest->update_group($groupid, null, null, null, $courselink);
+                $res = $this->apirest->update_group($groupid, null, null, null, $courselink);
             } else {
                 // Create a new Group on Accredible.
                 $description = Html2Text::convert($course->summary);
@@ -124,7 +124,7 @@ class groups {
                 }
                 // Add a random number to deal with duplicate course names.
                 $name = $course->shortname . $this->rand;
-                $res = $this->apiRest->create_group($name, $course->fullname, $description, $courselink);
+                $res = $this->apirest->create_group($name, $course->fullname, $description, $courselink);
             }
             return $res->group->id;
         } catch (\Exception $e) {

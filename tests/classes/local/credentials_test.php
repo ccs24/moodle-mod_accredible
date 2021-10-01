@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use mod_accredible\apiRest\apiRest;
+use mod_accredible\apirest\apirest;
 use mod_accredible\client\client;
 use mod_accredible\local\credentials;
 
@@ -95,12 +95,12 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return the created credential.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $localcredentials = new credentials($api);
         $result = $localcredentials->create_credential($this->user, $mockgroupid);
         $this->assertEquals($result, $resdata->credential);
 
-        // When the apiRest returns an error response.
+        // When the apirest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
             ->setMethods(['post'])
             ->getMock();
@@ -117,7 +117,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to raise an exception.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $localcredentials = new credentials($api);
         $foundexception = false;
 
@@ -177,13 +177,13 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return the created credential.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $localcredentials = new credentials($api);
         $result = $localcredentials->create_credential_legacy($this->user, "moodle-course",
             "", null, $courselink, $completeddate);
         $this->assertEquals($result, $resdata->credential);
 
-        // When the apiRest returns an error response.
+        // When the apirest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
             ->setMethods(['post'])
             ->getMock();
@@ -200,7 +200,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to raise an exception.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $localcredentials = new credentials($api);
         $foundexception = false;
 
@@ -233,13 +233,13 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->will($this->onConsecutiveCalls($resdatapage1, $resdatapage2));
 
         // Expect to return all credentials of the group_id in the param.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $localcredentials = new credentials($api);
         $result = $localcredentials->get_credentials(9549);
         $resdatapage12 = array_merge($resdatapage1->credentials, $resdatapage2->credentials);
         $this->assertEquals($result, $resdatapage12);
 
-        // When apiRest returns an error response.
+        // When apirest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
             ->setMethods(['get'])
             ->getMock();
@@ -256,7 +256,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to raise an exception.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $localcredentials = new credentials($api);
         $foundexception = false;
         try {
@@ -281,7 +281,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return an empty array.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $localcredentials = new credentials($api);
         $result = $localcredentials->get_credentials(9549);
         $this->assertEquals($result, array());
@@ -305,12 +305,12 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return a credential belonging to the user.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $localcredentials = new credentials($api);
         $result = $localcredentials->check_for_existing_credential(9549, $this->userwithemail->email);
         $this->assertEquals($result, $resdata->credentials[0]);
 
-        // When apiRest returns an error response.
+        // When apirest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
             ->setMethods(['get'])
             ->getMock();
@@ -326,7 +326,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to raise an exception.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $localcredentials = new credentials($api);
         $foundexception = false;
         try {
@@ -351,7 +351,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return an empty array.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $localcredentials = new credentials($api);
         $result = $localcredentials->check_for_existing_credential(9549, $this->userwithemail->email);
         $this->assertEquals($result, false);
@@ -375,7 +375,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return a credential belonging to the user.
-        $api = new apiRest($mockclient1);
+        $api = new apirest($mockclient1);
         $localcredentials = new credentials($api);
 
         // Send the userwithemail as the function returns the credential only if the recipient email matches the user email.
@@ -383,7 +383,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
 
         $this->assertEquals($result, $resdata->credentials[1]);
 
-        // When apiRest returns an error response.
+        // When apirest returns an error response.
         $mockclient2 = $this->getMockBuilder('client')
             ->setMethods(['get'])
             ->getMock();
@@ -399,7 +399,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to raise an exception.
-        $api = new apiRest($mockclient2);
+        $api = new apirest($mockclient2);
         $localcredentials = new credentials($api);
         $foundexception = false;
         try {
@@ -424,7 +424,7 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
             ->willReturn($resdata);
 
         // Expect to return an empty array.
-        $api = new apiRest($mockclient3);
+        $api = new apirest($mockclient3);
         $localcredentials = new credentials($api);
         $result = $localcredentials->check_for_existing_certificate(9549, $this->userwithemail);
         $this->assertEquals($result, false);

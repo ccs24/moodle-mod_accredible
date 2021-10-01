@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/accredible/locallib.php');
 
-use mod_accredible\apiRest\apiRest;
+use mod_accredible\apirest\apirest;
 
 class mod_accredible_locallib_testcase extends advanced_testcase {
     /**

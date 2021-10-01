@@ -583,7 +583,7 @@ class mod_accredible_apirest_testcase extends advanced_testcase {
         // When the grade is NOT a number.
         $foundexception1 = false;
         try {
-            $api->update_evidence_item_grade(1, 1, '0x539');
+            $api->update_evidence_item_grade(1, 1, 'number');
         } catch (\InvalidArgumentException $error) {
             $foundexception1 = true;
         }

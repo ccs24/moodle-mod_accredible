@@ -25,7 +25,7 @@ class apirest {
      * Use `public` to make unit testing possible.
      * @var string
      */
-    public $api_endpoint;
+    public $apiendpoint;
 
     /**
      * HTTP request client.
@@ -36,19 +36,19 @@ class apirest {
     public function __construct($client = null) {
         global $CFG;
 
-        $this->api_endpoint = 'https://api.accredible.com/v1/';
+        $this->apiendpoint = 'https://api.accredible.com/v1/';
 
-        if($CFG->is_eu) {
-            $this->api_endpoint = 'https://eu.api.accredible.com/v1/';
+        if ($CFG->is_eu) {
+            $this->apiendpoint = 'https://eu.api.accredible.com/v1/';
         }
 
-        $dev_api_endpoint = getenv('ACCREDIBLE_DEV_API_ENDPOINT');
-        if($dev_api_endpoint) {
-            $this->api_endpoint = $dev_api_endpoint;
+        $devapiendpoint = getenv('ACCREDIBLE_DEV_API_ENDPOINT');
+        if ($devapiendpoint) {
+            $this->apiendpoint = $devapiendpoint;
         }
 
         // A mock client is passed when unit testing.
-        if($client) {
+        if ($client) {
             $this->client = $client;
         } else {
             $this->client = new client();
@@ -57,65 +57,68 @@ class apirest {
 
     /**
      * Get Credentials
-     * @param String|null $group_id
+     * @param String|null $groupid
      * @param String|null $email
      * @param String|null $page_size
      * @param String $page
      * @return stdObject
      */
-    function get_credentials($group_id = null, $email = null, $page_size = null, $page = 1) {
-        return $this->client->get("{$this->api_endpoint}all_credentials?group_id={$group_id}&email=" . rawurlencode($email) . "&page_size={$page_size}&page={$page}");
+    public function get_credentials($groupid = null, $email = null, $pagesize = null, $page = 1) {
+        return $this->client->get("{$this->apiendpoint}all_credentials?group_id={$groupid}&email=" .
+            rawurlencode($email) . "&page_size={$pagesize}&page={$page}");
     }
 
     /**
      * Get a Credential with EnvidenceItems
-     * @param Integer $credential_id
+     * @param Integer $credentialid
      * @return stdObject
      */
-    function get_credential($credential_id) {
-        return $this->client->get("{$this->api_endpoint}credentials/{$credential_id}");
+    public function get_credential($credentialid) {
+        return $this->client->get("{$this->apiendpoint}credentials/{$credentialid}");
     }
 
     /**
      * Generaate a Single Sign On Link for a recipient for a particular credential.
      * @return stdObject
      */
-    function recipient_sso_link($credential_id = null, $recipient_id = null, $recipient_email = null, $wallet_view = null, $group_id = null, $redirect_to = null) {
+    public function recipient_sso_link($credentialid = null, $recipientid = null,
+        $recipientemail = null, $walletview = null, $groupid = null, $redirectto = null) {
 
         $data = array(
-            "credential_id" => $credential_id,
-            "recipient_id" => $recipient_id,
-            "recipient_email" => $recipient_email,
-            "wallet_view" => $wallet_view,
-            "group_id" => $group_id,
-            "redirect_to" => $redirect_to,
+            "credential_id" => $credentialid,
+            "recipient_id" => $recipientid,
+            "recipient_email" => $recipientemail,
+            "wallet_view" => $walletview,
+            "group_id" => $groupid,
+            "redirect_to" => $redirectto,
         );
 
         $data = $this->strip_empty_keys($data);
 
         $data = json_encode($data);
 
-        return $this->client->post("{$this->api_endpoint}sso/generate_link", $data);
+        return $this->client->post("{$this->apiendpoint}sso/generate_link", $data);
     }
 
     /**
      * Update a Group
      * @param String $id
      * @param String|null $name
-     * @param String|null $course_name
-     * @param String|null $course_description
-     * @param String|null $course_link
+     * @param String|null $coursename
+     * @param String|null $coursedescription
+     * @param String|null $courselink
      * @return stdObject
      */
-    function update_group($id, $name = null, $course_name = null, $course_description = null, $course_link = null, $design_id = null) {
+    public function update_group($id, $name = null, $coursename = null,
+        $coursedescription = null, $courselink = null, $designid = null) {
 
         $data = array(
             "group" => array(
                 "name" => $name,
-                "course_name" => $course_name,
-                "course_description" => $course_description,
-                "course_link" => $course_link,
-                "design_id" => $design_id
+                "course_name" => $coursename,
+                "course_description" => $coursedescription,
+                "course_link" => $courselink,
+                "design_id" => $designid
             )
         );
 
@@ -123,74 +126,75 @@ class apirest {
 
         $data = json_encode($data);
 
-        return $this->client->put("{$this->api_endpoint}issuer/groups/{$id}", $data);
+        return $this->client->put("{$this->apiendpoint}issuer/groups/{$id}", $data);
     }
 
     /**
      * Create a new Group
      * @param String $name
-     * @param String $course_name
+     * @param String $coursename
      * @param String $course_description
-     * @param String|null $course_link
+     * @param String|null $courselink
      * @return stdObject
      */
-    function create_group($name, $course_name, $course_description, $course_link = null) {
+    public function create_group($name, $coursename, $coursedescription, $courselink = null) {
 
         $data = array(
             "group" => array(
                 "name" => $name,
-                "course_name" => $course_name,
-                "course_description" => $course_description,
-                "course_link" => $course_link
+                "course_name" => $coursename,
+                "course_description" => $coursedescription,
+                "course_link" => $courselink
             )
         );
 
         $data = json_encode($data);
 
-        return $this->client->post("{$this->api_endpoint}issuer/groups", $data);
+        return $this->client->post("{$this->apiendpoint}issuer/groups", $data);
     }
 
     /**
      * Creates a Credential given an existing Group
-     * @param String $recipient_name
-     * @param String $recipient_email
-     * @param String $course_id
-     * @param Date|null $issued_on
-     * @param Date|null $expired_on
+     * @param String $recipientname
+     * @param String $recipientemail
+     * @param String $courseid
+     * @param Date|null $issuedon
+     * @param Date|null $expiredon
      * @param stdObject|null $custom_attributes
      * @return stdObject
      */
-    function create_credential($recipient_name, $recipient_email, $course_id, $issued_on = null, $expired_on = null, $custom_attributes = null) {
+    public function create_credential($recipientname, $recipientemail, $courseid,
+        $issuedon = null, $expiredon = null, $customattributes = null) {
 
         $data = array(
             "credential" => array(
-                "group_id" => $course_id,
+                "group_id" => $courseid,
                 "recipient" => array(
-                    "name" => $recipient_name,
-                    "email" => $recipient_email
+                    "name" => $recipientname,
+                    "email" => $recipientemail
                 ),
-                "issued_on" => $issued_on,
-                "expired_on" => $expired_on,
-                "custom_attributes" => $custom_attributes
+                "issued_on" => $issuedon,
+                "expired_on" => $expiredon,
+                "custom_attributes" => $customattributes
             )
         );
 
         $data = json_encode($data);
 
-        return $this->client->post("{$this->api_endpoint}credentials", $data);
+        return $this->client->post("{$this->apiendpoint}credentials", $data);
     }
 
     /**
      * Creates an evidence item on a given credential. This is a general method used by more specific evidence item creations.
-     * @param stdObject $evidence_item
+     * @param stdObject $evidenceitem
      * @return stdObject
      */
-    function create_evidence_item($evidence_item, $credential_id, $throw_error = false) {
-        $data = json_encode($evidence_item);
-        $result = $this->client->post("{$this->api_endpoint}credentials/{$credential_id}/evidence_items", $data);
-        if($throw_error && $this->client->error) {
+    public function create_evidence_item($evidenceitem, $credentialid, $throwerror = false) {
+        $data = json_encode($evidenceitem);
+        $result = $this->client->post("{$this->apiendpoint}credentials/{$credentialid}/evidence_items", $data);
+        if ($throwerror && $this->client->error) {
             throw new \moodle_exception(
-                'evidenceadderror', 'accredible', 'https://help.accredible.com/hc/en-us', $credential_id, $this->client->error
+                'evidenceadderror', 'accredible', 'https://help.accredible.com/hc/en-us', $credentialid, $this->client->error
             );
         }
         return $result;
@@ -198,47 +202,47 @@ class apirest {
 
     /**
      * Creates a Grade evidence item on a given credential.
-     * @param String $start_date
-     * @param String $end_date
+     * @param String $startdate
+     * @param String $enddate
      * @return stdObject
      */
-    function create_evidence_item_duration($start_date, $end_date, $credential_id, $hidden = false) {
+    public function create_evidence_item_duration($startdate, $enddate, $credentialid, $hidden = false) {
 
-        $duration_info = array(
-            'start_date' => date("Y-m-d", strtotime($start_date)),
-            'end_date' => date("Y-m-d", strtotime($end_date)),
-            'duration_in_days' => floor( (strtotime($end_date) - strtotime($start_date)) / 86400)
+        $durationinfo = array(
+            'start_date' => date("Y-m-d", strtotime($startdate)),
+            'end_date' => date("Y-m-d", strtotime($enddate)),
+            'duration_in_days' => floor( (strtotime($enddate) - strtotime($startdate)) / 86400)
         );
 
-        // multi day duration
-        if ($duration_info['duration_in_days'] && $duration_info['duration_in_days'] != 0) {
+        // Multi day duration.
+        if ($durationinfo['duration_in_days'] && $durationinfo['duration_in_days'] != 0) {
 
-            $evidence_item = array(
+            $evidenceitem = array(
                 "evidence_item" => array(
-                    "description" => 'Completed in ' . $duration_info['duration_in_days'] . ' days',
+                    "description" => 'Completed in ' . $durationinfo['duration_in_days'] . ' days',
                     "category" => "course_duration",
-                    "string_object" => json_encode($duration_info),
+                    "string_object" => json_encode($durationinfo),
                     "hidden" => $hidden
                 )
             );
 
-            $result = $this->create_evidence_item($evidence_item, $credential_id);
+            $result = $this->create_evidence_item($evidenceitem, $credentialid);
 
             return $result;
-            // it may be completed in one day
-        } else if ($duration_info['start_date'] != $duration_info['end_date']) {
-            $duration_info['duration_in_days'] = 1;
+            // It may be completed in one day.
+        } else if ($durationinfo['start_date'] != $durationinfo['end_date']) {
+            $durationinfo['duration_in_days'] = 1;
 
-            $evidence_item = array(
+            $evidenceitem = array(
                 "evidence_item" => array(
                     "description" => 'Completed in 1 day',
                     "category" => "course_duration",
-                    "string_object" => json_encode($duration_info),
+                    "string_object" => json_encode($durationinfo),
                     "hidden" => $hidden
                 )
             );
 
-            $result = $this->create_evidence_item($evidence_item, $credential_id);
+            $result = $this->create_evidence_item($evidenceitem, $credentialid);
 
             return $result;
 
@@ -249,56 +253,58 @@ class apirest {
 
     /**
      * Creates a Credential given an existing Group. This legacy method uses achievement names rather than group IDs.
-     * @param String $recipient_name
-     * @param String $recipient_email
-     * @param String $achievement_name
-     * @param Date|null $issued_on
-     * @param Date|null $expired_on
-     * @param stdObject|null $custom_attributes
+     * @param String $recipientname
+     * @param String $recipientemail
+     * @param String $achievementname
+     * @param Date|null $issuedon
+     * @param Date|null $expiredon
+     * @param stdObject|null $customattributes
      * @return stdObject
      */
-    function create_credential_legacy($recipient_name, $recipient_email, $achievement_name, $issued_on = null, $expired_on = null, $course_name = null, $course_description = null, $course_link = null, $custom_attributes = null){
+    public function create_credential_legacy($recipientname, $recipientemail,
+        $achievementname, $issuedon = null, $expiredon = null, $coursename = null,
+        $coursedescription = null, $courselink = null, $customattributes = null) {
 
         $data = array(
             "credential" => array(
-                "group_name" => $achievement_name,
+                "group_name" => $achievementname,
                 "recipient" => array(
-                    "name" => $recipient_name,
-                    "email" => $recipient_email
+                    "name" => $recipientname,
+                    "email" => $recipientemail
                 ),
-                "issued_on" => $issued_on,
-                "expired_on" => $expired_on,
-                "custom_attributes" => $custom_attributes,
-                "name" => $course_name,
-                "description" => $course_description,
-                "course_link" => $course_link
+                "issued_on" => $issuedon,
+                "expired_on" => $expiredon,
+                "custom_attributes" => $customattributes,
+                "name" => $coursename,
+                "description" => $coursedescription,
+                "course_link" => $courselink
             )
         );
 
         $data = json_encode($data);
 
-        return $this->client->post("{$this->api_endpoint}credentials", $data);
+        return $this->client->post("{$this->apiendpoint}credentials", $data);
     }
 
     /**
      * Get all Groups
-     * @param String $page_size
+     * @param String $pagesize
      * @param String $page
      * @return stdObject
      */
-    function get_groups($page_size = 50, $page = 1) {
-        return $this->client->get($this->api_endpoint.'issuer/all_groups?page_size=' . $page_size . '&page=' . $page);
+    public function get_groups($pagesize = 50, $page = 1) {
+        return $this->client->get($this->apiendpoint.'issuer/all_groups?page_size=' . $pagesize . '&page=' . $page);
     }
 
     /**
      * Get all Groups
-     * @param Integer $page_size
+     * @param Integer $pagesize
      * @param Integer $page
      * @return stdObject
      */
-    function search_groups($page_size = 50, $page = 1) {
-        $data = json_encode(array('page' => $page, 'page_size' => $page_size));
-        return $this->client->post("{$this->api_endpoint}issuer/groups/search", $data);
+    public function search_groups($pagesize = 50, $page = 1) {
+        $data = json_encode(array('page' => $page, 'page_size' => $pagesize));
+        return $this->client->post("{$this->apiendpoint}issuer/groups/search", $data);
     }
 
     /**
@@ -306,11 +312,11 @@ class apirest {
      * @param String $grade - value must be between 0 and 100
      * @return stdObject
      */
-    function create_evidence_item_grade($grade, $description, $credential_id, $hidden = false) {
+    public function create_evidence_item_grade($grade, $description, $credentialid, $hidden = false) {
 
         if (is_numeric($grade) && intval($grade) >= 0 && intval($grade) <= 100) {
 
-            $evidence_item = array(
+            $evidenceitem = array(
                 "evidence_item" => array(
                     "description" => $description,
                     "category" => "grade",
@@ -319,7 +325,7 @@ class apirest {
                 )
             );
 
-            return $this->create_evidence_item($evidence_item, $credential_id);
+            return $this->create_evidence_item($evidenceitem, $credentialid);
         } else {
             throw new \InvalidArgumentException("$grade must be a numeric value between 0 and 100.");
         }
@@ -327,16 +333,16 @@ class apirest {
 
     /**
      * Updates an evidence item on a given credential.
-     * @param Integer $credential_id
-     * @param Integer $evidence_item_id
+     * @param Integer $credentialid
+     * @param Integer $evidenceitemid
      * @param String $grade - value must be between 0 and 100
      * @return stdObject
      */
-    function update_evidence_item_grade($credential_id, $evidence_item_id, $grade) {
+    public function update_evidence_item_grade($credentialid, $evidenceitemid, $grade) {
         if (is_numeric($grade) && intval($grade) >= 0 && intval($grade) <= 100) {
-            $evidence_item = array('evidence_item' => array('string_object' => $grade));
-            $data = json_encode($evidence_item);
-            $url = "{$this->api_endpoint}credentials/{$credential_id}/evidence_items/{$evidence_item_id}";
+            $evidenceitem = array('evidence_item' => array('string_object' => $grade));
+            $data = json_encode($evidenceitem);
+            $url = "{$this->apiendpoint}credentials/{$credentialid}/evidence_items/{$evidenceitemid}";
             return $this->client->put($url, $data);
         } else {
             throw new \InvalidArgumentException("$grade must be a numeric value between 0 and 100.");

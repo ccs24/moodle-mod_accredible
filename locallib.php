@@ -414,7 +414,7 @@ function accredible_get_transcript($courseid, $userid, $finalquizid) {
     $totalscore = 0;
     $itemscompleted = 0;
     $transcriptitems = array();
-    $quizes = $DB->get_records_select('quiz', 'course = :course_id', array('course_id' => $courseid) );
+    $quizes = $DB->get_records_select('quiz', 'course = :course_id', array('course_id' => $courseid), 'id ASC');
 
     // Grab the grades for all quizes.
     foreach ($quizes as $quiz) {

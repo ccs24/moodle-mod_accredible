@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Code fragment to define the version of the certificate module
+ * Unit tests for mod/accredible/lib.php
  *
  * @package    mod
  * @subpackage accredible
@@ -25,10 +25,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2021100800; // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2014051200; // Requires this Moodle version.
-$plugin->cron      = 0; // Period for cron to check this module (secs).
-$plugin->component = 'mod_accredible';
+global $CFG;
+require_once($CFG->dirroot . '/mod/accredible/lib.php');
 
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "v1.7.4"; // User-friendly version number.
+class mod_accredible_lib_testcase extends advanced_testcase {
+    /**
+     * Sample test
+     * later: remove after adding real tests
+     */
+    public function test_sample() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Sample test.
+        $this->assertEmpty("");
+    }
+}

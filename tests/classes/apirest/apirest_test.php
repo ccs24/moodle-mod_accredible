@@ -64,17 +64,17 @@ class mod_accredible_apirest_testcase extends advanced_testcase {
     public function test_api_endpoint() {
         // When is_eu is NOT enabled.
         $api = new apirest();
-        $this->assertEquals($api->api_endpoint, 'https://api.accredible.com/v1/');
+        $this->assertEquals($api->apiendpoint, 'https://api.accredible.com/v1/');
 
         // When is_eu is enabled.
         set_config('is_eu', 1);
         $api = new apirest();
-        $this->assertEquals($api->api_endpoint, 'https://eu.api.accredible.com/v1/');
+        $this->assertEquals($api->apiendpoint, 'https://eu.api.accredible.com/v1/');
 
         // When the environemnt variable is set.
         putenv('ACCREDIBLE_DEV_API_ENDPOINT=http://host.docker.internal:3000/v1/');
         $api = new apirest();
-        $this->assertEquals($api->api_endpoint, 'http://host.docker.internal:3000/v1/');
+        $this->assertEquals($api->apiendpoint, 'http://host.docker.internal:3000/v1/');
     }
 
     /**

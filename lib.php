@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/accredible/locallib.php');
+use mod_accredible\local\credentials;
+use mod_accredible\local\groups;
 
 /**
  * Add certificate instance.
@@ -41,7 +43,10 @@ function accredible_add_instance($post) {
 
     $post->instance = isset($post->instance) ? $post->instance : null;
 
-    $groupid = sync_course_with_accredible($course, $post->instance, $post->groupid);
+    $localgroups = new groups();
+    $groupid = $localgroups->sync_group_with($course, $post->instance, $post->groupid);
+
+    $localcredentials = new credentials();
 
     // Issue certs.
     if ( isset($post->users) ) {
@@ -51,7 +56,7 @@ function accredible_add_instance($post) {
             if ($issuecertificate) {
                 $user = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
 
-                $credential = create_credential($user, $groupid);
+                $credential = $localcredentials->create_credential($user, $groupid);
 
                 // Evidence item posts.
                 $credentialid = $credential->id;
@@ -97,13 +102,16 @@ function accredible_update_instance($post) {
     // To update your certificate details, go to accredible.com.
     global $DB;
 
+    $localcredentials = new credentials();
+
     $accrediblecertificate = $DB->get_record('accredible', array('id' => $post->instance), '*', MUST_EXIST);
 
     $course = $DB->get_record('course', array('id' => $post->course), '*', MUST_EXIST);
 
     // Update the group if we have one to sync with.
     if ($accrediblecertificate->groupid) {
-        sync_course_with_accredible($course, $post->instance, $post->groupid);
+        $localgroups = new groups();
+        $localgroups->sync_group_with($course, $post->instance, $post->groupid);
     }
 
     // Issue certs for unissued users.
@@ -122,7 +130,7 @@ function accredible_update_instance($post) {
                 $completeddate = date('Y-m-d', (int) $completedtimestamp);
                 if ($accrediblecertificate->groupid) {
                     // Create the credential.
-                    $result = create_credential($user, $groupid, null, $completeddate);
+                    $result = $localcredentials->create_credential($user, $groupid, $completeddate);
                     $credentialid = $result->id;
                     // Evidence item posts.
                     if ($post->finalquiz) {
@@ -177,10 +185,10 @@ function accredible_update_instance($post) {
                     $courseurl = new moodle_url('/course/view.php', array('id' => $post->course));
                     $courselink = $courseurl->__toString();
 
-                    $credential = create_credential_legacy($user, $post->achievementid,
+                    $credential = $localcredentials->create_credential_legacy($user, $post->achievementid,
                         $post->certificatename, $post->description, $courselink, $completeddate);
                 } else {
-                    $credential = create_credential($user, $accrediblecertificate->groupid, null, $completeddate);
+                    $credential = $localcredentials->create_credential($user, $accrediblecertificate->groupid, $completeddate);
                 }
 
                 // Evidence item posts.

@@ -24,7 +24,7 @@ class client {
      */
     private $curl;
 
-    private $curl_options;
+    private $curloptions;
 
     public $error;
 
@@ -33,14 +33,14 @@ class client {
         require_once($CFG->libdir . '/filelib.php');
 
         // A mock curl is passed when unit testing.
-        if($curl) {
+        if ($curl) {
             $this->curl = $curl;
         } else {
             $this->curl = new \curl();
         }
 
         $token = $CFG->accredible_api_key;
-        $this->curl_options = array(
+        $this->curloptions = array(
             'CURLOPT_RETURNTRANSFER' => true,
             'CURLOPT_FAILONERROR'    => true,
             'CURLOPT_HTTPHEADER'     => array(
@@ -53,23 +53,47 @@ class client {
         $error = null;
     }
 
-    function get($url) {
+    /**
+     * Make a GET request.
+     * @param string $url
+     * @return stdObject
+     */
+    public function get($url) {
         return $this->send_req($url, 'get');
     }
 
-    function post($url, $postBody) {
-        return $this->send_req($url, 'post', $postBody);
+    /**
+     * Make a POST request.
+     * @param string $url
+     * @param string $reqdata a JSON encoded string
+     * @return stdObject
+     */
+    public function post($url, $reqdata) {
+        return $this->send_req($url, 'post', $reqdata);
     }
 
-    function put($url, $putBody) {
-        return $this->send_req($url, 'put', $putBody);
+    /**
+     * Make a PUT request.
+     * @param string $url
+     * @param string $reqdata a JSON encoded string
+     * @return stdObject
+     */
+    public function put($url, $reqdata) {
+        return $this->send_req($url, 'put', $reqdata);
     }
 
-    private function send_req($url, $method, $postBody = null) {
+    /**
+     * Call $curl method.
+     * @param string $url
+     * @param string $method
+     * @param string $reqdata a JSON encoded string
+     * @return stdObject
+     */
+    private function send_req($url, $method, $reqdata = null) {
         $curl = $this->curl;
-        $response = $curl->$method($url, $postBody, $this->curl_options);
+        $response = $curl->$method($url, $reqdata, $this->curloptions);
 
-        if($curl->error) {
+        if ($curl->error) {
             $this->error = $curl->error;
             debugging('<div style="padding-top: 70px; font-size: 0.9rem;"><b>ACCREDIBLE API ERROR</b> ' .
                 $curl->error . '<br />' . $method . ' ' . $url . '</div>', DEBUG_DEVELOPER);

@@ -1,3 +1,4 @@
+
 {
     "groups": [
       {
@@ -26,10 +27,7 @@
         "name": "new group2",
         "course_description": "Desscription of course",
         "course_name": "Intro to Programming",
-        "learning_outcomes": [
-          "skill one",
-          "skill two"
-        ],
+        "learning_outcomes": null,
         "attach_pdf": false,
         "course_link": "http://www.example.com",
         "language": "en",

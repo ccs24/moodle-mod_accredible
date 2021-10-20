@@ -17,7 +17,7 @@
 /**
  * Certificate module core interaction API
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -33,7 +33,7 @@ use mod_accredible\local\credentials;
  * Checks if a user has earned a specific credential according to the activity settings
  * @param stdObject $record An Accredible activity record
  * @param stdObject $course
- * @param stdObject user
+ * @param stdObject $user
  * @return bool
  */
 function accredible_check_if_cert_earned($record, $course, $user) {
@@ -103,7 +103,8 @@ function accredible_check_if_cert_earned($record, $course, $user) {
 
 /**
  * Get the SSO link for a recipient
- * @return type
+ * @param int $groupid
+ * @param string $email
  */
 function accredible_get_recipient_sso_linik($groupid, $email) {
     global $CFG;
@@ -122,9 +123,16 @@ function accredible_get_recipient_sso_linik($groupid, $email) {
 
 // Old below here.
 
-/*
- * accredible_issue_default_certificate
+/**
+ * Issue a certificate
  *
+ * @param int $userid
+ * @param int $certificateid
+ * @param string $name
+ * @param string $email
+ * @param string $grade
+ * @param string $quizname
+ * @param date|null $completedtimestamp
  */
 function accredible_issue_default_certificate($userid, $certificateid, $name, $email, $grade,
     $quizname, $completedtimestamp = null) {
@@ -167,8 +175,13 @@ function accredible_issue_default_certificate($userid, $certificateid, $name, $e
     return json_decode($result);
 }
 
-/*
- * accredible_log_creation
+/**
+ * Log message when certificate is created.
+ *
+ * @param int $certificateid ID of the certificate.
+ * @param int $userid ID of the user.
+ * @param int $courseid ID of the course.
+ * @param int $cmid ID of the couse module.
  */
 function accredible_log_creation($certificateid, $userid, $courseid, $cmid) {
     global $DB;
@@ -190,7 +203,7 @@ function accredible_log_creation($certificateid, $userid, $courseid, $cmid) {
     ));
 }
 
-/*
+/**
  * Quiz submission handler (checks for a completed course)
  *
  * @param core/event $event quiz mod attempt_submitted event
@@ -367,7 +380,7 @@ function accredible_quiz_submission_handler($event) {
 }
 
 
-/*
+/**
  * Course completion handler
  *
  * @param core/event $event
@@ -407,6 +420,14 @@ function accredible_course_completed_handler($event) {
     }
 }
 
+
+/**
+ * Make a transcript if user has completed 2/3 of the quizes.
+ *
+ * @param int $courseid
+ * @param int $userid
+ * @param int $finalquizid
+ */
 function accredible_get_transcript($courseid, $userid, $finalquizid) {
     global $DB, $CFG;
 
@@ -448,19 +469,43 @@ function accredible_get_transcript($courseid, $userid, $finalquizid) {
     }
 }
 
+/**
+ * Create evidence item
+ *
+ * @param int $credentialid
+ * @param stdObject $evidenceitem
+ * @param bool $throwerror
+ */
 function accredible_post_evidence($credentialid, $evidenceitem, $throwerror = false) {
     $api = new apirest();
     $api->create_evidence_item(array('evidence_item' => $evidenceitem), $credentialid, $throwerror);
 }
 
+/**
+ * Serialize completion array
+ *
+ * @param Array $completionarray
+ */
 function serialize_completion_array($completionarray) {
     return base64_encode(serialize( (array)$completionarray ));
 }
 
+/**
+ * Unserialize completion array
+ *
+ * @param stdObject $completionobject
+ */
 function unserialize_completion_array($completionobject) {
     return (array)unserialize(base64_decode( $completionobject ));
 }
 
+/**
+ * Post answers from essay
+ *
+ * @param int $userid
+ * @param int $courseid
+ * @param int $credentialid
+ */
 function accredible_post_essay_answers($userid, $courseid, $credentialid) {
     global $DB, $CFG;
 
@@ -522,7 +567,14 @@ function accredible_post_essay_answers($userid, $courseid, $credentialid) {
     }
 }
 
-
+/**
+ * Create evidence course duration
+ *
+ * @param int $userid
+ * @param int $courseid
+ * @param int $credentialid
+ * @param date|null $completedtimestamp
+ */
 function accredible_course_duration_evidence($userid, $courseid, $credentialid, $completedtimestamp = null) {
     global $DB, $CFG;
 
@@ -543,13 +595,15 @@ function accredible_course_duration_evidence($userid, $courseid, $credentialid, 
     }
 }
 
-/* accredible_manual_issue_completion_timestamp()
+/**
+ * Get a timestamp for when a student completed a course. This is
+ * used when manually issuing certs to get a proper issue date and
+ * for the course duration item. Currently checking for the date of
+ * the highest quiz attempt for the final quiz specified for that
+ * accredible activity.
  *
- *  Get a timestamp for when a student completed a course. This is
- *  used when manually issuing certs to get a proper issue date and
- *  for the course duration item. Currently checking for the date of
- *  the highest quiz attempt for the final quiz specified for that
- *  accredible activity.
+ * @param stdObject $accrediblerecord
+ * @param stdObject $user
  */
 function accredible_manual_issue_completion_timestamp($accrediblerecord, $user) {
     global $DB;
@@ -603,10 +657,22 @@ function accredible_manual_issue_completion_timestamp($accrediblerecord, $user) 
     return (int) $completedtimestamp;
 }
 
+/**
+ * Return 's' when number is bigger than 1
+ *
+ * @param int $number
+ * @return string
+ */
 function number_ending ($number) {
     return ($number > 1) ? 's' : '';
 }
 
+/**
+ * Convert number of seconds in a string
+ *
+ * @param int $seconds
+ * @return string
+ */
 function seconds_to_str ($seconds) {
     $hours = floor(($seconds %= 86400) / 3600);
     if ($hours) {

@@ -17,8 +17,9 @@
 /**
  * Unit tests for mod/accredible/lib.php
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
+ * @category   test
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,6 +29,15 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/accredible/lib.php');
 
+/**
+ * Unit tests for mod/accredible/lib.php
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @category   test
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class mod_accredible_lib_testcase extends advanced_testcase {
     /**
      * Sample test

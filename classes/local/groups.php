@@ -14,21 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Local functions related to groups/courses.
- *
- * @package    mod
- * @subpackage accredible
- * @copyright  Accredible <dev@accredible.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_accredible\local;
 defined('MOODLE_INTERNAL') || die();
 
 use mod_accredible\apirest\apirest;
 use mod_accredible\Html2Text\Html2Text;
 
+/**
+ * Local functions related to groups/courses.
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class groups {
     /**
      * The apirest object used to call API requests.
@@ -42,6 +41,12 @@ class groups {
      */
     private $rand;
 
+    /**
+     * Constructor method.
+     *
+     * @param stdObject $apirest a mock apirest for testing.
+     * @param int $rand a random number to avoid duplicated names when creating groups.
+     */
     public function __construct($apirest = null, $rand = null) {
         // An apirest with a mock client is passed when unit testing.
         if ($apirest) {
@@ -100,6 +105,7 @@ class groups {
      *
      * @param stdClass $course
      * @param int|null $instanceid
+     * @param int|null $groupid
      * @return int $groupid
      */
     public function sync_group_with($course, $instanceid = null, $groupid = null) {

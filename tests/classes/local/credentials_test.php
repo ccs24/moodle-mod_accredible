@@ -17,8 +17,9 @@
 /**
  * Unit tests for mod/accredible/classes/local/credentials.php
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
+ * @category   test
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,6 +30,15 @@ use mod_accredible\apirest\apirest;
 use mod_accredible\client\client;
 use mod_accredible\local\credentials;
 
+/**
+ * Unit tests for mod/accredible/classes/local/credentials.php
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @category   test
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class mod_accredible_credentials_testcase extends advanced_testcase {
     /**
      * Setup before every test.
@@ -62,6 +72,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $this->course = $this->getDataGenerator()->create_course();
     }
 
+    /**
+     * Create credential test
+     */
     public function test_create_credential() {
         // When the credential creation is successful.
         $mockclient1 = $this->getMockBuilder('client')
@@ -130,6 +143,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $this->assertTrue($foundexception);
     }
 
+    /**
+     * Create credential legacy test
+     */
     public function test_create_credential_legacy() {
         global $DB;
         // When the credential creation is successful.
@@ -214,6 +230,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $this->assertTrue($foundexception);
     }
 
+    /**
+     * Get credentials test
+     */
     public function test_get_credentials() {
         // When the credential search is successful.
         $mockclient1 = $this->getMockBuilder('client')
@@ -287,6 +306,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $this->assertEquals($result, array());
     }
 
+    /**
+     * Check existing credential test
+     */
     public function test_check_for_existing_credential() {
         // When an existing credential exists for a group_id and user_email.
         $mockclient1 = $this->getMockBuilder('client')
@@ -357,6 +379,9 @@ class mod_accredible_credentials_testcase extends advanced_testcase {
         $this->assertEquals($result, false);
     }
 
+    /**
+     * Check existing certificate test
+     */
     public function test_check_for_existing_certificate() {
         // When an existing credential exists for a group_id and user_email.
         $mockclient1 = $this->getMockBuilder('client')

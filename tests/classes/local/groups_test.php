@@ -17,8 +17,9 @@
 /**
  * Unit tests for mod/accredible/classes/local/groups.php
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
+ * @category   test
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,6 +31,15 @@ use mod_accredible\client\client;
 use mod_accredible\Html2Text\Html2Text;
 use mod_accredible\local\groups;
 
+/**
+ * Unit tests for mod/accredible/classes/local/groups.php
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @category   test
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class mod_accredible_groups_testcase extends advanced_testcase {
     /**
      * Setup before every test.

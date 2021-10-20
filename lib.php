@@ -17,7 +17,7 @@
 /**
  * Certificate module core interaction API
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,7 +31,7 @@ use mod_accredible\local\groups;
 /**
  * Add certificate instance.
  *
- * @param array $certificate
+ * @param stdObject $post
  * @return array $certificate new certificate object
  */
 function accredible_add_instance($post) {

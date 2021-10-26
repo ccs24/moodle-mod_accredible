@@ -17,17 +17,38 @@
 namespace mod_accredible\client;
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * The curl object used to make the request.
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class client {
     /**
      * The curl object used to make the request.
-     * @var curl
+     * @var curl $curl
      */
     private $curl;
 
+    /**
+     * The options object for the requests.
+     * @var array $curloptions
+     */
     private $curloptions;
 
+    /**
+     * The options object for the requests.
+     * @var string|null $error
+     */
     public $error;
 
+    /**
+     * Constructor method
+     *
+     * @param stdObject $curl a mock curl for testing
+     */
     public function __construct($curl = null) {
         global $CFG;
         require_once($CFG->libdir . '/filelib.php');

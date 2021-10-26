@@ -19,6 +19,14 @@ defined('MOODLE_INTERNAL') || die();
 
 use mod_accredible\apirest\apirest;
 
+/**
+ * Local functions related to credentials.
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class credentials {
     /**
      * HTTP request apirest.
@@ -26,6 +34,11 @@ class credentials {
      */
     private $apirest;
 
+    /**
+     * Constructor method
+     *
+     * @param stdObject $apirest a mock apirest for testing.
+     */
     public function __construct($apirest = null) {
         // A mock apirest is passed when unit testing.
         if ($apirest) {
@@ -39,6 +52,7 @@ class credentials {
      * Create a credential given a user and an existing group
      * @param stdObject $user
      * @param int $groupid
+     * @param date|null $issuedon
      * @return stdObject
      */
     public function create_credential($user, $groupid, $issuedon = null) {
@@ -61,7 +75,11 @@ class credentials {
     /**
      * Create a credential given a user and an existing group
      * @param stdObject $user
-     * @param int $groupid
+     * @param string $achievementname
+     * @param string $coursename
+     * @param string $coursedescription
+     * @param int $courselink
+     * @param int $issuedon
      * @return stdObject
      */
     public function create_credential_legacy($user, $achievementname, $coursename,
@@ -134,7 +152,7 @@ class credentials {
     /**
      * Check's if a credential exists for an email in a particular group
      * @param int $groupid
-     * @param String $email
+     * @param string $email
      * @return array[stdClass] || false
      */
     public function check_for_existing_credential($groupid, $email) {

@@ -17,7 +17,7 @@
 /**
  * Add event handlers for the quiz
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
  * @category   event
  * @copyright  Accredible <dev@accredible.com>

@@ -78,7 +78,7 @@ class apirest {
      */
     public function get_credentials($groupid = null, $email = null, $pagesize = null, $page = 1) {
         if ($email) {
-            $email = strtolower($email)
+            $email = strtolower($email);
         }
         return $this->client->get("{$this->apiendpoint}all_credentials?group_id={$groupid}&email=" .
             rawurlencode($email) . "&page_size={$pagesize}&page={$page}");

@@ -187,10 +187,9 @@ class mod_accredible_mod_form extends moodleform_mod {
             $unissuedheader = false;
             foreach ($usersearnedcertificate as $user) {
                 $existingcertificate = false;
-                $useremail = strtolower($user->email);
                 foreach ($certificates as $certificate) {
                     // Search through the certificates to see if this user has one existing.
-                    if ($certificate->recipient->email == $useremail) {
+                    if ($certificate->recipient->email == strtolower($user->email)) {
                         // This user has an existing certificate, no need to continue searching.
                         $existingcertificate = true;
                         break;
@@ -227,10 +226,9 @@ class mod_accredible_mod_form extends moodleform_mod {
 
             foreach ($users as $user) {
                 $certid = null;
-                $useremail = strtolower($user->email);
                 // Check cert emails for this user.
                 foreach ($certificates as $certificate) {
-                    if ($certificate->recipient->email == $useremail) {
+                    if ($certificate->recipient->email == strtolower($user->email)) {
                         $certid = $certificate->id;
                         if (isset($certificate->url)) {
                             $certlink = $certificate->url;

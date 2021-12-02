@@ -219,7 +219,7 @@ class mod_accredible_apirest_testcase extends advanced_testcase {
 
         // Expect to return resdata.
         $api = new apirest($mockclient3);
-        $result = $api->get_credentials(1000, "PErson2@example.com");
+        $result = $api->get_credentials(1000, "person2@example.com");
         $this->assertEquals($result, $resdata);
     }
 

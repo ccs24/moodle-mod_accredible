@@ -68,16 +68,34 @@ class groups {
      * @return array[stdClass] $groups
      */
     public function get_groups() {
-        $response = $this->apirest->get_groups(10000, 1);
-        if (!isset($response->groups)) {
+        $pagesize = 50;
+        $page = 1;
+
+        // Maximum number of pages to request to avoid possible infinite loop.
+        $looplimit = 100;
+        try {
+            $loop = true;
+            $count = 0;
+            $groups = array();
+            // Query the Accredible API and loop until it returns that there is no next page.
+            while ($loop === true) {
+                $response = $this->apirest->get_groups($pagesize, $page);
+                foreach ($response->groups as $group) {
+                    $groups[$group->id] = $group->name;
+                }
+
+                $page++;
+                $count++;
+                if ($response->meta->next_page === null || $count >= $looplimit) {
+                    // If the Accredible API returns that there
+                    // is no next page, end the loop.
+                    $loop = false;
+                }
+            }
+            return $groups;
+        } catch (\Exception $e) {
             throw new \moodle_exception('getgroupserror', 'accredible', 'https://help.accredible.com/hc/en-us');
         }
-
-        $groups = array();
-        foreach ($response->groups as $group) {
-            $groups[$group->id] = $group->name;
-        }
-        return $groups;
     }
 
     /**
@@ -86,17 +104,34 @@ class groups {
      * @return array[stdClass] $templates
      */
     public function get_templates() {
-        $response = $this->apirest->search_groups(10000, 1);
-        if (!isset($response->groups)) {
+        $pagesize = 50;
+        $page = 1;
+
+        // Maximum number of pages to request to avoid possible infinite loop.
+        $looplimit = 100;
+        try {
+            $loop = true;
+            $count = 0;
+            $templates = array();
+            // Query the Accredible API and loop until it returns that there is no next page.
+            while ($loop === true) {
+                $response = $this->apirest->search_groups($pagesize, $page);
+                foreach ($response->groups as $group) {
+                    $templates[$group->name] = $group->name;
+                }
+
+                $page++;
+                $count++;
+                if ($response->meta->next_page === null || $count >= $looplimit) {
+                    // If the Accredible API returns that there
+                    // is no next page, end the loop.
+                    $loop = false;
+                }
+            }
+            return $templates;
+        } catch (\Exception $e) {
             throw new \moodle_exception('gettemplateserror', 'accredible', 'https://help.accredible.com/hc/en-us');
         }
-
-        $groups = $response->groups;
-        $templates = array();
-        foreach ($groups as $group) {
-            $templates[$group->name] = $group->name;
-        }
-        return $templates;
     }
 
     /**

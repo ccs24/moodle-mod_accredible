@@ -161,8 +161,8 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->getMock();
 
         // Mock API response data.
-        $resdata1 = $this->mockapi->resdata('groups/all_groups_page1.json');
-        $resdata2 = $this->mockapi->resdata('groups/all_groups_page2.json');
+        $resdata1 = $this->mockapi->resdata('groups/search_success_page1.json');
+        $resdata2 = $this->mockapi->resdata('groups/search_success_page2.json');
 
         $reqdata1 = json_encode(array('page' => 1, 'page_size' => 50));
         $reqdata2 = json_encode(array('page' => 2, 'page_size' => 50));

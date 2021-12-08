@@ -71,25 +71,20 @@ class groups {
         $pagesize = 50;
         $page = 1;
 
-        // Maximum number of pages to request to avoid possible infinite loop.
-        $looplimit = 100;
         try {
-            $loop = true;
-            $count = 0;
             $groups = array();
             // Query the Accredible API and loop until it returns that there is no next page.
-            while ($loop === true) {
+            for ($i = 0; $i <= 100; $i++) {
                 $response = $this->apirest->get_groups($pagesize, $page);
                 foreach ($response->groups as $group) {
                     $groups[$group->id] = $group->name;
                 }
 
                 $page++;
-                $count++;
-                if ($response->meta->next_page === null || $count >= $looplimit) {
+                if ($response->meta->next_page === null) {
                     // If the Accredible API returns that there
                     // is no next page, end the loop.
-                    $loop = false;
+                    break;
                 }
             }
             return $groups;
@@ -107,25 +102,20 @@ class groups {
         $pagesize = 50;
         $page = 1;
 
-        // Maximum number of pages to request to avoid possible infinite loop.
-        $looplimit = 100;
         try {
-            $loop = true;
-            $count = 0;
             $templates = array();
             // Query the Accredible API and loop until it returns that there is no next page.
-            while ($loop === true) {
+            for ($i = 0; $i <= 100; $i++) {
                 $response = $this->apirest->search_groups($pagesize, $page);
                 foreach ($response->groups as $group) {
                     $templates[$group->name] = $group->name;
                 }
 
                 $page++;
-                $count++;
-                if ($response->meta->next_page === null || $count >= $looplimit) {
+                if ($response->meta->next_page === null) {
                     // If the Accredible API returns that there
                     // is no next page, end the loop.
-                    $loop = false;
+                    break;
                 }
             }
             return $templates;

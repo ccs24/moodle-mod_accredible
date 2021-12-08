@@ -79,14 +79,17 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->getMock();
 
         // Mock API response data.
-        $resdata = $this->mockapi->resdata('groups/all_groups_success.json');
+        $resdata1 = $this->mockapi->resdata('groups/all_groups_page1.json');
+        $resdata2 = $this->mockapi->resdata('groups/all_groups_page2.json');
 
         // Expect to call the endpoint once with page and page_size.
-        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
-        $mockclient1->expects($this->once())
+        $url1 = 'https://api.accredible.com/v1/issuer/all_groups?page_size=50&page=1';
+        $url2 = 'https://api.accredible.com/v1/issuer/all_groups?page_size=50&page=2';
+
+        $mockclient1->expects($this->exactly(2))
             ->method('get')
-            ->with($this->equalTo($url))
-            ->willReturn($resdata);
+            ->withConsecutive([$this->equalTo($url1)], [$this->equalTo($url2)])
+            ->will($this->onConsecutiveCalls($resdata1, $resdata2));
 
         // Expect to return groups.
         $api = new apirest($mockclient1);
@@ -95,6 +98,8 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $this->assertEquals($result, array(
             '12472' => 'new group1',
             '12473' => 'new group2',
+            '12474' => 'new group3',
+            '12475' => 'new group4',
         ));
 
         // When the apirest returns an error response.
@@ -107,7 +112,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $resdata = $this->mockapi->resdata('unauthorized_error.json');
 
         // Expect to call the endpoint once with page and page_size.
-        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
+        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=50&page=1';
         $mockclient2->expects($this->once())
             ->method('get')
             ->with($this->equalTo($url))
@@ -133,7 +138,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $resdata = $this->mockapi->resdata('groups/all_groups_success_empty.json');
 
         // Expect to call the endpoint once with page and page_size.
-        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=10000&page=1';
+        $url = 'https://api.accredible.com/v1/issuer/all_groups?page_size=50&page=1';
         $mockclient3->expects($this->once())
             ->method('get')
             ->with($this->equalTo($url))
@@ -156,16 +161,19 @@ class mod_accredible_groups_testcase extends advanced_testcase {
             ->getMock();
 
         // Mock API response data.
-        $resdata = $this->mockapi->resdata('groups/search_success.json');
+        $resdata1 = $this->mockapi->resdata('groups/search_success_page1.json');
+        $resdata2 = $this->mockapi->resdata('groups/search_success_page2.json');
 
-        $reqdata = json_encode(array('page' => 1, 'page_size' => 10000));
+        $reqdata1 = json_encode(array('page' => 1, 'page_size' => 50));
+        $reqdata2 = json_encode(array('page' => 2, 'page_size' => 50));
 
         // Expect to call the endpoint once with page and page_size.
         $url = 'https://api.accredible.com/v1/issuer/groups/search';
-        $mockclient1->expects($this->once())
+
+        $mockclient1->expects($this->exactly(2))
             ->method('post')
-            ->with($this->equalTo($url), $this->equalTo($reqdata))
-            ->willReturn($resdata);
+            ->withConsecutive([$this->equalTo($url), $this->equalTo($reqdata1)], [$this->equalTo($url), $this->equalTo($reqdata2)])
+            ->will($this->onConsecutiveCalls($resdata1, $resdata2));
 
         // Expect to return group name arrays.
         $api = new apirest($mockclient1);
@@ -174,6 +182,8 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $this->assertEquals($result, array(
             'new group1' => 'new group1',
             'new group2' => 'new group2',
+            'new group3' => 'new group3',
+            'new group4' => 'new group4'
         ));
 
         // When the apirest returns an error response.
@@ -185,7 +195,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         $mockclient2->error = 'The requested URL returned error: 401 Unauthorized';
         $resdata = $this->mockapi->resdata('unauthorized_error.json');
 
-        $reqdata = json_encode(array('page' => 1, 'page_size' => 10000));
+        $reqdata = json_encode(array('page' => 1, 'page_size' => 50));
 
         // Expect to call the endpoint once with page and page_size.
         $url = 'https://api.accredible.com/v1/issuer/groups/search';
@@ -213,7 +223,7 @@ class mod_accredible_groups_testcase extends advanced_testcase {
         // Mock API response data.
         $resdata = $this->mockapi->resdata('groups/search_success_empty.json');
 
-        $reqdata = json_encode(array('page' => 1, 'page_size' => 10000));
+        $reqdata = json_encode(array('page' => 1, 'page_size' => 50));
 
         // Expect to call the endpoint once with page and page_size.
         $url = 'https://api.accredible.com/v1/issuer/groups/search';

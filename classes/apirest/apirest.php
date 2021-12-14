@@ -106,6 +106,9 @@ class apirest {
     public function recipient_sso_link($credentialid = null, $recipientid = null,
         $recipientemail = null, $walletview = null, $groupid = null, $redirectto = null) {
 
+        if ($recipientemail) {
+            $recipientemail = strtolower($recipientemail);
+        }
         $data = array(
             "credential_id" => $credentialid,
             "recipient_id" => $recipientid,

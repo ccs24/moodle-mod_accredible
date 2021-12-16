@@ -14,21 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Local functions related to groups/courses.
- *
- * @package    mod
- * @subpackage accredible
- * @copyright  Accredible <dev@accredible.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_accredible\local;
 defined('MOODLE_INTERNAL') || die();
 
 use mod_accredible\apirest\apirest;
 use mod_accredible\Html2Text\Html2Text;
 
+/**
+ * Local functions related to groups/courses.
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class groups {
     /**
      * The apirest object used to call API requests.
@@ -42,6 +41,12 @@ class groups {
      */
     private $rand;
 
+    /**
+     * Constructor method.
+     *
+     * @param stdObject $apirest a mock apirest for testing.
+     * @param int $rand a random number to avoid duplicated names when creating groups.
+     */
     public function __construct($apirest = null, $rand = null) {
         // An apirest with a mock client is passed when unit testing.
         if ($apirest) {
@@ -63,16 +68,29 @@ class groups {
      * @return array[stdClass] $groups
      */
     public function get_groups() {
-        $response = $this->apirest->get_groups(10000, 1);
-        if (!isset($response->groups)) {
+        $pagesize = 50;
+        $page = 1;
+
+        try {
+            $groups = array();
+            // Query the Accredible API and loop until it returns that there is no next page.
+            for ($i = 0; $i <= 100; $i++) {
+                $response = $this->apirest->get_groups($pagesize, $page);
+                foreach ($response->groups as $group) {
+                    $groups[$group->id] = $group->name;
+                }
+
+                $page++;
+                if ($response->meta->next_page === null) {
+                    // If the Accredible API returns that there
+                    // is no next page, end the loop.
+                    break;
+                }
+            }
+            return $groups;
+        } catch (\Exception $e) {
             throw new \moodle_exception('getgroupserror', 'accredible', 'https://help.accredible.com/hc/en-us');
         }
-
-        $groups = array();
-        foreach ($response->groups as $group) {
-            $groups[$group->id] = $group->name;
-        }
-        return $groups;
     }
 
     /**
@@ -81,17 +99,29 @@ class groups {
      * @return array[stdClass] $templates
      */
     public function get_templates() {
-        $response = $this->apirest->search_groups(10000, 1);
-        if (!isset($response->groups)) {
+        $pagesize = 50;
+        $page = 1;
+
+        try {
+            $templates = array();
+            // Query the Accredible API and loop until it returns that there is no next page.
+            for ($i = 0; $i <= 100; $i++) {
+                $response = $this->apirest->search_groups($pagesize, $page);
+                foreach ($response->groups as $group) {
+                    $templates[$group->name] = $group->name;
+                }
+
+                $page++;
+                if ($response->meta->next_page === null) {
+                    // If the Accredible API returns that there
+                    // is no next page, end the loop.
+                    break;
+                }
+            }
+            return $templates;
+        } catch (\Exception $e) {
             throw new \moodle_exception('gettemplateserror', 'accredible', 'https://help.accredible.com/hc/en-us');
         }
-
-        $groups = $response->groups;
-        $templates = array();
-        foreach ($groups as $group) {
-            $templates[$group->name] = $group->name;
-        }
-        return $templates;
     }
 
     /**
@@ -100,6 +130,7 @@ class groups {
      *
      * @param stdClass $course
      * @param int|null $instanceid
+     * @param int|null $groupid
      * @return int $groupid
      */
     public function sync_group_with($course, $instanceid = null, $groupid = null) {

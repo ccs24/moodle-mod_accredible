@@ -17,7 +17,7 @@
 /**
  * This page lists all the instances of certificate in a particular course
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

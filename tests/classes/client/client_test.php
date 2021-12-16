@@ -17,8 +17,9 @@
 /**
  * Unit tests for mod/accredible/classes/client/client.php
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
+ * @category   test
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,6 +28,15 @@ defined('MOODLE_INTERNAL') || die();
 
 use mod_accredible\client\client;
 
+/**
+ * Unit tests for mod/accredible/classes/client/client.php
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @category   test
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class mod_accredible_client_testcase extends advanced_testcase {
     /**
      * Setup before every test.

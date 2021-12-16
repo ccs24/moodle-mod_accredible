@@ -17,7 +17,7 @@
 /**
  * This file keeps track of upgrades to the certificate module
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,6 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Function to update the accredible db.
+ *
+ * @param int $oldversion
+ */
 function xmldb_accredible_upgrade($oldversion=0) {
 
     global $CFG, $THEME, $DB;

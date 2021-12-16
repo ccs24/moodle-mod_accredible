@@ -17,8 +17,9 @@
 /**
  * Unit tests for mod/accredible/classes/apirest/apirest.php
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
+ * @category   test
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,6 +29,15 @@ defined('MOODLE_INTERNAL') || die();
 use mod_accredible\apirest\apirest;
 use mod_accredible\client\client;
 
+/**
+ * Unit tests for mod/accredible/classes/apirest/apirest.php
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @category   test
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class mod_accredible_apirest_testcase extends advanced_testcase {
     /**
      * Setup before every test.
@@ -166,7 +176,7 @@ class mod_accredible_apirest_testcase extends advanced_testcase {
 
         // Expect to return resdata.
         $api = new apirest($mockclient1);
-        $result = $api->get_credentials(9549, "person2@example.com");
+        $result = $api->get_credentials(9549, "PeRSon2@example.com");
         $this->assertEquals($result, $resdata);
 
         // When no credentials are returned from the API.
@@ -210,6 +220,64 @@ class mod_accredible_apirest_testcase extends advanced_testcase {
         // Expect to return resdata.
         $api = new apirest($mockclient3);
         $result = $api->get_credentials(1000, "person2@example.com");
+        $this->assertEquals($result, $resdata);
+    }
+
+    /**
+     * Tests if `POST /v1/sso/generate_link` is properly called.
+     */
+    public function test_recipient_sso_link() {
+        // When the response is successful.
+        $mockclient1 = $this->getMockBuilder('client')
+            ->setMethods(['post'])
+            ->getMock();
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('credentials/recipient_sso_link_success.json');
+
+        // Expect to call the endpoint once.
+        $url = "https://api.accredible.com/v1/sso/generate_link";
+
+        $reqdata = json_encode(array(
+            "recipient_email" => "person@example.com",
+            "group_id" => 45,
+        ));
+
+        $mockclient1->expects($this->once())
+            ->method('post')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apirest($mockclient1);
+        $result = $api->recipient_sso_link(null, null, "PerSon@example.com", null, 45, null);
+        $this->assertEquals($result, $resdata);
+
+        // When the api returns not found error.
+        $mockclient2 = $this->getMockBuilder('client')
+            ->setMethods(['post'])
+            ->getMock();
+        $mockclient2->error = 'The requested URL returned error: 404 Not found';
+
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('credentials/recipient_sso_link_not_found.json');
+
+        // Expect to call the endpoint once.
+        $url = "https://api.accredible.com/v1/sso/generate_link";
+
+        $reqdata = json_encode(array(
+            "recipient_email" => "person@example.com",
+            "group_id" => 45
+        ));
+
+        $mockclient2->expects($this->once())
+            ->method('post')
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
+            ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apirest($mockclient2);
+        $result = $api->recipient_sso_link(null, null, "PerSon@example.com", null, 45, null);
         $this->assertEquals($result, $resdata);
     }
 

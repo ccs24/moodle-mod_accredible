@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Instance add/edit form
+ * This file contains the forms to create and edit an instance of this module
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -35,8 +35,21 @@ use mod_accredible\local\credentials;
 use mod_accredible\Html2Text\Html2Text;
 use mod_accredible\local\groups;
 
+/**
+ * Accredible settings form.
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class mod_accredible_mod_form extends moodleform_mod {
 
+    /**
+     * Called to define this moodle form
+     *
+     * @return void
+     */
     public function definition() {
         global $DB, $COURSE, $CFG;
 
@@ -174,10 +187,9 @@ class mod_accredible_mod_form extends moodleform_mod {
             $unissuedheader = false;
             foreach ($usersearnedcertificate as $user) {
                 $existingcertificate = false;
-
                 foreach ($certificates as $certificate) {
                     // Search through the certificates to see if this user has one existing.
-                    if ($certificate->recipient->email == $user->email) {
+                    if ($certificate->recipient->email == strtolower($user->email)) {
                         // This user has an existing certificate, no need to continue searching.
                         $existingcertificate = true;
                         break;
@@ -216,7 +228,7 @@ class mod_accredible_mod_form extends moodleform_mod {
                 $certid = null;
                 // Check cert emails for this user.
                 foreach ($certificates as $certificate) {
-                    if ($certificate->recipient->email == $user->email) {
+                    if ($certificate->recipient->email == strtolower($user->email)) {
                         $certid = $certificate->id;
                         if (isset($certificate->url)) {
                             $certlink = $certificate->url;

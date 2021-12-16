@@ -17,8 +17,9 @@
 /**
  * Unit tests for mod/accredible/locallib.php
  *
- * @package    mod
+ * @package    mod_accredible
  * @subpackage accredible
+ * @category   test
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,6 +31,15 @@ require_once($CFG->dirroot . '/mod/accredible/locallib.php');
 
 use mod_accredible\apirest\apirest;
 
+/**
+ * Unit tests for mod/accredible/locallib.php
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @category   test
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class mod_accredible_locallib_testcase extends advanced_testcase {
     /**
      * Setup before every test.
@@ -61,6 +71,9 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         };
     }
 
+    /**
+     * Get transcript test
+     */
     public function test_accredible_get_transcript() {
         global $DB;
 
@@ -145,11 +158,23 @@ class mod_accredible_locallib_testcase extends advanced_testcase {
         $this->assertEquals($result, false);
     }
 
+    /**
+     * Create quiz module test
+     *
+     * @param int $courseid
+     */
     private function create_quiz_module($courseid) {
         $quiz = array("course" => $courseid, "grade" => 10);
         return $this->getDataGenerator()->create_module('quiz', $quiz);
     }
 
+    /**
+     * Create quiz grades test
+     *
+     * @param int $quizid
+     * @param int $userid
+     * @param int $grade
+     */
     private function create_quiz_grades($quizid, $userid, $grade) {
         global $DB;
         $quizgrade = array("quiz" => $quizid, "userid" => $userid, "grade" => $grade);

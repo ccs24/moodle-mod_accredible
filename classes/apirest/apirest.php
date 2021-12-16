@@ -19,20 +19,33 @@ defined('MOODLE_INTERNAL') || die();
 
 use mod_accredible\client\client;
 
+/**
+ * Class to make requests to Accredible API.
+ *
+ * @package    mod_accredible
+ * @subpackage accredible
+ * @copyright  Accredible <dev@accredible.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class apirest {
     /**
      * API base URL.
      * Use `public` to make unit testing possible.
-     * @var string
+     * @var string $apiendpoint
      */
     public $apiendpoint;
 
     /**
      * HTTP request client.
-     * @var client
+     * @var stdObject $client
      */
     private $client;
 
+    /**
+     * Constructor method to define correct endpoints
+     *
+     * @param stdObject $client a mock client for testing
+     */
     public function __construct($client = null) {
         global $CFG;
 
@@ -57,20 +70,23 @@ class apirest {
 
     /**
      * Get Credentials
-     * @param String|null $groupid
-     * @param String|null $email
-     * @param String|null $page_size
-     * @param String $page
+     * @param string|null $groupid
+     * @param string|null $email
+     * @param string|null $pagesize
+     * @param string $page
      * @return stdObject
      */
     public function get_credentials($groupid = null, $email = null, $pagesize = null, $page = 1) {
+        if ($email) {
+            $email = strtolower($email);
+        }
         return $this->client->get("{$this->apiendpoint}all_credentials?group_id={$groupid}&email=" .
             rawurlencode($email) . "&page_size={$pagesize}&page={$page}");
     }
 
     /**
      * Get a Credential with EnvidenceItems
-     * @param Integer $credentialid
+     * @param int $credentialid
      * @return stdObject
      */
     public function get_credential($credentialid) {
@@ -79,11 +95,20 @@ class apirest {
 
     /**
      * Generaate a Single Sign On Link for a recipient for a particular credential.
+     * @param string|null $credentialid
+     * @param string|null $recipientid
+     * @param string|null $recipientemail
+     * @param string|null $walletview
+     * @param string|null $groupid
+     * @param string|null $redirectto
      * @return stdObject
      */
     public function recipient_sso_link($credentialid = null, $recipientid = null,
         $recipientemail = null, $walletview = null, $groupid = null, $redirectto = null) {
 
+        if ($recipientemail) {
+            $recipientemail = strtolower($recipientemail);
+        }
         $data = array(
             "credential_id" => $credentialid,
             "recipient_id" => $recipientid,
@@ -102,11 +127,12 @@ class apirest {
 
     /**
      * Update a Group
-     * @param String $id
-     * @param String|null $name
-     * @param String|null $coursename
-     * @param String|null $coursedescription
-     * @param String|null $courselink
+     * @param string $id
+     * @param string|null $name
+     * @param string|null $coursename
+     * @param string|null $coursedescription
+     * @param string|null $courselink
+     * @param string|null $designid
      * @return stdObject
      */
     public function update_group($id, $name = null, $coursename = null,
@@ -131,10 +157,10 @@ class apirest {
 
     /**
      * Create a new Group
-     * @param String $name
-     * @param String $coursename
-     * @param String $course_description
-     * @param String|null $courselink
+     * @param string $name
+     * @param string $coursename
+     * @param string $coursedescription
+     * @param string|null $courselink
      * @return stdObject
      */
     public function create_group($name, $coursename, $coursedescription, $courselink = null) {
@@ -155,12 +181,12 @@ class apirest {
 
     /**
      * Creates a Credential given an existing Group
-     * @param String $recipientname
-     * @param String $recipientemail
-     * @param String $courseid
-     * @param Date|null $issuedon
-     * @param Date|null $expiredon
-     * @param stdObject|null $custom_attributes
+     * @param string $recipientname
+     * @param string $recipientemail
+     * @param string $courseid
+     * @param date|null $issuedon
+     * @param date|null $expiredon
+     * @param stdObject|null $customattributes
      * @return stdObject
      */
     public function create_credential($recipientname, $recipientemail, $courseid,
@@ -187,6 +213,8 @@ class apirest {
     /**
      * Creates an evidence item on a given credential. This is a general method used by more specific evidence item creations.
      * @param stdObject $evidenceitem
+     * @param string $credentialid
+     * @param bool $throwerror
      * @return stdObject
      */
     public function create_evidence_item($evidenceitem, $credentialid, $throwerror = false) {
@@ -202,8 +230,10 @@ class apirest {
 
     /**
      * Creates a Grade evidence item on a given credential.
-     * @param String $startdate
-     * @param String $enddate
+     * @param string $startdate
+     * @param string $enddate
+     * @param string $credentialid
+     * @param bool $hidden
      * @return stdObject
      */
     public function create_evidence_item_duration($startdate, $enddate, $credentialid, $hidden = false) {
@@ -253,11 +283,14 @@ class apirest {
 
     /**
      * Creates a Credential given an existing Group. This legacy method uses achievement names rather than group IDs.
-     * @param String $recipientname
-     * @param String $recipientemail
-     * @param String $achievementname
-     * @param Date|null $issuedon
-     * @param Date|null $expiredon
+     * @param string $recipientname
+     * @param string $recipientemail
+     * @param string $achievementname
+     * @param date|null $issuedon
+     * @param date|null $expiredon
+     * @param string|null $coursename
+     * @param string|null $coursedescription
+     * @param string|null $courselink
      * @param stdObject|null $customattributes
      * @return stdObject
      */
@@ -288,8 +321,8 @@ class apirest {
 
     /**
      * Get all Groups
-     * @param String $pagesize
-     * @param String $page
+     * @param string $pagesize
+     * @param string $page
      * @return stdObject
      */
     public function get_groups($pagesize = 50, $page = 1) {
@@ -298,8 +331,8 @@ class apirest {
 
     /**
      * Get all Groups
-     * @param Integer $pagesize
-     * @param Integer $page
+     * @param int $pagesize
+     * @param int $page
      * @return stdObject
      */
     public function search_groups($pagesize = 50, $page = 1) {
@@ -309,7 +342,10 @@ class apirest {
 
     /**
      * Creates a Grade evidence item on a given credential.
-     * @param String $grade - value must be between 0 and 100
+     * @param string $grade - value must be between 0 and 100
+     * @param string $description
+     * @param string $credentialid
+     * @param bool $hidden
      * @return stdObject
      */
     public function create_evidence_item_grade($grade, $description, $credentialid, $hidden = false) {
@@ -333,9 +369,9 @@ class apirest {
 
     /**
      * Updates an evidence item on a given credential.
-     * @param Integer $credentialid
-     * @param Integer $evidenceitemid
-     * @param String $grade - value must be between 0 and 100
+     * @param int $credentialid
+     * @param int $evidenceitemid
+     * @param string $grade - value must be between 0 and 100
      * @return stdObject
      */
     public function update_evidence_item_grade($credentialid, $evidenceitemid, $grade) {

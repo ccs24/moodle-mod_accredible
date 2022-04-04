@@ -105,28 +105,21 @@ class mod_accredible_mod_form extends moodleform_mod {
         $mform->addElement('hidden', 'course', $id);
         $mform->addElement('header', 'general', get_string('general', 'form'));
         $mform->addElement('static', 'overview', get_string('overview', 'accredible'),
-            get_string('activitydescription', 'accredible'));
+            get_string('activitygroupdescription', 'accredible'));
         if ($alreadyexists) {
             $mform->addElement('static', 'additionalactivitiesone', '', get_string('additionalactivitiesone', 'accredible'));
         }
-        $mform->addElement('text', 'name', get_string('activityname', 'accredible'), array('style' => 'width: 399px'));
-        $mform->addRule('name', null, 'required', null, 'client');
-        $mform->setType('name', PARAM_TEXT);
-        $mform->setDefault('name', $course->fullname);
+
+        $localgroups = new groups();
+        $templates = $localgroups->get_groups();
+        $mform->addElement('select', 'groupid', get_string('accrediblegroup', 'accredible'), $templates);
+        $mform->addRule('groupid', null, 'required', null, 'client');
+        if ($updatingcert && $accrediblecertificate->groupid) {
+            $mform->setDefault('groupid', $accrediblecertificate->groupid);
+        }
 
         if ($alreadyexists) {
             $mform->addElement('static', 'additionalactivitiestwo', '', get_string('additionalactivitiestwo', 'accredible'));
-        }
-
-        // If we're updating and have a group then let the issuer choose to edit this.
-        if ($updatingcert && $accrediblecertificate->groupid) {
-            // Grab the list of groups available.
-            $localgroups = new groups();
-            $templates = $localgroups->get_groups();
-            $mform->addElement('static', 'usestemplatesdescription', '', get_string('usestemplatesdescription', 'accredible'));
-            $mform->addElement('select', 'groupid', get_string('templatename', 'accredible'), $templates);
-            $mform->addRule('groupid', null, 'required', null, 'client');
-            $mform->setDefault('groupid', $accrediblecertificate->groupid);
         }
 
         if ($updatingcert && $accrediblecertificate->achievementid) {

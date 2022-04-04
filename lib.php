@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/accredible/locallib.php');
+use mod_accredible\apirest\apirest;
 use mod_accredible\local\credentials;
 use mod_accredible\local\groups;
 
@@ -43,8 +44,8 @@ function accredible_add_instance($post) {
 
     $post->instance = isset($post->instance) ? $post->instance : null;
 
-    $localgroups = new groups();
-    $groupid = $localgroups->sync_group_with($course, $post->instance, $post->groupid);
+    $apirest = new apirest();
+    $accrediblegroup = $apirest->get_group($post->groupid);
 
     $localcredentials = new credentials();
 
@@ -82,12 +83,12 @@ function accredible_add_instance($post) {
     // Save record.
     $dbrecord = new stdClass();
     $dbrecord->completionactivities = isset($post->completionactivities) ? $post->completionactivities : null;
-    $dbrecord->name = $post->name;
+    $dbrecord->name = $accrediblegroup->group->name;
     $dbrecord->course = $post->course;
     $dbrecord->finalquiz = $post->finalquiz;
     $dbrecord->passinggrade = $post->passinggrade;
     $dbrecord->timecreated = time();
-    $dbrecord->groupid = $groupid;
+    $dbrecord->groupid = $post->groupid;
 
     return $DB->insert_record('accredible', $dbrecord);
 }
@@ -107,12 +108,6 @@ function accredible_update_instance($post) {
     $accrediblecertificate = $DB->get_record('accredible', array('id' => $post->instance), '*', MUST_EXIST);
 
     $course = $DB->get_record('course', array('id' => $post->course), '*', MUST_EXIST);
-
-    // Update the group if we have one to sync with.
-    if ($accrediblecertificate->groupid) {
-        $localgroups = new groups();
-        $localgroups->sync_group_with($course, $post->instance, $post->groupid);
-    }
 
     // Issue certs for unissued users.
     if (isset($post->unissuedusers)) {
@@ -224,8 +219,12 @@ function accredible_update_instance($post) {
     // If the group was changed we should save that.
     if (!$accrediblecertificate->achievementid && $post->groupid) {
         $groupid = $post->groupid;
+        $apirest = new apirest();
+        $accrediblegroup = $apirest->get_group($groupid);
+        $recordname = $accrediblegroup->group->name;
     } else {
         $groupid = $accrediblecertificate->groupid;
+        $recordname = $accrediblecertificate->name;
     }
 
     // Set completion activitied to 0 if unchecked.
@@ -239,7 +238,7 @@ function accredible_update_instance($post) {
         $dbrecord->id = $post->instance;
         $dbrecord->achievementid = $post->achievementid;
         $dbrecord->completionactivities = $post->completionactivities;
-        $dbrecord->name = $post->name;
+        $dbrecord->name = $recordname;
         $dbrecord->certificatename = $post->certificatename;
         $dbrecord->description = $post->description;
         $dbrecord->passinggrade = $post->passinggrade;
@@ -248,7 +247,7 @@ function accredible_update_instance($post) {
         $dbrecord = new stdClass();
         $dbrecord->id = $post->instance;
         $dbrecord->completionactivities = $post->completionactivities;
-        $dbrecord->name = $post->name;
+        $dbrecord->name = $recordname;
         $dbrecord->course = $post->course;
         $dbrecord->finalquiz = $post->finalquiz;
         $dbrecord->passinggrade = $post->passinggrade;

@@ -24,7 +24,6 @@
  */
 
 $string['achievementid'] = 'Achievement id / cohort name (must be unique)';
-$string['activityname'] = 'Activity name';
 $string['additionalactivitiesone'] = 'Warning: You are adding more than one activity to a course.<br/>Both activities are viewable by students, so be sure to give them different names.';
 $string['additionalactivitiestwo'] = 'Certificates/Badges will only be listed on the activity page if they were issued with this achievement id.';
 $string['additionalactivitiesthree'] = 'This is the name that will appear on the ceriticate.';
@@ -75,5 +74,6 @@ $string['viewsubheaderold'] = 'Achievement ID: {$a}';
 $string['viewsubheader'] = 'Group ID: {$a}';
 
 $string['gotodashboard'] = 'To update the appearance of your badges and certificates, visit: <a href="https://dashboard.accredible.com" target="_blank">https://dashboard.accredible.com</a>';
-$string['activitydescription'] = 'This module automatically creates and updates a Credential Group on Accredible. Any certificates and badges issued are in this group and their appearance and information can be updated on <a href="https://dashboard.accredible.com" target="_blank">the dashboard</a>.';
 $string['overview'] = 'Overview';
+$string['activitygroupdescription'] = 'Credentials groups need to have been created in <a href="https://dashboard.accredible.com" target="_blank">the Accredible dashboard</a> before credentials can be issued. If none appear, check your API Key to make sure integration is set up correctly.';
+$string['accrediblegroup'] = 'Accredible Group';

@@ -69,6 +69,12 @@ class mod_accredible_mod_form extends moodleform_mod {
             $description = "Recipient has compeleted the achievement.";
         }
 
+        if ($CFG->is_eu) {
+            $dashboardurl = 'https://eu.dashboard.accredible.com/';
+        } else {
+            $dashboardurl = 'https://dashboard.accredible.com/';
+        }
+
         // Make sure the API key is set.
         if (!isset($CFG->accredible_api_key)) {
             throw new moodle_exception('Please set your API Key first in the plugin settings.');
@@ -105,7 +111,7 @@ class mod_accredible_mod_form extends moodleform_mod {
         $mform->addElement('hidden', 'course', $id);
         $mform->addElement('header', 'general', get_string('general', 'form'));
         $mform->addElement('static', 'overview', get_string('overview', 'accredible'),
-            get_string('activitygroupdescription', 'accredible'));
+            get_string('activitygroupdescription', 'accredible', $dashboardurl));
         if ($alreadyexists) {
             $mform->addElement('static', 'additionalactivitiesone', '', get_string('additionalactivitiesone', 'accredible'));
         }

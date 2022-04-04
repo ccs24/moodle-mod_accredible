@@ -75,5 +75,5 @@ $string['viewsubheader'] = 'Group ID: {$a}';
 
 $string['gotodashboard'] = 'To update the appearance of your badges and certificates, visit: <a href="https://dashboard.accredible.com" target="_blank">https://dashboard.accredible.com</a>';
 $string['overview'] = 'Overview';
-$string['activitygroupdescription'] = 'Credentials groups need to have been created in <a href="https://dashboard.accredible.com" target="_blank">the Accredible dashboard</a> before credentials can be issued. If none appear, check your API Key to make sure integration is set up correctly.';
+$string['activitygroupdescription'] = 'Credentials groups need to have been created in the <a href="{$a}" target="_blank">Accredible Dashboard</a> before credentials can be issued. If none appear, check your API Key to make sure integration is set up correctly.';
 $string['accrediblegroup'] = 'Accredible Group';

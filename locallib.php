@@ -23,8 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- defined('MOODLE_INTERNAL') || die();
-
 use mod_accredible\apirest\apirest;
 use mod_accredible\Html2Text\Html2Text;
 use mod_accredible\local\credentials;

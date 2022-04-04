@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_accredible\client;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * The curl object used to make the request.

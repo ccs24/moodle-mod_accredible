@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_accredible\Html2Text;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Class to convert HTML into plain text.

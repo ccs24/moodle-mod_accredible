@@ -14,16 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Unit tests for mod/accredible/locallib.php
- *
- * @package    mod_accredible
- * @subpackage accredible
- * @category   test
- * @copyright  Accredible <dev@accredible.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
+namespace mod_accredible;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -40,7 +31,7 @@ use mod_accredible\apirest\apirest;
  * @copyright  Accredible <dev@accredible.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_accredible_locallib_testcase extends advanced_testcase {
+class mod_accredible_locallib_test extends \advanced_testcase {
     /**
      * Setup before every test.
      */

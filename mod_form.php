@@ -106,12 +106,14 @@ class mod_accredible_mod_form extends moodleform_mod {
             }
         }
 
+        $inputstyle = array('style' => 'width: 399px');
+
         // Form start.
         $mform =& $this->_form;
         $mform->addElement('hidden', 'course', $id);
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
-        $mform->addElement('text', 'name', get_string('activityname', 'accredible'), array('style' => 'width: 399px'));
+        $mform->addElement('text', 'name', get_string('activityname', 'accredible'), $inputstyle);
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->setType('name', PARAM_TEXT);
         $mform->setDefault('name', $course->fullname);
@@ -123,7 +125,7 @@ class mod_accredible_mod_form extends moodleform_mod {
         // Load available groups.
         $localgroups = new groups();
         $templates = array('' => '') + $localgroups->get_groups();
-        $mform->addElement('select', 'groupid', get_string('accrediblegroup', 'accredible'), $templates, array('style' => 'width: 399px'));
+        $mform->addElement('select', 'groupid', get_string('accrediblegroup', 'accredible'), $templates, $inputstyle);
         $mform->addRule('groupid', null, 'required', null, 'client');
         if ($updatingcert && $accrediblecertificate->groupid) {
             $mform->setDefault('groupid', $accrediblecertificate->groupid);

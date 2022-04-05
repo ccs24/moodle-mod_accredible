@@ -24,6 +24,7 @@
  */
 
 $string['achievementid'] = 'Achievement id / cohort name (must be unique)';
+$string['activityname'] = 'Activity name';
 $string['additionalactivitiesone'] = 'Warning: You are adding more than one activity to a course.<br/>Both activities are viewable by students, so be sure to give them different names.';
 $string['additionalactivitiestwo'] = 'Certificates/Badges will only be listed on the activity page if they were issued with this achievement id.';
 $string['additionalactivitiesthree'] = 'This is the name that will appear on the ceriticate.';

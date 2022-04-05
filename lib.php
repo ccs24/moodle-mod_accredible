@@ -44,9 +44,6 @@ function accredible_add_instance($post) {
 
     $post->instance = isset($post->instance) ? $post->instance : null;
 
-    $apirest = new apirest();
-    $accrediblegroup = $apirest->get_group($post->groupid);
-
     $localcredentials = new credentials();
 
     // Issue certs.
@@ -83,7 +80,7 @@ function accredible_add_instance($post) {
     // Save record.
     $dbrecord = new stdClass();
     $dbrecord->completionactivities = isset($post->completionactivities) ? $post->completionactivities : null;
-    $dbrecord->name = $accrediblegroup->group->name;
+    $dbrecord->name = $post->name;
     $dbrecord->course = $post->course;
     $dbrecord->finalquiz = $post->finalquiz;
     $dbrecord->passinggrade = $post->passinggrade;
@@ -216,17 +213,6 @@ function accredible_update_instance($post) {
         }
     }
 
-    // If the group was changed we should save that.
-    if (!$accrediblecertificate->achievementid && $post->groupid) {
-        $groupid = $post->groupid;
-        $apirest = new apirest();
-        $accrediblegroup = $apirest->get_group($groupid);
-        $recordname = $accrediblegroup->group->name;
-    } else {
-        $groupid = $accrediblecertificate->groupid;
-        $recordname = $accrediblecertificate->name;
-    }
-
     // Set completion activitied to 0 if unchecked.
     if (!property_exists($post, 'completionactivities')) {
         $post->completionactivities = 0;
@@ -238,7 +224,7 @@ function accredible_update_instance($post) {
         $dbrecord->id = $post->instance;
         $dbrecord->achievementid = $post->achievementid;
         $dbrecord->completionactivities = $post->completionactivities;
-        $dbrecord->name = $recordname;
+        $dbrecord->name = $post->name;
         $dbrecord->certificatename = $post->certificatename;
         $dbrecord->description = $post->description;
         $dbrecord->passinggrade = $post->passinggrade;
@@ -247,12 +233,12 @@ function accredible_update_instance($post) {
         $dbrecord = new stdClass();
         $dbrecord->id = $post->instance;
         $dbrecord->completionactivities = $post->completionactivities;
-        $dbrecord->name = $recordname;
+        $dbrecord->name = $post->name;
         $dbrecord->course = $post->course;
         $dbrecord->finalquiz = $post->finalquiz;
         $dbrecord->passinggrade = $post->passinggrade;
         $dbrecord->timecreated = time();
-        $dbrecord->groupid = $groupid;
+        $dbrecord->groupid = $post->groupid;;
     }
 
     return $DB->update_record('accredible', $dbrecord);

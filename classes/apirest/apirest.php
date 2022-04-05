@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_accredible\apirest;
-defined('MOODLE_INTERNAL') || die();
 
 use mod_accredible\client\client;
 

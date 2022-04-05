@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_accredible\event;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * The accredible event class.

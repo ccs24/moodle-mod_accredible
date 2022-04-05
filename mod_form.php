@@ -116,8 +116,9 @@ class mod_accredible_mod_form extends moodleform_mod {
             $mform->addElement('static', 'additionalactivitiesone', '', get_string('additionalactivitiesone', 'accredible'));
         }
 
+        // Load available groups.
         $localgroups = new groups();
-        $templates = $localgroups->get_groups();
+        $templates = array('' => '') + $localgroups->get_groups();
         $mform->addElement('select', 'groupid', get_string('accrediblegroup', 'accredible'), $templates);
         $mform->addRule('groupid', null, 'required', null, 'client');
         if ($updatingcert && $accrediblecertificate->groupid) {

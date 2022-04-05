@@ -86,7 +86,6 @@ class mod_accredible_groups_test extends \advanced_testcase {
         $localgroups = new groups($api);
         $result = $localgroups->get_groups();
         $this->assertEquals($result, array(
-            ''      => '',
             '12472' => 'new group1',
             '12473' => 'new group2',
             '12474' => 'new group3',
@@ -139,7 +138,7 @@ class mod_accredible_groups_test extends \advanced_testcase {
         $api = new apirest($mockclient3);
         $localgroups = new groups($api);
         $result = $localgroups->get_groups();
-        $this->assertEquals($result, array('' => ''));
+        $this->assertEquals($result, array());
     }
 
     /**

@@ -700,7 +700,7 @@ class mod_accredible_apirest_test extends \advanced_testcase {
         // Mock API response data.
         $resdata = $this->mockapi->resdata('unauthorized_error.json');
 
-        // Expect to call the endpoint
+        // Expect to call the endpoint.
         $url = 'https://api.accredible.com/v1/issuer/groups/' . $groupid;
         $mockclient2->expects($this->once())
             ->method('get')

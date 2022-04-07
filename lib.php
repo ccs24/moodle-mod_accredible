@@ -218,6 +218,13 @@ function accredible_update_instance($post) {
         $post->completionactivities = 0;
     }
 
+    // If the group was changed we should save that.
+    if (!$accrediblecertificate->achievementid && $post->groupid) {
+        $groupid = $post->groupid;
+    } else {
+        $groupid = $accrediblecertificate->groupid;
+    }
+
     // Save record.
     if ($accrediblecertificate->achievementid) {
         $dbrecord = new stdClass();
@@ -238,7 +245,7 @@ function accredible_update_instance($post) {
         $dbrecord->finalquiz = $post->finalquiz;
         $dbrecord->passinggrade = $post->passinggrade;
         $dbrecord->timecreated = time();
-        $dbrecord->groupid = $post->groupid;;
+        $dbrecord->groupid = $groupid;
     }
 
     return $DB->update_record('accredible', $dbrecord);

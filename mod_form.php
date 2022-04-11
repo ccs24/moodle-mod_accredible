@@ -51,7 +51,8 @@ class mod_accredible_mod_form extends moodleform_mod {
     public function definition() {
         global $DB, $COURSE, $CFG;
 
-        $localcredentials = new credentials();
+        $credentialsclient = new credentials();
+        $groupsclient = new groups();
 
         $updatingcert = false;
         $alreadyexists = false;
@@ -123,8 +124,7 @@ class mod_accredible_mod_form extends moodleform_mod {
         }
 
         // Load available groups.
-        $localgroups = new groups();
-        $templates = array('' => '') + $localgroups->get_groups();
+        $templates = array('' => '') + $groupsclient->get_groups();
         $mform->addElement('select', 'groupid', get_string('accrediblegroup', 'accredible'), $templates, $inputstyle);
         $mform->addRule('groupid', null, 'required', null, 'client');
         if ($updatingcert && $accrediblecertificate->groupid) {
@@ -140,8 +140,7 @@ class mod_accredible_mod_form extends moodleform_mod {
 
         if ($updatingcert && $accrediblecertificate->achievementid) {
             // Grab the list of templates available.
-            $localgroups = new groups();
-            $templates = $localgroups->get_templates();
+            $templates = $groupsclient->get_templates();
             $mform->addElement('static', 'usestemplatesdescription', '', get_string('usestemplatesdescription', 'accredible'));
             $mform->addElement('select', 'achievementid', get_string('groupselect', 'accredible'), $templates);
             $mform->addRule('achievementid', null, 'required', null, 'client');
@@ -173,9 +172,9 @@ class mod_accredible_mod_form extends moodleform_mod {
         if ($updatingcert) {
             // Grab existing certificates and cross-reference emails.
             if ($accrediblecertificate->achievementid) {
-                $certificates = $localcredentials->get_credentials($accrediblecertificate->achievementid);
+                $certificates = $credentialsclient->get_credentials($accrediblecertificate->achievementid);
             } else if ($accrediblecertificate->groupid) {
-                $certificates = $localcredentials->get_credentials($accrediblecertificate->groupid);
+                $certificates = $credentialsclient->get_credentials($accrediblecertificate->groupid);
             }
         }
 
@@ -226,9 +225,9 @@ class mod_accredible_mod_form extends moodleform_mod {
         if ($updatingcert) {
             // Grab existing credentials and cross-reference emails.
             if ($accrediblecertificate->achievementid) {
-                $certificates = $localcredentials->get_credentials($accrediblecertificate->achievementid);
+                $certificates = $credentialsclient->get_credentials($accrediblecertificate->achievementid);
             } else {
-                $certificates = $localcredentials->get_credentials($accrediblecertificate->groupid);
+                $certificates = $credentialsclient->get_credentials($accrediblecertificate->groupid);
             }
 
             foreach ($users as $user) {

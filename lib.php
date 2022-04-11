@@ -54,7 +54,7 @@ function accredible_add_instance($post) {
             if ($issuecertificate) {
                 $user = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
 
-                $credential = $localcredentials->create_credential($user, $groupid);
+                $credential = $localcredentials->create_credential($user, $post->groupid);
 
                 // Evidence item posts.
                 $credentialid = $credential->id;

@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/accredible/locallib.php');
+use mod_accredible\apirest\apirest;
 use mod_accredible\local\credentials;
 use mod_accredible\local\groups;
 
@@ -43,9 +44,6 @@ function accredible_add_instance($post) {
 
     $post->instance = isset($post->instance) ? $post->instance : null;
 
-    $localgroups = new groups();
-    $groupid = $localgroups->sync_group_with($course, $post->instance, $post->groupid);
-
     $localcredentials = new credentials();
 
     // Issue certs.
@@ -56,7 +54,7 @@ function accredible_add_instance($post) {
             if ($issuecertificate) {
                 $user = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
 
-                $credential = $localcredentials->create_credential($user, $groupid);
+                $credential = $localcredentials->create_credential($user, $post->groupid);
 
                 // Evidence item posts.
                 $credentialid = $credential->id;
@@ -87,7 +85,7 @@ function accredible_add_instance($post) {
     $dbrecord->finalquiz = $post->finalquiz;
     $dbrecord->passinggrade = $post->passinggrade;
     $dbrecord->timecreated = time();
-    $dbrecord->groupid = $groupid;
+    $dbrecord->groupid = $post->groupid;
 
     return $DB->insert_record('accredible', $dbrecord);
 }
@@ -107,12 +105,6 @@ function accredible_update_instance($post) {
     $accrediblecertificate = $DB->get_record('accredible', array('id' => $post->instance), '*', MUST_EXIST);
 
     $course = $DB->get_record('course', array('id' => $post->course), '*', MUST_EXIST);
-
-    // Update the group if we have one to sync with.
-    if ($accrediblecertificate->groupid) {
-        $localgroups = new groups();
-        $localgroups->sync_group_with($course, $post->instance, $post->groupid);
-    }
 
     // Issue certs for unissued users.
     if (isset($post->unissuedusers)) {
@@ -221,16 +213,16 @@ function accredible_update_instance($post) {
         }
     }
 
+    // Set completion activitied to 0 if unchecked.
+    if (!property_exists($post, 'completionactivities')) {
+        $post->completionactivities = 0;
+    }
+
     // If the group was changed we should save that.
     if (!$accrediblecertificate->achievementid && $post->groupid) {
         $groupid = $post->groupid;
     } else {
         $groupid = $accrediblecertificate->groupid;
-    }
-
-    // Set completion activitied to 0 if unchecked.
-    if (!property_exists($post, 'completionactivities')) {
-        $post->completionactivities = 0;
     }
 
     // Save record.

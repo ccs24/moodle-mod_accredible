@@ -51,7 +51,8 @@ class mod_accredible_mod_form extends moodleform_mod {
     public function definition() {
         global $DB, $COURSE, $CFG;
 
-        $localcredentials = new credentials();
+        $credentialsclient = new credentials();
+        $groupsclient = new groups();
 
         $updatingcert = false;
         $alreadyexists = false;
@@ -67,6 +68,12 @@ class mod_accredible_mod_form extends moodleform_mod {
         $description = Html2Text::convert($COURSE->summary);
         if (empty($description)) {
             $description = "Recipient has compeleted the achievement.";
+        }
+
+        if ($CFG->is_eu) {
+            $dashboardurl = 'https://eu.dashboard.accredible.com/';
+        } else {
+            $dashboardurl = 'https://dashboard.accredible.com/';
         }
 
         // Make sure the API key is set.
@@ -100,39 +107,40 @@ class mod_accredible_mod_form extends moodleform_mod {
             }
         }
 
+        $inputstyle = array('style' => 'width: 399px');
+
         // Form start.
         $mform =& $this->_form;
         $mform->addElement('hidden', 'course', $id);
         $mform->addElement('header', 'general', get_string('general', 'form'));
-        $mform->addElement('static', 'overview', get_string('overview', 'accredible'),
-            get_string('activitydescription', 'accredible'));
-        if ($alreadyexists) {
-            $mform->addElement('static', 'additionalactivitiesone', '', get_string('additionalactivitiesone', 'accredible'));
-        }
-        $mform->addElement('text', 'name', get_string('activityname', 'accredible'), array('style' => 'width: 399px'));
+
+        $mform->addElement('text', 'name', get_string('activityname', 'accredible'), $inputstyle);
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->setType('name', PARAM_TEXT);
         $mform->setDefault('name', $course->fullname);
 
         if ($alreadyexists) {
-            $mform->addElement('static', 'additionalactivitiestwo', '', get_string('additionalactivitiestwo', 'accredible'));
+            $mform->addElement('static', 'additionalactivitiesone', '', get_string('additionalactivitiesone', 'accredible'));
         }
 
-        // If we're updating and have a group then let the issuer choose to edit this.
+        // Load available groups.
+        $templates = array('' => '') + $groupsclient->get_groups();
+        $mform->addElement('select', 'groupid', get_string('accrediblegroup', 'accredible'), $templates, $inputstyle);
+        $mform->addRule('groupid', null, 'required', null, 'client');
         if ($updatingcert && $accrediblecertificate->groupid) {
-            // Grab the list of groups available.
-            $localgroups = new groups();
-            $templates = $localgroups->get_groups();
-            $mform->addElement('static', 'usestemplatesdescription', '', get_string('usestemplatesdescription', 'accredible'));
-            $mform->addElement('select', 'groupid', get_string('templatename', 'accredible'), $templates);
-            $mform->addRule('groupid', null, 'required', null, 'client');
             $mform->setDefault('groupid', $accrediblecertificate->groupid);
+        }
+
+        $mform->addElement('static', 'overview', '',
+            get_string('activitygroupdescription', 'accredible', $dashboardurl));
+
+        if ($alreadyexists) {
+            $mform->addElement('static', 'additionalactivitiestwo', '', get_string('additionalactivitiestwo', 'accredible'));
         }
 
         if ($updatingcert && $accrediblecertificate->achievementid) {
             // Grab the list of templates available.
-            $localgroups = new groups();
-            $templates = $localgroups->get_templates();
+            $templates = $groupsclient->get_templates();
             $mform->addElement('static', 'usestemplatesdescription', '', get_string('usestemplatesdescription', 'accredible'));
             $mform->addElement('select', 'achievementid', get_string('groupselect', 'accredible'), $templates);
             $mform->addRule('achievementid', null, 'required', null, 'client');
@@ -164,9 +172,9 @@ class mod_accredible_mod_form extends moodleform_mod {
         if ($updatingcert) {
             // Grab existing certificates and cross-reference emails.
             if ($accrediblecertificate->achievementid) {
-                $certificates = $localcredentials->get_credentials($accrediblecertificate->achievementid);
+                $certificates = $credentialsclient->get_credentials($accrediblecertificate->achievementid);
             } else if ($accrediblecertificate->groupid) {
-                $certificates = $localcredentials->get_credentials($accrediblecertificate->groupid);
+                $certificates = $credentialsclient->get_credentials($accrediblecertificate->groupid);
             }
         }
 
@@ -217,9 +225,9 @@ class mod_accredible_mod_form extends moodleform_mod {
         if ($updatingcert) {
             // Grab existing credentials and cross-reference emails.
             if ($accrediblecertificate->achievementid) {
-                $certificates = $localcredentials->get_credentials($accrediblecertificate->achievementid);
+                $certificates = $credentialsclient->get_credentials($accrediblecertificate->achievementid);
             } else {
-                $certificates = $localcredentials->get_credentials($accrediblecertificate->groupid);
+                $certificates = $credentialsclient->get_credentials($accrediblecertificate->groupid);
             }
 
             foreach ($users as $user) {

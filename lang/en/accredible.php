@@ -75,5 +75,6 @@ $string['viewsubheaderold'] = 'Achievement ID: {$a}';
 $string['viewsubheader'] = 'Group ID: {$a}';
 
 $string['gotodashboard'] = 'To update the appearance of your badges and certificates, visit: <a href="https://dashboard.accredible.com" target="_blank">https://dashboard.accredible.com</a>';
-$string['activitydescription'] = 'This module automatically creates and updates a Credential Group on Accredible. Any certificates and badges issued are in this group and their appearance and information can be updated on <a href="https://dashboard.accredible.com" target="_blank">the dashboard</a>.';
 $string['overview'] = 'Overview';
+$string['activitygroupdescription'] = 'Credentials groups need to have been created in the <a href="{$a}" target="_blank">Accredible Dashboard</a> before credentials can be issued. If none appear, check your API Key to make sure integration is set up correctly.';
+$string['accrediblegroup'] = 'Accredible Group';

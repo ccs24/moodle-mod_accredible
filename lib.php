@@ -47,6 +47,7 @@ function accredible_add_instance($post) {
     $groupid = $localgroups->sync_group_with($course, $post->instance, $post->groupid);
 
     $localcredentials = new credentials();
+    $evidenceitems = new evidenceitems();
 
     // Issue certs.
     if ( isset($post->users) ) {
@@ -68,12 +69,12 @@ function accredible_add_instance($post) {
                     if ($usersgrade < 50) {
                         $gradeevidence['hidden'] = true;
                     }
-                    accredible_post_evidence($credentialid, $gradeevidence, true);
+                    $evidenceitems->accredible_post_evidence($credentialid, $gradeevidence, true);
                 }
                 if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
-                    accredible_post_evidence($credentialid, $transcript, true);
+                    $evidenceitems->accredible_post_evidence($credentialid, $transcript, true);
                 }
-                accredible_post_essay_answers($userid, $post->course, $credentialid);
+                $evidenceitems->$evidenceitems->accredible_post_essay_answers($userid, $post->course, $credentialid);
                 accredible_course_duration_evidence($userid, $post->course, $credentialid);
             }
         }
@@ -103,6 +104,7 @@ function accredible_update_instance($post) {
     global $DB;
 
     $localcredentials = new credentials();
+    $evidenceitems = new evidenceitems();
 
     $accrediblecertificate = $DB->get_record('accredible', array('id' => $post->instance), '*', MUST_EXIST);
 
@@ -141,12 +143,12 @@ function accredible_update_instance($post) {
                         if ($usersgrade < 50) {
                             $gradeevidence['hidden'] = true;
                         }
-                        accredible_post_evidence($credentialid, $gradeevidence, true);
+                        $evidenceitems->accredible_post_evidence($credentialid, $gradeevidence, true);
                     }
                     if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
-                        accredible_post_evidence($credentialid, $transcript, true);
+                        $evidenceitems->accredible_post_evidence($credentialid, $transcript, true);
                     }
-                    accredible_post_essay_answers($userid, $post->course, $credentialid);
+                    $evidenceitems->accredible_post_essay_answers($userid, $post->course, $credentialid);
                     accredible_course_duration_evidence($userid, $post->course, $credentialid, $completedtimestamp);
                 } else if ($accrediblecertificate->achievementid) {
                     if ($post->finalquiz) {
@@ -201,12 +203,12 @@ function accredible_update_instance($post) {
                     if ($usersgrade < 50) {
                         $gradeevidence['hidden'] = true;
                     }
-                    accredible_post_evidence($credentialid, $gradeevidence, true);
+                    $evidenceitems->accredible_post_evidence($credentialid, $gradeevidence, true);
                 }
                 if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
-                    accredible_post_evidence($credentialid, $transcript, true);
+                    $evidenceitems->accredible_post_evidence($credentialid, $transcript, true);
                 }
-                accredible_post_essay_answers($userid, $post->course, $credentialid);
+                $evidenceitems->accredible_post_essay_answers($userid, $post->course, $credentialid);
                 accredible_course_duration_evidence($userid, $post->course, $credentialid, $completedtimestamp);
 
                 // Log the creation.

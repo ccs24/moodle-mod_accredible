@@ -78,3 +78,7 @@ $string['gotodashboard'] = 'To update the appearance of your badges and certific
 $string['overview'] = 'Overview';
 $string['activitygroupdescription'] = 'Credentials groups need to have been created in the <a href="{$a}" target="_blank">Accredible Dashboard</a> before credentials can be issued. If none appear, check your API Key to make sure integration is set up correctly.';
 $string['accrediblegroup'] = 'Accredible Group';
+
+$string['privacy:metadata:accredible'] = 'In order to integrate with Accredible, user data needs to be exchanged with that service.';
+$string['privacy:metadata:accredible:email'] = 'Your email address is sent to Accredible to issue a credential.';
+$string['privacy:metadata:accredible:fullname'] = 'Your full name is sent to Accredible to issue a credential.';

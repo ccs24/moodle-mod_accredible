@@ -238,9 +238,9 @@ class apirest {
     public function create_evidence_item_duration($startdate, $enddate, $credentialid, $hidden = false) {
 
         $durationinfo = array(
-            'start_date' => date("Y-m-d", strtotime($startdate)),
+            'start_date' => date("Y-m-d", $startdate),
             'end_date' => date("Y-m-d", strtotime($enddate)),
-            'duration_in_days' => floor( (strtotime($enddate) - strtotime($startdate)) / 86400)
+            'duration_in_days' => floor( (strtotime($enddate) - $startdate) / 86400)
         );
 
         // Multi day duration.

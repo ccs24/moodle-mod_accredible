@@ -69,13 +69,13 @@ function accredible_add_instance($post) {
                     if ($usersgrade < 50) {
                         $gradeevidence['hidden'] = true;
                     }
-                    $evidenceitems->accredible_post_evidence($credentialid, $gradeevidence, true);
+                    $evidenceitems->post_evidence($credentialid, $gradeevidence, true);
                 }
                 if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
-                    $evidenceitems->accredible_post_evidence($credentialid, $transcript, true);
+                    $evidenceitems->post_evidence($credentialid, $transcript, true);
                 }
-                $evidenceitems->$evidenceitems->accredible_post_essay_answers($userid, $post->course, $credentialid);
-                accredible_course_duration_evidence($userid, $post->course, $credentialid);
+                $evidenceitems->post_essay_answers($userid, $post->course, $credentialid);
+                $evidenceitems->course_duration_evidence($userid, $post->course, $credentialid);
             }
         }
     }
@@ -143,13 +143,13 @@ function accredible_update_instance($post) {
                         if ($usersgrade < 50) {
                             $gradeevidence['hidden'] = true;
                         }
-                        $evidenceitems->accredible_post_evidence($credentialid, $gradeevidence, true);
+                        $evidenceitems->post_evidence($credentialid, $gradeevidence, true);
                     }
                     if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
-                        $evidenceitems->accredible_post_evidence($credentialid, $transcript, true);
+                        $evidenceitems->post_evidence($credentialid, $transcript, true);
                     }
-                    $evidenceitems->accredible_post_essay_answers($userid, $post->course, $credentialid);
-                    accredible_course_duration_evidence($userid, $post->course, $credentialid, $completedtimestamp);
+                    $evidenceitems->post_essay_answers($userid, $post->course, $credentialid);
+                    $evidenceitems->course_duration_evidence($userid, $post->course, $credentialid, $completedtimestamp);
                 } else if ($accrediblecertificate->achievementid) {
                     if ($post->finalquiz) {
                         $quiz = $DB->get_record('quiz', array('id' => $post->finalquiz), '*', MUST_EXIST);
@@ -203,13 +203,13 @@ function accredible_update_instance($post) {
                     if ($usersgrade < 50) {
                         $gradeevidence['hidden'] = true;
                     }
-                    $evidenceitems->accredible_post_evidence($credentialid, $gradeevidence, true);
+                    $evidenceitems->post_evidence($credentialid, $gradeevidence, true);
                 }
                 if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
-                    $evidenceitems->accredible_post_evidence($credentialid, $transcript, true);
+                    $evidenceitems->post_evidence($credentialid, $transcript, true);
                 }
-                $evidenceitems->accredible_post_essay_answers($userid, $post->course, $credentialid);
-                accredible_course_duration_evidence($userid, $post->course, $credentialid, $completedtimestamp);
+                $evidenceitems->post_essay_answers($userid, $post->course, $credentialid);
+                $evidenceitems->course_duration_evidence($userid, $post->course, $credentialid, $completedtimestamp);
 
                 // Log the creation.
                 $event = accredible_log_creation(

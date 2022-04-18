@@ -166,11 +166,11 @@ function accredible_issue_default_certificate($userid, $certificateid, $name, $e
     $evidenceitem = new evidenceitem();
 
     if ($transcript = accredible_get_transcript($accrediblecertificate->course, $userid, $accrediblecertificate->finalquiz)) {
-        $evidenceitem->accredible_post_evidence($credentialid, $transcript, false);
+        $evidenceitem->post_evidence($credentialid, $transcript, false);
     }
 
-    $evidenceitem->accredible_post_essay_answers($userid, $accrediblecertificate->course, $credentialid);
-    $evidenceitem->accredible_course_duration_evidence($userid, $accrediblecertificate->course, $credentialid, $completedtimestamp);
+    $evidenceitem->post_essay_answers($userid, $accrediblecertificate->course, $credentialid);
+    $evidenceitem->course_duration_evidence($userid, $accrediblecertificate->course, $credentialid, $completedtimestamp);
 
     return json_decode($result);
 }

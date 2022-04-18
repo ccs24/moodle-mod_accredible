@@ -62,7 +62,7 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
     /**
      * Post credential evidence test
      */
-    public function test_accredible_post_evidence() {
+    public function test_post_evidence() {
         // When the throw_error is FALSE and the response is successful.
         $mockclient1 = $this->getMockBuilder('client')
             ->setMethods(['post'])
@@ -90,7 +90,7 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
         // Expect to return resdata.
         $api = new apirest($mockclient1);
         $evidenceitems = new evidenceitems($api);
-        $result = $evidenceitems->accredible_post_evidence(1, $evidenceitem, false);
+        $result = $evidenceitems->post_evidence(1, $evidenceitem, false);
         $this->assertEquals($result, null);
 
         // When the throw_error is FALSE and the response is NOT successful.
@@ -111,7 +111,7 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
         // Expect to not throwing an exception.
         $api = new apirest($mockclient2);
         $evidenceitems = new evidenceitems($api);
-        $result = $evidenceitems->accredible_post_evidence(1, $evidenceitem, false);
+        $result = $evidenceitems->post_evidence(1, $evidenceitem, false);
         $this->assertEquals($result, null);
 
         // When the throw_error is TRUE and the response is NOT successful.
@@ -134,7 +134,7 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
         $api = new apirest($mockclient3);
         $evidenceitems = new evidenceitems($api);
         try {
-            $evidenceitems->accredible_post_evidence(1, $evidenceitem, true, $api);
+            $evidenceitems->post_evidence(1, $evidenceitem, true, $api);
         } catch (\moodle_exception $error) {
             $foundexception = true;
         }
@@ -144,20 +144,20 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
     /**
      * Post credential evidence from essay answers test
      */
-    public function test_accredible_post_essay_answers() {
+    public function test_post_essay_answers() {
         global $DB;
 
         $evidenceitems = new evidenceitems();
 
         // When there are not quizes.
-        $result = $evidenceitems->accredible_post_essay_answers(1, 1, 1);
+        $result = $evidenceitems->post_essay_answers(1, 1, 1);
 
         $this->assertEmpty($DB->get_records('quiz'));
         $this->assertEquals($result, null);
 
         // When there are not quiz attempts.
         $this->create_quiz_module(1);
-        $result = $evidenceitems->accredible_post_essay_answers(1, 1, 1);
+        $result = $evidenceitems->post_essay_answers(1, 1, 1);
 
         $this->assertEmpty($DB->get_records('quiz_attempts'));
         $this->assertEquals($result, null);
@@ -165,7 +165,7 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
         // When there are no quiz attemps for user.
         $quiz = $this->create_quiz_module(1);
         $this->create_quiz_grades($quiz->id, 2, 5);
-        $result = $evidenceitems->accredible_post_essay_answers(1, 1, 1);
+        $result = $evidenceitems->post_essay_answers(1, 1, 1);
 
         $this->assertEquals($result, null);
 
@@ -215,32 +215,40 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
 
         $api = new apirest($mockclient1);
         $evidenceitems = new evidenceitems($api);
-        $result = $evidenceitems->accredible_post_essay_answers($this->user->id, 1, 1);
+        $result = $evidenceitems->post_essay_answers($this->user->id, 1, 1);
         $this->assertEquals($result, null);
     }
 
     /**
      * Post credential evidence test
      */
-    public function test_accredible_course_duration_evidence() {
+    public function test_course_duration_evidence() {
         global $DB;
 
         $evidenceitems = new evidenceitems();
 
         // When there are not enrolments.
-        $result = $evidenceitems->accredible_course_duration_evidence(1, 1, 1);
+        $result = $evidenceitems->course_duration_evidence(1, 1, 1);
         $this->assertEquals($result, null);
 
         // When there is enrolment with timestart 0.
         $enrolid = $this->create_enrolment(1);
-        $enrolid = $this->create_user_enrolment($enrolid, 2, 0);
+        $this->create_user_enrolment($enrolid, 2, 0);
 
-        $result = $evidenceitems->accredible_course_duration_evidence(2, 1, 1);
+        $result = $evidenceitems->course_duration_evidence(2, 1, 1);
         $this->assertEquals($result, null);
 
-        // When there is enrolment with timestart.
+        // When there is enrolment with completed time > enrol start.
         $enrolid = $this->create_enrolment(1);
-        $enrolid = $this->create_user_enrolment($enrolid, $this->user->id, time());
+        $this->create_user_enrolment($enrolid, $this->user->id, strtotime('2022-04-19'));
+
+        $result = $evidenceitems->course_duration_evidence($this->user->id, 1, 1, date("Y-m-d", strtotime('2022-04-17')));
+        $this->assertEquals($result, null);
+
+        // When there is enrolment with completed time < enrol start.
+        $user = $this->getDataGenerator()->create_user();
+        $enrolid = $this->create_enrolment(1);
+        $this->create_user_enrolment($enrolid, $user->id, strtotime('2022-04-15'));
 
         $mockclient1 = $this->getMockBuilder('client')
             ->setMethods(['post'])
@@ -252,15 +260,30 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
         // Expect to call the endpoint once with url and reqdata.
         $url = 'https://api.accredible.com/v1/credentials/1/evidence_items';
 
+        $stringobject = array(
+            "start_date"       => "2022-04-15",
+            "end_date"         => "2022-04-17",
+            "duration_in_days" => 2
+        );
+        $evidenceitem = array(
+            "evidence_item" => array(
+                "description"   => 'Completed in 2 days',
+                "category"      => 'course_duration',
+                "string_object" => json_encode($stringobject),
+                "hidden"        => true
+            )
+        );
+        $reqdata = json_encode($evidenceitem);
+
         $mockclient1->expects($this->once())
             ->method('post')
-            ->with($this->equalTo($url))
+            ->with($this->equalTo($url), $this->equalTo($reqdata))
             ->willReturn($resdata);
 
         $api = new apirest($mockclient1);
         $evidenceitems = new evidenceitems($api);
 
-        $result = $evidenceitems->accredible_course_duration_evidence($this->user->id, 1, 1);
+        $result = $evidenceitems->course_duration_evidence($user->id, 1, 1, date("Y-m-d", strtotime('2022-04-17')));
         $this->assertEquals($result, null);
     }
 

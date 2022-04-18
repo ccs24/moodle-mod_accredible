@@ -54,7 +54,7 @@ class evidenceitems {
      * @param stdObject $evidenceitem
      * @param bool $throwerror
      */
-    public function accredible_post_evidence($credentialid, $evidenceitem, $throwerror = false) {
+    public function post_evidence($credentialid, $evidenceitem, $throwerror = false) {
         $this->apirest->create_evidence_item(array('evidence_item' => $evidenceitem), $credentialid, $throwerror);
     }
 
@@ -65,8 +65,8 @@ class evidenceitems {
      * @param int $courseid
      * @param int $credentialid
      */
-    public function accredible_post_essay_answers($userid, $courseid, $credentialid) {
-        global $DB, $CFG;
+    public function post_essay_answers($userid, $courseid, $credentialid) {
+        global $DB;
 
         // Grab the course quizes.
         if ($quizes = $DB->get_records_select('quiz', 'course = :course_id', array('course_id' => $courseid)) ) {
@@ -119,7 +119,7 @@ class evidenceitems {
                         $evidenceitem['hidden'] = true;
 
                         // Post the evidence.
-                        $this->accredible_post_evidence($credentialid, $evidenceitem, false);
+                        $this->post_evidence($credentialid, $evidenceitem, false);
                     }
                 }
             }
@@ -134,8 +134,8 @@ class evidenceitems {
      * @param int $credentialid
      * @param date|null $completedtimestamp
      */
-    public function accredible_course_duration_evidence($userid, $courseid, $credentialid, $completedtimestamp = null) {
-        global $DB, $CFG;
+    public function course_duration_evidence($userid, $courseid, $credentialid, $completedtimestamp = null) {
+        global $DB;
 
         $sql = "SELECT enrol.id, ue.timestart
                         FROM {enrol} enrol, {user_enrolments} ue
@@ -150,7 +150,7 @@ class evidenceitems {
             }
 
             if ($enrolmenttimestamp && $enrolmenttimestamp != 0 &&
-                (strtotime($enrolmenttimestamp) < strtotime($completedtimestamp))) {
+                ($enrolmenttimestamp < strtotime($completedtimestamp))) {
                 $this->apirest->create_evidence_item_duration($enrolmenttimestamp, $completedtimestamp, $credentialid, true);
             }
         }

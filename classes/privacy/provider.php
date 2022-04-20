@@ -48,6 +48,7 @@ class provider implements
         $collection->add_external_location_link('accredible', [
             'email' => 'privacy:metadata:accredible:email',
             'fullname' => 'privacy:metadata:accredible:fullname',
+            'quizgrade' => 'privacy:metadata:accredible:quizgrade',
         ], 'privacy:metadata:accredible');
 
         return $collection;

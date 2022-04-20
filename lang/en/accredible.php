@@ -82,4 +82,4 @@ $string['accrediblegroup'] = 'Accredible Group';
 $string['privacy:metadata:accredible'] = 'In order to integrate with Accredible, user data needs to be exchanged with that service.';
 $string['privacy:metadata:accredible:email'] = 'Your email address is sent to Accredible to issue a credential.';
 $string['privacy:metadata:accredible:fullname'] = 'Your full name is sent to Accredible to issue a credential.';
-$string['privacy:metadata:accredible:quizgrade'] = 'Your quiz grade is sent to Accredible to issue a credential.';
+$string['privacy:metadata:accredible:quizgrade'] = 'Your quiz grade may be sent to Accredible to issue a credential.';

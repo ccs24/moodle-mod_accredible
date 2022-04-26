@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_accredible\local;
-defined('MOODLE_INTERNAL') || die();
 
 use mod_accredible\apirest\apirest;
 use mod_accredible\Html2Text\Html2Text;
@@ -121,49 +120,6 @@ class groups {
             return $templates;
         } catch (\Exception $e) {
             throw new \moodle_exception('gettemplateserror', 'accredible', 'https://help.accredible.com/hc/en-us');
-        }
-    }
-
-    /**
-     * Sync the selected course information with a group on Accredible - returns a group ID.
-     * Optionally takes a group ID so we can set it and change the assigned group.
-     *
-     * @param stdClass $course
-     * @param int|null $instanceid
-     * @param int|null $groupid
-     * @return int $groupid
-     */
-    public function sync_group_with($course, $instanceid = null, $groupid = null) {
-        global $DB;
-
-        $courselink = new \moodle_url('/course/view.php', array('id' => $course->id));
-
-        try {
-            if ($instanceid != null) {
-                // Update the group.
-                $accredible = $DB->get_record('accredible', array('id' => $instanceid), '*', MUST_EXIST);
-                // Get the group id.
-                if (!isset($groupid)) {
-                    $groupid = $accredible->groupid;
-                }
-                $res = $this->apirest->update_group($groupid, null, null, null, $courselink);
-            } else {
-                // Create a new Group on Accredible.
-                $description = Html2Text::convert($course->summary);
-                if (empty($description)) {
-                    $description = "Recipient has compeleted the achievement.";
-                }
-                // Add a random number to deal with duplicate course names.
-                $name = $course->shortname . $this->rand;
-                $res = $this->apirest->create_group($name, $course->fullname, $description, $courselink);
-            }
-            return $res->group->id;
-        } catch (\Exception $e) {
-            throw new \moodle_exception('syncgroupwitherror',
-                                        'accredible',
-                                        'https://help.accredible.com/hc/en-us',
-                                        $course->id,
-                                        $course->id);
         }
     }
 }

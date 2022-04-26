@@ -75,5 +75,11 @@ $string['viewsubheaderold'] = 'Achievement ID: {$a}';
 $string['viewsubheader'] = 'Group ID: {$a}';
 
 $string['gotodashboard'] = 'To update the appearance of your badges and certificates, visit: <a href="https://dashboard.accredible.com" target="_blank">https://dashboard.accredible.com</a>';
-$string['activitydescription'] = 'This module automatically creates and updates a Credential Group on Accredible. Any certificates and badges issued are in this group and their appearance and information can be updated on <a href="https://dashboard.accredible.com" target="_blank">the dashboard</a>.';
 $string['overview'] = 'Overview';
+$string['activitygroupdescription'] = 'Credentials groups need to have been created in the <a href="{$a}" target="_blank">Accredible Dashboard</a> before credentials can be issued. If none appear, check your API Key to make sure integration is set up correctly.';
+$string['accrediblegroup'] = 'Accredible Group';
+
+$string['privacy:metadata:accredible'] = 'In order to integrate with Accredible, user data needs to be exchanged with that service.';
+$string['privacy:metadata:accredible:email'] = 'Your email address is sent to Accredible to issue a credential.';
+$string['privacy:metadata:accredible:fullname'] = 'Your full name is sent to Accredible to issue a credential.';
+$string['privacy:metadata:accredible:quizgrade'] = 'Your quiz grade may be sent to Accredible to issue a credential.';

@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_accredible\apirest;
-defined('MOODLE_INTERNAL') || die();
 
 use mod_accredible\client\client;
 
@@ -123,60 +122,6 @@ class apirest {
         $data = json_encode($data);
 
         return $this->client->post("{$this->apiendpoint}sso/generate_link", $data);
-    }
-
-    /**
-     * Update a Group
-     * @param string $id
-     * @param string|null $name
-     * @param string|null $coursename
-     * @param string|null $coursedescription
-     * @param string|null $courselink
-     * @param string|null $designid
-     * @return stdObject
-     */
-    public function update_group($id, $name = null, $coursename = null,
-        $coursedescription = null, $courselink = null, $designid = null) {
-
-        $data = array(
-            "group" => array(
-                "name" => $name,
-                "course_name" => $coursename,
-                "course_description" => $coursedescription,
-                "course_link" => $courselink,
-                "design_id" => $designid
-            )
-        );
-
-        $data = $this->strip_empty_keys($data);
-
-        $data = json_encode($data);
-
-        return $this->client->put("{$this->apiendpoint}issuer/groups/{$id}", $data);
-    }
-
-    /**
-     * Create a new Group
-     * @param string $name
-     * @param string $coursename
-     * @param string $coursedescription
-     * @param string|null $courselink
-     * @return stdObject
-     */
-    public function create_group($name, $coursename, $coursedescription, $courselink = null) {
-
-        $data = array(
-            "group" => array(
-                "name" => $name,
-                "course_name" => $coursename,
-                "course_description" => $coursedescription,
-                "course_link" => $courselink
-            )
-        );
-
-        $data = json_encode($data);
-
-        return $this->client->post("{$this->apiendpoint}issuer/groups", $data);
     }
 
     /**
@@ -317,6 +262,15 @@ class apirest {
         $data = json_encode($data);
 
         return $this->client->post("{$this->apiendpoint}credentials", $data);
+    }
+
+    /**
+     * Get Group
+     * @param int $id
+     * @return stdObject
+     */
+    public function get_group($id) {
+        return $this->client->get($this->apiendpoint.'issuer/groups/' . $id);
     }
 
     /**

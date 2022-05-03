@@ -242,7 +242,7 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
         $enrolid = $this->create_enrolment(1);
         $this->create_user_enrolment($enrolid, $this->user->id, strtotime('2022-04-19'));
 
-        $result = $evidenceitems->course_duration_evidence($this->user->id, 1, 1, date("Y-m-d", strtotime('2022-04-17')));
+        $result = $evidenceitems->course_duration_evidence($this->user->id, 1, 1, strtotime('2022-04-17'));
         $this->assertEquals($result, null);
 
         // When there is enrolment with completed time < enrol start.
@@ -283,7 +283,7 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
         $api = new apirest($mockclient1);
         $evidenceitems = new evidenceitems($api);
 
-        $result = $evidenceitems->course_duration_evidence($user->id, 1, 1, date("Y-m-d", strtotime('2022-04-17')));
+        $result = $evidenceitems->course_duration_evidence($user->id, 1, 1, strtotime('2022-04-17'));
         $this->assertEquals($result, null);
     }
 

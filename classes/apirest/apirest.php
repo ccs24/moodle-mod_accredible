@@ -229,8 +229,8 @@ class apirest {
 
     /**
      * Creates a Grade evidence item on a given credential.
-     * @param string $startdate
-     * @param string $enddate
+     * @param int $startdate
+     * @param int $enddate
      * @param string $credentialid
      * @param bool $hidden
      * @return stdObject
@@ -239,8 +239,8 @@ class apirest {
 
         $durationinfo = array(
             'start_date' => date("Y-m-d", $startdate),
-            'end_date' => date("Y-m-d", strtotime($enddate)),
-            'duration_in_days' => floor( (strtotime($enddate) - $startdate) / 86400)
+            'end_date' => date("Y-m-d", $enddate),
+            'duration_in_days' => floor( ($enddate - $startdate) / 86400)
         );
 
         // Multi day duration.

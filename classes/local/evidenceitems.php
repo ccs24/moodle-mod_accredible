@@ -132,7 +132,7 @@ class evidenceitems {
      * @param int $userid
      * @param int $courseid
      * @param int $credentialid
-     * @param date|null $completedtimestamp
+     * @param int|null $completedtimestamp
      */
     public function course_duration_evidence($userid, $courseid, $credentialid, $completedtimestamp = null) {
         global $DB;
@@ -146,11 +146,11 @@ class evidenceitems {
             $enrolmenttimestamp = $enrolment->timestart;
 
             if (!isset($completedtimestamp)) {
-                $completedtimestamp = date("Y-m-d");
+                $completedtimestamp = time();
             }
 
             if ($enrolmenttimestamp && $enrolmenttimestamp != 0 &&
-                ($enrolmenttimestamp < strtotime($completedtimestamp))) {
+                ($enrolmenttimestamp < $completedtimestamp)) {
                 $this->apirest->create_evidence_item_duration($enrolmenttimestamp, $completedtimestamp, $credentialid, true);
             }
         }

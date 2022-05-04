@@ -26,6 +26,7 @@
 use mod_accredible\apirest\apirest;
 use mod_accredible\Html2Text\Html2Text;
 use mod_accredible\local\credentials;
+use mod_accredible\local\evidenceitems;
 
 /**
  * Checks if a user has earned a specific credential according to the activity settings

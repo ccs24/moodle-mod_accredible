@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/accredible/locallib.php');
 use mod_accredible\local\credentials;
 use mod_accredible\local\groups;
+use mod_accredible\local\evidenceitems;
 
 /**
  * Add certificate instance.

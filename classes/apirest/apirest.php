@@ -190,7 +190,7 @@ class apirest {
         );
 
         // Multi day duration.
-        if ($durationinfo['duration_in_days'] && $durationinfo['duration_in_days'] != 0) {
+        if ($durationinfo['duration_in_days'] && $durationinfo['duration_in_days'] > 0) {
 
             $evidenceitem = array(
                 "evidence_item" => array(
@@ -205,7 +205,7 @@ class apirest {
 
             return $result;
             // It may be completed in one day.
-        } else if ($durationinfo['start_date'] != $durationinfo['end_date']) {
+        } else if ($durationinfo['end_date'] >= $durationinfo['start_date']) {
             $durationinfo['duration_in_days'] = 1;
 
             $evidenceitem = array(

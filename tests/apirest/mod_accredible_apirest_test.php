@@ -566,6 +566,99 @@ class mod_accredible_apirest_test extends \advanced_testcase {
     }
 
     /**
+     * Tests if `POST /v1/credentials/:credential_id/evidence_items`
+     * is properly called when sending duration items.
+     */
+    public function test_create_evidence_item_duration() {
+        // Mock API response data.
+        $resdata = $this->mockapi->resdata('evidence_items/create_success.json');
+
+        // When the startdate == enddate.
+        $startdate = strtotime('2022-04-15');
+        $enddate = strtotime('2022-04-15');
+        $mockclient1 = $this->getMockBuilder('client')
+            ->setMethods(['post'])
+            ->getMock();
+
+        // Expect to call the endpoint once with url and reqdata.
+        $url = 'https://api.accredible.com/v1/credentials/1/evidence_items';
+        $stringobject = array(
+            "start_date"       => "2022-04-15",
+            "end_date"         => "2022-04-15",
+            "duration_in_days" => 1
+        );
+        $evidenceitem = array(
+            "evidence_item" => array(
+                "description"   => 'Completed in 1 day',
+                "category"      => 'course_duration',
+                "string_object" => json_encode($stringobject),
+                "hidden"        => false
+            )
+        );
+        $reqdata = json_encode($evidenceitem);
+
+        $mockclient1->expects($this->once())
+            ->method('post')
+            ->with($this->equalTo($url),
+                   $this->equalTo($reqdata))
+            ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apirest($mockclient1);
+        $result = $api->create_evidence_item_duration($startdate, $enddate, 1);
+        $this->assertEquals($result, $resdata);
+
+        // When the startdate < enddate.
+        $startdate = strtotime('2022-04-15');
+        $enddate = strtotime('2022-04-17');
+        $mockclient2 = $this->getMockBuilder('client')
+            ->setMethods(['post'])
+            ->getMock();
+
+        // Expect to call the endpoint once with url and reqdata.
+        $url = 'https://api.accredible.com/v1/credentials/1/evidence_items';
+        $stringobject = array(
+            "start_date"       => "2022-04-15",
+            "end_date"         => "2022-04-17",
+            "duration_in_days" => 2
+        );
+        $evidenceitem = array(
+            "evidence_item" => array(
+                "description"   => 'Completed in 2 days',
+                "category"      => 'course_duration',
+                "string_object" => json_encode($stringobject),
+                "hidden"        => false
+            )
+        );
+        $reqdata = json_encode($evidenceitem);
+
+        $mockclient2->expects($this->once())
+            ->method('post')
+            ->with($this->equalTo($url),
+                   $this->equalTo($reqdata))
+            ->willReturn($resdata);
+
+        // Expect to return resdata.
+        $api = new apirest($mockclient2);
+        $result = $api->create_evidence_item_duration($startdate, $enddate, 1);
+        $this->assertEquals($result, $resdata);
+
+        // When startdate > enddate.
+        $startdate = strtotime('2022-04-18');
+        $enddate = strtotime('2022-04-15');
+
+        // Expect to throw an exception.
+        $api = new apirest();
+        $foundexception = false;
+        try {
+            $api->create_evidence_item_duration($startdate, $enddate, 1);
+        } catch (\InvalidArgumentException $error) {
+            $foundexception = true;
+        }
+        $this->assertTrue($foundexception);
+    }
+
+    /**
      * Tests if `PUT /v1/credentials/:credential_id/evidence_items/:id`
      * is properly called.
      */

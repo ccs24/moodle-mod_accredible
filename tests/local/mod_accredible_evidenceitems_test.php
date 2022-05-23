@@ -245,47 +245,6 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
         $result = $evidenceitems->course_duration_evidence($this->user->id, 1, 1, strtotime('2022-04-17'));
         $this->assertEquals($result, null);
 
-        // When there is enrolment with completed time equals enrol start.
-        $user = $this->getDataGenerator()->create_user();
-        $enrolid = $this->create_enrolment(1);
-        $this->create_user_enrolment($enrolid, $user->id, strtotime('2022-04-15'));
-
-        $mockclient1 = $this->getMockBuilder('client')
-            ->setMethods(['post'])
-            ->getMock();
-
-        // Mock API response data.
-        $resdata = $this->mockapi->resdata('evidence_items/create_success.json');
-
-        // Expect to call the endpoint once with url and reqdata.
-        $url = 'https://api.accredible.com/v1/credentials/1/evidence_items';
-
-        $stringobject = array(
-            "start_date"       => "2022-04-15",
-            "end_date"         => "2022-04-15",
-            "duration_in_days" => 1
-        );
-        $evidenceitem = array(
-            "evidence_item" => array(
-                "description"   => 'Completed in 1 day',
-                "category"      => 'course_duration',
-                "string_object" => json_encode($stringobject),
-                "hidden"        => true
-            )
-        );
-        $reqdata = json_encode($evidenceitem);
-
-        $mockclient1->expects($this->once())
-            ->method('post')
-            ->with($this->equalTo($url), $this->equalTo($reqdata))
-            ->willReturn($resdata);
-
-        $api = new apirest($mockclient1);
-        $evidenceitems = new evidenceitems($api);
-
-        $result = $evidenceitems->course_duration_evidence($user->id, 1, 1, strtotime('2022-04-15'));
-        $this->assertEquals($result, null);
-
         // When there is enrolment with completed time < enrol start.
         $user = $this->getDataGenerator()->create_user();
         $enrolid = $this->create_enrolment(1);

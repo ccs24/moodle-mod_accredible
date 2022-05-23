@@ -190,7 +190,7 @@ class apirest {
         );
 
         // Multi day duration.
-        if ($durationinfo['duration_in_days'] && $durationinfo['duration_in_days'] != 0) {
+        if ($durationinfo['duration_in_days'] && $durationinfo['duration_in_days'] > 0) {
 
             $evidenceitem = array(
                 "evidence_item" => array(

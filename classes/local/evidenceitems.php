@@ -150,7 +150,7 @@ class evidenceitems {
             }
 
             if ($enrolmenttimestamp && $enrolmenttimestamp != 0 &&
-                ($enrolmenttimestamp < $completedtimestamp)) {
+                ($enrolmenttimestamp <= $completedtimestamp)) {
                 $this->apirest->create_evidence_item_duration($enrolmenttimestamp, $completedtimestamp, $credentialid, true);
             }
         }

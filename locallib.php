@@ -26,6 +26,7 @@
 use mod_accredible\apirest\apirest;
 use mod_accredible\Html2Text\Html2Text;
 use mod_accredible\local\credentials;
+use mod_accredible\local\evidenceitems;
 
 /**
  * Checks if a user has earned a specific credential according to the activity settings
@@ -163,12 +164,14 @@ function accredible_issue_default_certificate($userid, $certificateid, $name, $e
         $response = $restapi->create_evidence_item_grade($grade, $quizname, $credentialid, $hidden);
     }
 
+    $evidenceitem = new evidenceitem();
+
     if ($transcript = accredible_get_transcript($accrediblecertificate->course, $userid, $accrediblecertificate->finalquiz)) {
-        accredible_post_evidence($credentialid, $transcript, false);
+        $evidenceitem->post_evidence($credentialid, $transcript, false);
     }
 
-    accredible_post_essay_answers($userid, $accrediblecertificate->course, $credentialid);
-    accredible_course_duration_evidence($userid, $accrediblecertificate->course, $credentialid, $completedtimestamp);
+    $evidenceitem->post_essay_answers($userid, $accrediblecertificate->course, $credentialid);
+    $evidenceitem->course_duration_evidence($userid, $accrediblecertificate->course, $credentialid, $completedtimestamp);
 
     return json_decode($result);
 }
@@ -468,18 +471,6 @@ function accredible_get_transcript($courseid, $userid, $finalquizid) {
 }
 
 /**
- * Create evidence item
- *
- * @param int $credentialid
- * @param stdObject $evidenceitem
- * @param bool $throwerror
- */
-function accredible_post_evidence($credentialid, $evidenceitem, $throwerror = false) {
-    $api = new apirest();
-    $api->create_evidence_item(array('evidence_item' => $evidenceitem), $credentialid, $throwerror);
-}
-
-/**
  * Serialize completion array
  *
  * @param Array $completionarray
@@ -495,102 +486,6 @@ function serialize_completion_array($completionarray) {
  */
 function unserialize_completion_array($completionobject) {
     return (array)unserialize(base64_decode( $completionobject ));
-}
-
-/**
- * Post answers from essay
- *
- * @param int $userid
- * @param int $courseid
- * @param int $credentialid
- */
-function accredible_post_essay_answers($userid, $courseid, $credentialid) {
-    global $DB, $CFG;
-
-    // Grab the course quizes.
-    if ($quizes = $DB->get_records_select('quiz', 'course = :course_id', array('course_id' => $courseid)) ) {
-        foreach ($quizes as $quiz) {
-            $evidenceitem = array('description' => $quiz->name);
-            // Grab quiz attempts.
-            $quizattempt = $DB->get_records('quiz_attempts', array('quiz' => $quiz->id,
-                'userid' => $userid), '-attempt', '*', 0, 1);
-
-            if ($quizattempt) {
-                $sql = "SELECT
-                        qa.id,
-                        quiza.quiz,
-                        quiza.id AS quizattemptid,
-                        quiza.timestart,
-                        quiza.timefinish,
-                        qa.slot,
-                        qa.behaviour,
-                        qa.questionsummary AS question,
-                        qa.responsesummary AS answer
-
-                FROM ".$CFG->prefix."quiz_attempts quiza
-                JOIN ".$CFG->prefix."question_usages qu ON qu.id = quiza.uniqueid
-                JOIN ".$CFG->prefix."question_attempts qa ON qa.questionusageid = qu.id
-
-                WHERE quiza.id = ? && qa.behaviour = 'manualgraded'
-
-                ORDER BY quiza.userid, quiza.attempt, qa.slot";
-
-                if ( $questions = $DB->get_records_sql($sql, array(reset($quizattempt)->id)) ) {
-                    $questionsoutput = "<style>#main {  max-width: 780px;margin-left: auto;";
-                    $questionsoutput .= "margin-right: auto;margin-top: 50px;margin-bottom: 80px; font-family: Arial;} ";
-                    $questionsoutput .= "h1, h5 {   text-align: center;} ";
-                    $questionsoutput .= ".answer { border: 1px solid grey; padding: 20px; font-size: 14px; ";
-                    $questionsoutput .= "line-height: 22px; margin-bottom:30px; margin-top:30px;} ";
-                    $questionsoutput .= "p {font-size: 14px; line-height: 18px;} </style>";
-                    $questionsoutput .= "<div id='main'>";
-                    $questionsoutput .= "<h1>" . $quiz->name . "</h1>";
-                    $questionsoutput .= "<h5>Time Taken: ".
-                        seconds_to_str( current($questions)->timefinish - current($questions)->timestart ) ."</h5>";
-
-                    foreach ($questions as $questionattempt) {
-                        $questionsoutput .= $questionattempt->question;
-                        $questionsoutput .= "<div class='answer'>".$questionattempt->answer."</div>";
-                    }
-
-                    $questionsoutput .= "</div>";
-
-                    $evidenceitem['string_object'] = $questionsoutput;
-                    $evidenceitem['hidden'] = true;
-
-                    // Post the evidence.
-                    accredible_post_evidence($credentialid, $evidenceitem, false);
-                }
-            }
-        }
-    }
-}
-
-/**
- * Create evidence course duration
- *
- * @param int $userid
- * @param int $courseid
- * @param int $credentialid
- * @param date|null $completedtimestamp
- */
-function accredible_course_duration_evidence($userid, $courseid, $credentialid, $completedtimestamp = null) {
-    global $DB, $CFG;
-
-    $sql = "SELECT enrol.id, ue.timestart
-                    FROM ".$CFG->prefix."enrol enrol, ".$CFG->prefix."user_enrolments ue
-                    WHERE enrol.id = ue.enrolid AND ue.userid = ? AND enrol.courseid = ?";
-    $enrolment = $DB->get_record_sql($sql, array($userid, $courseid));
-    $enrolmenttimestamp = $enrolment->timestart;
-
-    if (!isset($completedtimestamp)) {
-        $completedtimestamp = date("Y-m-d");
-    }
-
-    if ($enrolmenttimestamp && $enrolmenttimestamp != 0 && (strtotime($enrolmenttimestamp) < strtotime($completedtimestamp))) {
-        $apirest = new apirest();
-
-        $apirest->create_evidence_item_duration($enrolmenttimestamp, $completedtimestamp, $credentialid, true);
-    }
 }
 
 /**

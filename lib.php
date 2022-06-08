@@ -58,23 +58,25 @@ function accredible_add_instance($post) {
 
                 $credential = $localcredentials->create_credential($user, $post->groupid);
 
-                // Evidence item posts.
-                $credentialid = $credential->id;
-                if ($post->finalquiz) {
-                    $quiz = $DB->get_record('quiz', array('id' => $post->finalquiz), '*', MUST_EXIST);
-                    $usersgrade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
-                    $gradeevidence = array('string_object' => (string) $usersgrade,
-                        'description' => $quiz->name, 'custom' => true, 'category' => 'grade');
-                    if ($usersgrade < 50) {
-                        $gradeevidence['hidden'] = true;
+                if ($credential) {
+                    // Evidence item posts.
+                    $credentialid = $credential->id;
+                    if ($post->finalquiz) {
+                        $quiz = $DB->get_record('quiz', array('id' => $post->finalquiz), '*', MUST_EXIST);
+                        $usersgrade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
+                        $gradeevidence = array('string_object' => (string) $usersgrade,
+                            'description' => $quiz->name, 'custom' => true, 'category' => 'grade');
+                        if ($usersgrade < 50) {
+                            $gradeevidence['hidden'] = true;
+                        }
+                        $evidenceitems->post_evidence($credentialid, $gradeevidence, true);
                     }
-                    $evidenceitems->post_evidence($credentialid, $gradeevidence, true);
+                    if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
+                        $evidenceitems->post_evidence($credentialid, $transcript, true);
+                    }
+                    $evidenceitems->post_essay_answers($userid, $post->course, $credentialid);
+                    $evidenceitems->course_duration_evidence($userid, $post->course, $credentialid);
                 }
-                if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
-                    $evidenceitems->post_evidence($credentialid, $transcript, true);
-                }
-                $evidenceitems->post_essay_answers($userid, $post->course, $credentialid);
-                $evidenceitems->course_duration_evidence($userid, $post->course, $credentialid);
             }
         }
     }
@@ -125,24 +127,26 @@ function accredible_update_instance($post) {
                 $completeddate = date('Y-m-d', (int) $completedtimestamp);
                 if ($accrediblecertificate->groupid) {
                     // Create the credential.
-                    $result = $localcredentials->create_credential($user, $groupid, $completeddate);
-                    $credentialid = $result->id;
-                    // Evidence item posts.
-                    if ($post->finalquiz) {
-                        $quiz = $DB->get_record('quiz', array('id' => $post->finalquiz), '*', MUST_EXIST);
-                        $usersgrade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
-                        $gradeevidence = array('string_object' => (string) $usersgrade,
-                            'description' => $quiz->name, 'custom' => true, 'category' => 'grade');
-                        if ($usersgrade < 50) {
-                            $gradeevidence['hidden'] = true;
+                    $credential = $localcredentials->create_credential($user, $groupid, $completeddate);
+                    if ($credential) {
+                        $credentialid = $credential->id;
+                        // Evidence item posts.
+                        if ($post->finalquiz) {
+                            $quiz = $DB->get_record('quiz', array('id' => $post->finalquiz), '*', MUST_EXIST);
+                            $usersgrade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
+                            $gradeevidence = array('string_object' => (string) $usersgrade,
+                                'description' => $quiz->name, 'custom' => true, 'category' => 'grade');
+                            if ($usersgrade < 50) {
+                                $gradeevidence['hidden'] = true;
+                            }
+                            $evidenceitems->post_evidence($credentialid, $gradeevidence, true);
                         }
-                        $evidenceitems->post_evidence($credentialid, $gradeevidence, true);
+                        if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
+                            $evidenceitems->post_evidence($credentialid, $transcript, true);
+                        }
+                        $evidenceitems->post_essay_answers($userid, $post->course, $credentialid);
+                        $evidenceitems->course_duration_evidence($userid, $post->course, $credentialid, $completedtimestamp);
                     }
-                    if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
-                        $evidenceitems->post_evidence($credentialid, $transcript, true);
-                    }
-                    $evidenceitems->post_essay_answers($userid, $post->course, $credentialid);
-                    $evidenceitems->course_duration_evidence($userid, $post->course, $credentialid, $completedtimestamp);
                 } else if ($accrediblecertificate->achievementid) {
                     if ($post->finalquiz) {
                         $quiz = $DB->get_record('quiz', array('id' => $post->finalquiz), '*', MUST_EXIST);
@@ -183,35 +187,37 @@ function accredible_update_instance($post) {
                     $credential = $localcredentials->create_credential_legacy($user, $post->achievementid,
                         $post->certificatename, $post->description, $courselink, $completeddate);
                 } else {
-                    $credential = $localcredentials->create_credential($user, $accrediblecertificate->groupid, $completeddate);
+                    $credential = $localcredentials->create_credential($user, $post->groupid, $completeddate);
                 }
 
                 // Evidence item posts.
-                $credentialid = $credential->id;
-                if ($post->finalquiz) {
-                    $quiz = $DB->get_record('quiz', array('id' => $post->finalquiz), '*', MUST_EXIST);
-                    $usersgrade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
-                    $gradeevidence = array('string_object' => (string) $usersgrade,
-                        'description' => $quiz->name, 'custom' => true, 'category' => 'grade');
-                    if ($usersgrade < 50) {
-                        $gradeevidence['hidden'] = true;
+                if ($credential) {
+                    $credentialid = $credential->id;
+                    if ($post->finalquiz) {
+                        $quiz = $DB->get_record('quiz', array('id' => $post->finalquiz), '*', MUST_EXIST);
+                        $usersgrade = min( ( quiz_get_best_grade($quiz, $user->id) / $quiz->grade ) * 100, 100);
+                        $gradeevidence = array('string_object' => (string) $usersgrade,
+                            'description' => $quiz->name, 'custom' => true, 'category' => 'grade');
+                        if ($usersgrade < 50) {
+                            $gradeevidence['hidden'] = true;
+                        }
+                        $evidenceitems->post_evidence($credentialid, $gradeevidence, true);
                     }
-                    $evidenceitems->post_evidence($credentialid, $gradeevidence, true);
-                }
-                if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
-                    $evidenceitems->post_evidence($credentialid, $transcript, true);
-                }
-                $evidenceitems->post_essay_answers($userid, $post->course, $credentialid);
-                $evidenceitems->course_duration_evidence($userid, $post->course, $credentialid, $completedtimestamp);
+                    if ($transcript = accredible_get_transcript($post->course, $userid, $post->finalquiz)) {
+                        $evidenceitems->post_evidence($credentialid, $transcript, true);
+                    }
+                    $evidenceitems->post_essay_answers($userid, $post->course, $credentialid);
+                    $evidenceitems->course_duration_evidence($userid, $post->course, $credentialid, $completedtimestamp);
 
-                // Log the creation.
-                $event = accredible_log_creation(
-                    $credentialid,
-                    $userid,
-                    null,
-                    $post->coursemodule
-                );
-                $event->trigger();
+                    // Log the creation.
+                    $event = accredible_log_creation(
+                        $credentialid,
+                        $userid,
+                        null,
+                        $post->coursemodule
+                    );
+                    $event->trigger();
+                }
             }
         }
     }

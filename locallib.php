@@ -44,7 +44,7 @@ function accredible_check_if_cert_earned($record, $user) {
     $earned = false;
 
     // Check for the existence of an activity instance and an auto-issue rule.
-    if ( $record and ($record->finalquiz or $record->completionactivities) ) {
+    if ( $record && ($record->finalquiz || $record->completionactivities) ) {
 
         if ($record->finalquiz) {
             $quiz = $DB->get_record('quiz', array('id' => $record->finalquiz), '*', MUST_EXIST);
@@ -220,7 +220,7 @@ function accredible_quiz_submission_handler($event) {
     if ($accrediblecertificaterecords = $DB->get_records('accredible', array('course' => $event->courseid))) {
         foreach ($accrediblecertificaterecords as $record) {
             // Check for the existence of an activity instance and an auto-issue rule.
-            if ( $record and ($record->finalquiz or $record->completionactivities) ) {
+            if ( $record && ($record->finalquiz || $record->completionactivities) ) {
                 // Load user grade to attach in the credential.
                 $gradeattributes = $usersclient->get_user_grades($record, $user->id);
                 $customattributes = $usersclient->load_user_grade_as_custom_attributes($record, $gradeattributes, $userid);
@@ -400,7 +400,7 @@ function accredible_course_completed_handler($event) {
     if ($accrediblecertificaterecords = $DB->get_records('accredible', array('course' => $event->courseid))) {
         foreach ($accrediblecertificaterecords as $record) {
             // Check for the existence of an activity instance and an auto-issue rule.
-            if ( $record and ($record->completionactivities && $record->completionactivities != 0) ) {
+            if ( $record && ($record->completionactivities && $record->completionactivities != 0) ) {
                 // Load user grade to attach in the credential.
                 $gradeattributes = $usersclient->get_user_grades($record, $user->id);
                 $customattributes = $usersclient->load_user_grade_as_custom_attributes($record, $gradeattributes, $user->id);

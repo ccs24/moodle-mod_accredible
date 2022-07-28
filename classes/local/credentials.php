@@ -162,7 +162,7 @@ class credentials {
         try {
             $credentials = $this->apirest->get_credentials($groupid, $email);
 
-            if ($credentials->credentials and $credentials->credentials[0]) {
+            if ($credentials->credentials && $credentials->credentials[0]) {
                 return $credentials->credentials[0];
             } else {
                 return false;

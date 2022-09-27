@@ -27,36 +27,47 @@
  */
 class restore_accredible_activity_structure_step extends restore_activity_structure_step {
 
+    /**
+     * Define particular steps this activity can have
+     */
     protected function define_structure() {
 
         $paths = array();
 
         $paths[] = new restore_path_element('accredible', '/activity/accredible');
 
-        // Return the paths wrapped into standard activity structure
+        // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure($paths);
     }
 
+    /**
+     * Process accredible activities to add new ones.
+     * @param object $data old accredible activity
+     */
     protected function process_accredible($data) {
         global $DB;
 
         $data = (object)$data;
         $oldid = $data->id;
         $data->course = $this->get_courseid();
-        
+
         $data->gradeattributegradeitemid = $this->get_mappingid('grade_item', $data->gradeattributegradeitemid);
         $data->finalquiz = $this->get_mappingid('quiz', $data->finalquiz);
 
         $data->timeopen = $this->apply_date_offset($data->timeopen);
         $data->timeclose = $this->apply_date_offset($data->timeclose);
 
-        // insert the accredible record
+        // Insert the accredible record.
         $newitemid = $DB->insert_record('accredible', $data);
-        // immediately after inserting "activity" record, call this
+
+        // Immediately after inserting "activity" record, call this.
         $this->apply_activity_instance($newitemid);
     }
 
+    /**
+     * Method to add any related file.
+     */
     protected function after_execute() {
-        // Add accredible related files, no need to match by itemname (just internally handled context)
+        // Add accredible related files, no need to match by itemname (just internally handled context).
     }
 }

@@ -54,9 +54,6 @@ class restore_accredible_activity_structure_step extends restore_activity_struct
         $data->gradeattributegradeitemid = $this->get_mappingid('grade_item', $data->gradeattributegradeitemid);
         $data->finalquiz = $this->get_mappingid('quiz', $data->finalquiz);
 
-        $data->timeopen = $this->apply_date_offset($data->timeopen);
-        $data->timeclose = $this->apply_date_offset($data->timeclose);
-
         // Insert the accredible record.
         $newitemid = $DB->insert_record('accredible', $data);
 

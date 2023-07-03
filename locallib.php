@@ -223,7 +223,7 @@ function accredible_quiz_submission_handler($event) {
             if ( $record && ($record->finalquiz || $record->completionactivities) ) {
                 // Load user grade to attach in the credential.
                 $gradeattributes = $usersclient->get_user_grades($record, $user->id);
-                $customattributes = $usersclient->load_user_grade_as_custom_attributes($record, $gradeattributes, $userid);
+                $customattributes = $usersclient->load_user_grade_as_custom_attributes($record, $gradeattributes, $user->id);
 
                 // Check if we have a group mapping - if not use the old logic.
                 if ($record->groupid) {
@@ -388,7 +388,6 @@ function accredible_quiz_submission_handler($event) {
  * @param core/event $event
  */
 function accredible_course_completed_handler($event) {
-
     global $DB, $CFG;
 
     $localcredentials = new credentials();

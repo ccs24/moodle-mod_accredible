@@ -64,6 +64,7 @@ class mod_accredible_credentials_test extends \advanced_testcase {
 
     /**
      * Create credential test
+     * @covers ::create_credential
      */
     public function test_create_credential() {
         // When the credential creation is successful.
@@ -137,6 +138,7 @@ class mod_accredible_credentials_test extends \advanced_testcase {
 
     /**
      * Create credential legacy test
+     * @covers ::create_credential_legacy
      */
     public function test_create_credential_legacy() {
         global $DB;
@@ -224,6 +226,7 @@ class mod_accredible_credentials_test extends \advanced_testcase {
 
     /**
      * Get credentials test
+     * @covers ::get_credentials
      */
     public function test_get_credentials() {
         // When the credential search is successful.
@@ -300,6 +303,7 @@ class mod_accredible_credentials_test extends \advanced_testcase {
 
     /**
      * Check existing credential test
+     * @covers ::check_for_existing_credential
      */
     public function test_check_for_existing_credential() {
         // When an existing credential exists for a group_id and user_email.
@@ -373,6 +377,7 @@ class mod_accredible_credentials_test extends \advanced_testcase {
 
     /**
      * Check existing certificate test
+     * @covers ::check_for_existing_certificate
      */
     public function test_check_for_existing_certificate() {
         // When an existing credential exists for a group_id and user_email.

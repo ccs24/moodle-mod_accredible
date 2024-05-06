@@ -34,6 +34,8 @@ use mod_accredible\local\credentials;
 use mod_accredible\local\groups;
 use mod_accredible\local\users;
 use mod_accredible\local\attribute_keys;
+use mod_accredible\local\formhelper;
+
 
 /**
  * Accredible settings form.
@@ -57,6 +59,7 @@ class mod_accredible_mod_form extends moodleform_mod {
         $attributekeysclient = new attribute_keys();
         $groupsclient = new groups();
         $usersclient = new users();
+        $formhelper = new formhelper();
 
         $updatingcert = false;
         $alreadyexists = false;
@@ -117,16 +120,6 @@ class mod_accredible_mod_form extends moodleform_mod {
         if ($quizes = $DB->get_records_select('quiz', 'course = :course_id', array('course_id' => $id), '', 'id, name')) {
             foreach ($quizes as $quiz) {
                 $quizchoices[$quiz->id] = $quiz->name;
-            }
-        }
-
-        // Load course assigments.
-        $assigmentschoices = array('' => 'Select an Activity Grade');
-        $assigments = $DB->get_records_select('grade_items', 'courseid = :course_id AND itemtype = :item_type',
-            array('course_id' => $id, 'item_type' => 'mod'), '', 'id, itemname');
-        if ($assigments) {
-            foreach ($assigments as $assigment) {
-                $assigmentschoices[$assigment->id] = $assigment->itemname;
             }
         }
 
@@ -193,7 +186,7 @@ class mod_accredible_mod_form extends moodleform_mod {
 
         $mform->addElement('html', $includegradewrapperhtml);
         $mform->addElement('select', 'gradeattributegradeitemid', get_string('gradeattributegradeitemselect', 'accredible'),
-            $assigmentschoices, $inputstyle);
+            $formhelper->load_grade_item_options($id), $inputstyle);
         $mform->addElement('select', 'gradeattributekeyname', get_string('gradeattributekeynameselect', 'accredible'),
             $attributekeyschoices, $inputstyle);
         $mform->disabledIf('gradeattributekeyname', 'attributekysnumber', 'eq', 0);

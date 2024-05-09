@@ -58,6 +58,7 @@ class mod_accredible_attribute_keys_test extends \advanced_testcase {
 
     /**
      * Test whether it returns attribute keys.
+     * @covers ::get_attribute_keys
      */
     public function test_get_attribute_keys() {
         // When the apirest returns attribute keys.

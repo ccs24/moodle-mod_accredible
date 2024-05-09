@@ -19,7 +19,7 @@ namespace mod_accredible\local;
 use mod_accredible\apirest\apirest;
 
 /**
- * Unit tests for mod/accredible/classes/local/credentials.php
+ * Unit tests for mod/accredible/classes/local/evidenceitems.php
  *
  * @package    mod_accredible
  * @subpackage accredible
@@ -61,6 +61,7 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
 
     /**
      * Post credential evidence test
+     * @covers ::post_evidence
      */
     public function test_post_evidence() {
         // When the throw_error is FALSE and the response is successful.
@@ -143,6 +144,7 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
 
     /**
      * Post credential evidence from essay answers test
+     * @covers ::post_essay_answers
      */
     public function test_post_essay_answers() {
         global $DB;
@@ -221,6 +223,7 @@ class mod_accredible_evidenceitems_test extends \advanced_testcase {
 
     /**
      * Post credential evidence test
+     * @covers ::course_duration_evidence
      */
     public function test_course_duration_evidence() {
         global $DB;

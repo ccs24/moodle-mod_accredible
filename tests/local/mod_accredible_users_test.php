@@ -21,7 +21,7 @@ use mod_accredible\client\client;
 use mod_accredible\apirest\apirest;
 
 /**
- * Unit tests for mod/accredible/classes/helpers/user_helper.php
+ * Unit tests for mod/accredible/classes/local/users.php
  *
  * @package    mod_accredible
  * @subpackage accredible
@@ -64,6 +64,7 @@ class mod_accredible_users_test extends \advanced_testcase {
 
     /**
      * Generate list of users with their credentials from a course
+     * @covers ::get_users_with_credentials
      */
     public function test_get_users_with_credentials() {
         $userhelper = new users();
@@ -142,6 +143,7 @@ class mod_accredible_users_test extends \advanced_testcase {
 
     /**
      * Generate list of users without credential but with requirements for the course pass.
+     * @covers ::get_unissued_users
      */
     public function test_get_unissued_users() {
         $userhelper = new users();
@@ -197,6 +199,7 @@ class mod_accredible_users_test extends \advanced_testcase {
 
     /**
      * Return list of grades from a grade item.
+     * @covers ::get_user_grades
      */
     public function test_get_user_grades() {
         global $DB;
@@ -293,6 +296,7 @@ class mod_accredible_users_test extends \advanced_testcase {
 
     /**
      * Return list of grades from a grade item.
+     * @covers ::load_user_grade_as_custom_attributes
      */
     public function test_load_user_grade_as_custom_attributes() {
         global $DB;

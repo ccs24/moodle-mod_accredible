@@ -286,14 +286,14 @@ class mod_accredible_mod_form extends moodleform_mod {
         $mform->setDefault('passinggrade', 70);
 
         $mform->addElement('header', 'completionissue', get_string('completionissueheader', 'accredible'));
-        if ($updatingcert) {
-            $mform->addElement('checkbox', 'completionactivities', get_string('completionissuecheckbox', 'accredible'));
-            if (isset( $accrediblecertificate->completionactivities )) {
-                $mform->setDefault('completionactivities', 1);
-            }
-        } else {
-            $mform->addElement('checkbox', 'completionactivities', get_string('completionissuecheckbox', 'accredible'));
+        $mform->addElement('checkbox', 'completionactivities', get_string('completionissuecheckbox', 'accredible'));
+        if ($updatingcert && isset($accrediblecertificate->completionactivities)) {
+            $mform->setDefault('completionactivities', 1);
         }
+        $mform->addElement('text', 'finalgradetopass', get_string('finalgradetopassinput', 'accredible'));
+        $mform->setType('finalgradetopass', PARAM_INT);
+        $mform->setDefault('finalgradetopass', 0);
+        $mform->disabledIf('finalgradetopass', 'completionactivities', 'notchecked');
 
         $attributemappingdefaultvalues =
             $formhelper->attributemapping_default_values(

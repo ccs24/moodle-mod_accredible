@@ -39,14 +39,16 @@ class accredible {
     public function save_record($post, $existingrecord = null) {
         global $DB;
 
+        $includegradeattribute = $post->includegradeattribute ?? 0;
+        $gradeattributechecked = $includegradeattribute !== 0;
         $dbrecord = (object) [
             'completionactivities' => $post->completionactivities ?? null,
             'name' => $post->name,
             'finalquiz' => $post->finalquiz,
             'passinggrade' => $post->passinggrade,
-            'includegradeattribute' => $post->includegradeattribute ?? 0,
-            'gradeattributegradeitemid' => $post->gradeattributegradeitemid,
-            'gradeattributekeyname' => $post->gradeattributekeyname,
+            'includegradeattribute' => $includegradeattribute,
+            'gradeattributegradeitemid' => $gradeattributechecked ? $post->gradeattributegradeitemid : null,
+            'gradeattributekeyname' => $gradeattributechecked ? $post->gradeattributekeyname : null,
             'groupid' => $post->groupid,
             'attributemapping' => $this->build_attribute_mapping_list($post),
             'timecreated' => time()
@@ -187,6 +189,8 @@ class accredible {
             return $this->date($value);
         } else if ($customfield->type === 'textarea') {
             return strip_tags($value);
+        } else if ($customfield->type === 'select') {
+            return $this->customfield_selected_option($value, $customfield->configdata);
         } else {
             return $value;
         }
@@ -245,6 +249,33 @@ class accredible {
         }
         $accredibledateformat = 'Y-m-d';
         return date($accredibledateformat, $value);
+    }
+
+    /**
+     * Retrieves the selected option from a custom field based on its stored value and configuration data.
+     *
+     * @param mixed $value The stored value of the custom field which typically represents the selected index.
+     * @param string $configdata JSON encoded string containing the configuration of the custom field, including options.
+     * @return string|null The label of the selected option, or null if the index is out of range or invalid.
+     */
+    private function customfield_selected_option($value, $configdata) {
+        if ((int) $value === 0) {
+            return;
+        }
+        $index = (int) $value - 1;
+        $decoded = json_decode($configdata);
+        $options = $this->split_by_line($decoded->options);
+        return $options[$index];
+    }
+
+    /**
+     * Splits a text string into an array of lines.
+     *
+     * @param string $text The text to be split.
+     * @return array An array of strings, each representing a line in the input text.
+     */
+    private function split_by_line($text) {
+        return preg_split("/\r\n|\n|\r/", $text);
     }
 
     /**

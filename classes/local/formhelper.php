@@ -17,6 +17,7 @@
 namespace mod_accredible\local;
 
 use mod_accredible\local\attributemapping;
+use mod_accredible\local\attribute_keys;
 
 /**
  * Helper class for mod_form.php.
@@ -78,10 +79,18 @@ class formhelper {
      * @return array Associative array of course field names suitable for form dropdown.
      */
     public function load_course_field_options() {
-        $options = array('' => 'Select a Moodle course field');
+        $options = [
+            [
+                'value' => '',
+                'name' => 'Select a Moodle course field',
+            ]
+        ];
         $fields = attributemapping::VALID_COURSE_FIELDS;
         foreach ($fields as $field) {
-            $options[$field] = $field;
+            $options[] = [
+                'value' => $field,
+                'name' => $field,
+            ];
         }
         return $options;
     }
@@ -97,10 +106,18 @@ class formhelper {
     public function load_course_custom_field_options() {
         global $DB;
 
-        $options = array('' => 'Select a Moodle course custom field');
+        $options = [
+            [
+                'value' => '',
+                'name' => 'Select a Moodle course custom field',
+            ]
+        ];
         $customfields = $DB->get_records('customfield_field', array(), '', 'id, name');
         foreach ($customfields as $field) {
-            $options[$field->id] = $field->name;
+            $options[] = [
+                'value' => $field->id,
+                'name' => $field->name,
+            ];
         }
         return $options;
     }
@@ -116,14 +133,67 @@ class formhelper {
     public function load_user_profile_field_options() {
         global $DB;
 
-        $options = array('' => 'Select a Moodle user profile field');
+        $options = [
+            [
+                'value' => '',
+                'name' => 'Select a Moodle user profile field',
+            ]
+        ];
         $profilefields = $DB->get_records('user_info_field', array(), '', 'id, name');
         foreach ($profilefields as $field) {
-            $options[$field->id] = $field->name;
+            $options[] = [
+                'value' => $field->id,
+                'name' => $field->name,
+            ];
         }
         return $options;
     }
 
+    /**
+     * Maps an associative array to an array of select options.
+     *
+     * This function converts an associative array of options into an array
+     * of associative arrays with 'name' and 'value' keys, suitable for use
+     * in select elements in forms.
+     *
+     * @param array $options An associative array of options where the key is the option name and the value is the option value.
+     * @return array An array of associative arrays with 'name' and 'value' keys.
+     */
+    public function map_select_options($options) {
+        $selectoptions = [];
+        if (!isset($options)) {
+            return $selectoptions;
+        }
+        $keys = array_keys($options);
+        foreach ($keys as $key) {
+            $selectoptions[] = [
+                'name' => $options[$key],
+                'value' => $key,
+            ];
+        }
+
+        return $selectoptions;
+    }
+
+    /**
+     * Retrieves attribute keys choices for a select input.
+     *
+     * This function fetches attribute keys of type 'text' and 'date' using the
+     * attribute_keys client, merges them, and returns them as choices for a select input.
+     * It includes a prompt option as the first element in the choices array.
+     *
+     * @return array An associative array of attribute key choices for a select input.
+     */
+    public function get_attributekeys_choices() {
+        $attributekeysclient = $this->get_attribute_keys_client();
+        $firstoption = ['' => get_string('accrediblecustomattributeselectprompt', 'accredible')];
+
+        $textattributekeys = $attributekeysclient->get_attribute_keys('text');
+        $dateattributekeys = $attributekeysclient->get_attribute_keys('date');
+        $attributekeys = array_merge($textattributekeys, $dateattributekeys);
+
+        return isset($attributekeys) ? $firstoption + $attributekeys : $attributekeys;
+    }
 
     /**
      * Generate default values for attribute mapping based on a JSON string.
@@ -144,30 +214,48 @@ class formhelper {
         if (!$attributemapping) {
             return $defaultvalues;
         }
+        $coursefieldmappingindex = 0;
+        $coursecustomfieldmappingindex = 0;
+        $userprofilefieldmappingindex = 0;
 
         $decodedmapping = json_decode($attributemapping);
         foreach ($decodedmapping as $mapping) {
             switch ($mapping->table) {
                 case 'course':
                     $defaultvalues['coursefieldmapping'][] = [
+                        'index' => $coursefieldmappingindex,
                         'field' => isset($mapping->field) ? $mapping->field : '',
-                        'accredibleattribute' => isset($mapping->accredibleattribute) ? $mapping->accredibleattribute : ''
+                        'accredibleattribute' => isset($mapping->accredibleattribute) ? $mapping->accredibleattribute : '',
                     ];
+                    $coursefieldmappingindex++;
                     break;
                 case 'customfield_field':
                     $defaultvalues['coursecustomfieldmapping'][] = [
+                        'index' => $coursecustomfieldmappingindex,
                         'id' => isset($mapping->id) ? $mapping->id : '',
-                        'accredibleattribute' => isset($mapping->accredibleattribute) ? $mapping->accredibleattribute : ''
+                        'accredibleattribute' => isset($mapping->accredibleattribute) ? $mapping->accredibleattribute : '',
                     ];
+                    $coursecustomfieldmappingindex++;
                     break;
                 case 'user_info_field':
                     $defaultvalues['userprofilefieldmapping'][] = [
+                        'index' => $userprofilefieldmappingindex,
                         'id' => isset($mapping->id) ? $mapping->id : '',
-                        'accredibleattribute' => isset($mapping->accredibleattribute) ? $mapping->accredibleattribute : ''
+                        'accredibleattribute' => isset($mapping->accredibleattribute) ? $mapping->accredibleattribute : '',
                     ];
+                    $userprofilefieldmappingindex++;
                     break;
             }
         }
         return $defaultvalues;
+    }
+
+    /**
+     * Retrieves an instance of attribute_keys.
+     *
+     * @return attribute_keys An instance of the attribute_keys client.
+     */
+    public function get_attribute_keys_client() {
+        return  new attribute_keys();
     }
 }

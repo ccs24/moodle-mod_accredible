@@ -258,4 +258,24 @@ class formhelper {
     public function get_attribute_keys_client() {
         return  new attribute_keys();
     }
+
+    /**
+     * Reindex an associative array to have sequential numeric keys starting from 0.
+     *
+     * This function takes an associative array and returns a new array with
+     * the same values but with sequential numeric keys starting from 0.
+     *
+     * @param array $array The associative array to be reindexed.
+     * @return array The reindexed array with sequential numeric keys.
+     */
+    public function reindexarray($array) {
+        if (!isset($array)) {
+            return [];
+        }
+        $reindexarray = [];
+        foreach ($array as $value) {
+            $reindexarray[] = $value;
+        }
+        return $reindexarray;
+    }
 }

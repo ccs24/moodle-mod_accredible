@@ -23,21 +23,15 @@
  */
 
 define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
-    let options = {};
     const element = {
         acrredibleSelect: '[id*="_accredibleattribute"]',
         addButton: '[id*="_add_new_line"]',
         list: '.attribute_mapping',
     };
-    const optionsMap = {
-        coursefieldmapping: 'coursefieldoptions',
-        coursecustomfieldmapping: 'coursecustomfieldoptions',
-        userprofilefieldmapping: 'userprofilefieldoptions',
-    };
+    const requiresId = ['coursecustomfieldmapping', 'userprofilefieldmapping'];
 
     const mappings = {
-        init: function(data) {
-            options = data;
+        init: function() {
             mappings.setSelectValues();
             mappings.listenToAddAction();            
             mappings.listenToDeleteAction();
@@ -101,11 +95,13 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
 
         addNewLine: function() {
             const section = $(this).attr('data-section');
+            const options = mappings.getOptionsFromTemplate(section);
             const data = {
                 index: mappings.countLines(section)+1,
                 section: section,
                 accredibleoptions: options.accredibleoptions,
-                moodleoptions: options[optionsMap[section]]
+                moodleoptions: options.moodleoptions,
+                hasid: requiresId.includes(section)
             };
             mappings.renderMappingLine(data,`#${section}_content`);
             // Wait for line to be rendered then show/hide the button.
@@ -138,13 +134,51 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
         toggleAddButton: function(section) {
             const addBtn = $(`#${section}_add_new_line`);
             const currentLines = mappings.countLines(section);
-            const maxLines = options[optionsMap[section]].length - 1; // Excludes blank option.
+            const maxLines = mappings.getMoodleOptionsCount(section);
 
             if (currentLines == maxLines) {
                 addBtn.addClass('hidden');
             } else {
                 addBtn.removeClass('hidden');
             }
+        },
+
+        getOptionsFromTemplate: function(section) {
+            const template = $(`#template_${section}`)[0];
+            if (!template) {
+                return { accredibleoptions: [], moodleoptions: [] };
+            }
+
+            const accredibleselect = template.content.querySelector('#accredibleoptions_select');
+            const moodleselect = template.content.querySelector('#moodleoptions_select');
+
+            return {
+                accredibleoptions: mappings.getOptionsFromSelect(accredibleselect),
+                moodleoptions: mappings.getOptionsFromSelect(moodleselect)
+            };
+        },
+
+        getOptionsFromSelect: function(select) {
+            const options = $(select).find('option').toArray();
+
+            return options.reduce((options, optionElement) => {
+                options.push({
+                    name: optionElement.innerHTML,
+                    value: optionElement.value
+                });
+                return options;
+            }, []);
+        },
+
+        getMoodleOptionsCount: function(section) {
+            const template = $(`#template_${section}`)[0];
+            if (!template) {
+                return 0;
+            }
+
+            const moodleoptions = template.content.querySelector('#moodleoptions_select option');
+
+            return moodleoptions.length - 1; // Excludes blank option.
         },
 
         disableSubmit: function(isFormInvalid) {

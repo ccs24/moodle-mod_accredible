@@ -24,7 +24,7 @@
 
 define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
     const element = {
-        acrredibleSelect: '[id*="_accredibleattribute"]',
+        mappingSelects: '[id*="mapping_line"] select',
         addButton: '[id*="_add_new_line"]',
         list: '.attribute_mapping',
     };
@@ -53,14 +53,14 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
         },
 
         listenToSelectChanges: function() {
-            $(element.list).on('change', element.acrredibleSelect, (event) => {
+            $(element.list).on('change', element.mappingSelects, (event) => {
                 mappings.checkForDuplicates();
             });
         },
 
         getAttributeValuesCount: function() {
             const valuesCount = new Map();
-            $(element.acrredibleSelect).each((_,select) => {
+            $(element.mappingSelects).each((_,select) => {
                 const value = $(select).val();
                 if (!value) {
                     return;
@@ -74,22 +74,29 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
 
         checkForDuplicates: function() {
             const duplicateCount = mappings.getAttributeValuesCount();
+            const rowHasError = {};
+            let hasDuplicate = false;
 
-            $(element.acrredibleSelect).each((_,select) => {
+            $(element.mappingSelects).each((_,select) => {
                 const id = $(select).attr('id');
-                const sectionId = id.split('_accredibleattribute')[0];
-                const delSection = $(`#${sectionId}_delete_action`);
+                const rowId = new RegExp(/(id_\w+_\d)_\w+/g).exec(id)[1]; // Get "id_{{section}}_{{index}}" part.
+                const deleteIconWrapper = $(`#${rowId}_delete_action`);
 
                 $(select).removeClass('is-invalid');
-                delSection.removeClass('pb-xl-4');
-                mappings.disableSubmit(false);
 
                 const value = $(select).val();
                 if (duplicateCount.get(value) > 1) {
                     $(select).addClass('is-invalid');
-                    delSection.addClass('pb-xl-4');
-                    mappings.disableSubmit(true);
+                    deleteIconWrapper.addClass('pb-xl-4');  // Applies padding to align delete icon.
+                    hasDuplicate = true;
+                    rowHasError[rowId] = true;
                 }
+
+                if (!rowHasError[rowId]) {
+                    deleteIconWrapper.removeClass('pb-xl-4');
+                }
+
+                mappings.disableSubmit(hasDuplicate);
             });
         },
 

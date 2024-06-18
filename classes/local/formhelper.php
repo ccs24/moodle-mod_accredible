@@ -39,14 +39,14 @@ class formhelper {
     public function load_grade_item_options($courseid) {
         global $DB;
 
-        $options = array('' => 'Select an Activity Grade');
+        $options = ['' => 'Select an Activity Grade'];
 
         $coursegradeitem = $DB->get_record(
             'grade_items',
-            array(
+            [
                 'courseid' => $courseid,
-                'itemtype' => 'course'
-            ),
+                'itemtype' => 'course',
+            ],
             'id',
             IGNORE_MULTIPLE
         );
@@ -57,7 +57,10 @@ class formhelper {
         $modgradeitems = $DB->get_records_select(
             'grade_items',
             'courseid = :course_id AND itemtype = :item_type',
-            array('course_id' => $courseid, 'item_type' => 'mod'),
+            [
+                'course_id' => $courseid,
+                'item_type' => 'mod',
+            ],
             '',
             'id, itemname'
         );
@@ -209,7 +212,7 @@ class formhelper {
         $defaultvalues = [
             'coursefieldmapping' => [],
             'coursecustomfieldmapping' => [],
-            'userprofilefieldmapping' => []
+            'userprofilefieldmapping' => [],
         ];
         if (!$attributemapping) {
             return $defaultvalues;
